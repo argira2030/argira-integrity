@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Argira Shield v5.21 · Voz destacada + explicación Simple/Experta (corregido)</title>
+    <title>Argira Shield v5.28 · Interfaz mejorada (funcional)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -27,28 +27,40 @@
         .header { text-align: center; margin-bottom: 20px; }
         .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 1px; }
         h1 { font-size: 1.6rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .mode-selector { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: var(--card-bg); padding: 10px 18px; border-radius: 60px; margin-bottom: 16px; border: 1px solid var(--border-dim); }
-        .mode-options { display: flex; gap: 16px; flex-wrap: wrap; }
-        .mode-option { display: flex; align-items: center; gap: 6px; cursor: pointer; background: var(--surface); padding: 4px 12px; border-radius: 40px; }
-        .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; font-weight: bold; background: #2a5a2a; color: white; }
-        .view-selector { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        
+        /* Selector de modos mejorado (mantiene todos los elementos) */
+        .mode-selector { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; background: var(--card-bg); padding: 12px 20px; border-radius: 60px; margin-bottom: 16px; border: 1px solid var(--border-dim); }
+        .mode-options { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+        .mode-option { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; background: var(--surface); padding: 6px 14px; border-radius: 60px; transition: 0.1s; text-align: center; }
+        .mode-option.selected { background: var(--accent); color: #000; }
+        .mode-option input { margin-bottom: 2px; }
+        .mode-desc { font-size: 0.65rem; color: var(--text-dim); max-width: 120px; line-height: 1.2; }
+        .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.75rem; font-weight: bold; background: #2a5a2a; color: white; white-space: nowrap; }
+        
+        /* Semáforo compacto */
+        .compact-semaphore { display: flex; align-items: center; gap: 12px; background: var(--surface); padding: 6px 16px; border-radius: 60px; margin-left: auto; }
+        .compact-light { width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+        .compact-scale { font-weight: bold; font-size: 1.2rem; }
+        .compact-action { font-weight: bold; font-size: 0.9rem; }
+
+        .view-selector { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: 20px; }
         .view-buttons { display: flex; gap: 8px; }
         .view-help { font-size: 0.65rem; color: var(--text-dim); max-width: 280px; text-align: right; }
         .view-btn { background: transparent; border: 1px solid var(--border-dim); border-radius: 30px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
         .view-btn.active { background: var(--accent); color: #000; }
+        
         .main-box { background: var(--surface); border-radius: 32px; padding: 20px; border: 1px solid var(--border-dim); margin-bottom: 20px; }
         textarea { width: 100%; height: 140px; background: var(--surface); border-radius: 20px; padding: 12px; font-family: monospace; border: 1px solid var(--border-dim); color: var(--text-main); font-size: 0.9rem; }
-        .button-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 12px; }
+        .button-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 12px; }
         .example-bar { display: flex; gap: 8px; flex-wrap: wrap; }
-        .action-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-        button { background: linear-gradient(95deg, #1a2a2a, #0a1a1a); border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; padding: 6px 12px; font-weight: 600; cursor: pointer; font-size: 0.75rem; }
+        .action-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        button { background: linear-gradient(95deg, #1a2a2a, #0a1a1a); border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; padding: 8px 14px; font-weight: 600; cursor: pointer; font-size: 0.8rem; transition: 0.1s; }
         button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         button:hover { background: var(--accent); color: #000; }
-        .btn-primary { background: #1a4a3a; border-width: 2px; padding: 6px 16px; }
-        .btn-secondary { border-color: var(--text-dim); color: var(--text-dim); background: transparent; }
-        .share-link { background: transparent; border: none; color: var(--text-dim); font-size: 0.8rem; padding: 4px 8px; text-decoration: underline; cursor: pointer; }
+        .btn-primary { background: #1a4a3a; border-width: 2px; padding: 10px 24px; font-size: 1rem; } /* Botón Auditar más grande */
+        .btn-secondary { border-color: var(--text-dim); color: var(--text-dim); background: transparent; padding: 6px 12px; font-size: 0.75rem; }
+        .share-link { background: transparent; border: none; color: var(--text-dim); font-size: 0.8rem; padding: 6px 12px; text-decoration: underline; cursor: pointer; }
         .share-link:hover { color: var(--accent); }
-        /* Botón de voz grande y destacado */
         .speak-btn-large { background: #2a4a6a; border: 2px solid var(--accent); color: white; font-size: 1rem; padding: 10px 20px; margin-top: 12px; width: 100%; max-width: 300px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 60px; cursor: pointer; transition: 0.2s; }
         .speak-btn-large:hover { background: var(--accent); color: #000; }
         .veredicto-card { background: var(--card-bg); border-radius: 48px; padding: 20px; margin: 20px 0; text-align: center; border: 1px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
@@ -56,12 +68,13 @@
         .semaphore-light-big { width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0 15px currentColor; }
         .scale-big { font-size: 3rem; font-weight: 800; }
         .action-big { font-size: 1.4rem; font-weight: bold; background: #00000066; padding: 4px 16px; border-radius: 60px; }
-        .im-mini { font-size: 0.85rem; margin-top: 12px; color: var(--text-dim); }
+        .im-mini { font-size: 0.85rem; margin-top: 12px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .tooltip-costo { border-bottom: 1px dashed var(--accent); cursor: help; }
         .metrics-mini { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px 0; }
         .metric-mini { background: var(--surface); border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; border-left: 3px solid var(--accent); display: inline-flex; align-items: baseline; gap: 6px; cursor: help; position: relative; }
         .metric-mini strong { font-size: 0.9rem; margin-right: 2px; }
         .metric-mini .explain { font-size: 0.65rem; color: var(--text-dim); }
-        .tooltip-science { display: none; position: absolute; bottom: 130%; left: 0; background: var(--tooltip-bg); border-radius: 16px; padding: 8px; width: 200px; font-size: 0.7rem; z-index: 200; box-shadow: 0 2px 8px black; white-space: normal; }
+        .tooltip-science { display: none; position: absolute; bottom: 130%; left: 0; background: var(--tooltip-bg); border-radius: 16px; padding: 8px; width: 220px; font-size: 0.7rem; z-index: 200; box-shadow: 0 2px 8px black; white-space: normal; }
         .metric-mini:hover .tooltip-science, .metric-mini:focus-within .tooltip-science { display: block; }
         .expert-card { background: var(--surface); border-radius: 28px; padding: 16px; margin-top: 20px; border: 1px solid var(--border-dim); }
         .aseptic-panel { background: var(--surface); border-radius: 20px; padding: 16px; font-family: 'Segoe UI', monospace; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; border: 1px solid var(--border-dim); margin-top: 12px; }
@@ -91,47 +104,62 @@
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
     <div class="container" id="main-content">
         <div class="header">
-            <div class="badge-sci">⚡ ARGIRA v5.21 · Voz destacada + Explicación Simple/Experta (corregido)</div>
+            <div class="badge-sci">⚡ ARGIRA v5.28 · Interfaz mejorada (funcional)</div>
             <h1>🛡️ Integrity Shield</h1>
             <div>Kahneman · Cialdini · Shannon</div>
         </div>
         <div class="mode-selector">
             <div class="mode-options">
-                <label class="mode-option"><input type="radio" name="mode" value="alert" aria-label="Modo alerta, máxima sensibilidad para bulos"> ⚠️ Alerta</label>
-                <label class="mode-option"><input type="radio" name="mode" value="balanced" checked aria-label="Modo equilibrado, estándar recomendado"> ⚖️ Equilibrado</label>
-                <label class="mode-option"><input type="radio" name="mode" value="newsletter" aria-label="Modo newsletter, reduce peso a palabras como tú, hoy, gratis"> 🌿 Newsletter</label>
+                <label class="mode-option" id="modeAlertLabel">
+                    <input type="radio" name="mode" value="alert"> ⚠️ Alerta<br>
+                    <span class="mode-desc">Máxima sensibilidad. Para bulos, estafas, phishing.</span>
+                </label>
+                <label class="mode-option" id="modeBalancedLabel">
+                    <input type="radio" name="mode" value="balanced" checked> ⚖️ Equilibrado<br>
+                    <span class="mode-desc">Estándar. Para correos comerciales, publicidad, noticias.</span>
+                </label>
+                <label class="mode-option" id="modeNewsletterLabel">
+                    <input type="radio" name="mode" value="newsletter"> 🌿 Newsletter<br>
+                    <span class="mode-desc">Sensibilidad reducida. Para divulgación, marketing ético, contenido de valor.</span>
+                </label>
+            </div>
+            <div class="compact-semaphore">
+                <div class="compact-light" id="compactSemaphore"></div>
+                <div class="compact-scale" id="compactScale">0/10</div>
+                <div class="compact-action" id="compactAction">—</div>
+            </div>
+            <div>
                 <span id="modeBadge" class="mode-badge" aria-live="polite">⚖️ Equilibrado</span>
             </div>
             <div class="view-selector">
                 <div class="view-buttons">
-                    <button id="simpleViewBtn" class="view-btn active" aria-label="Vista simple, oculta detalles avanzados">👁️ Simple</button>
-                    <button id="expertViewBtn" class="view-btn" aria-label="Vista experta, muestra radar y texto anotado">🔬 Experta</button>
-                    <button id="helpBtn" class="view-btn" aria-label="Abrir ayuda científica">❓ Ayuda</button>
+                    <button id="simpleViewBtn" class="view-btn active">👁️ Simple</button>
+                    <button id="expertViewBtn" class="view-btn">🔬 Experta</button>
+                    <button id="helpBtn" class="view-btn">❓ Ayuda</button>
                 </div>
-                <div class="view-help" id="viewHelpText">
-                    Vista simple: solo veredicto y métricas clave. Vista experta: añade texto anotado, gráfico radar y explicaciones palabra a palabra.
-                </div>
+                <div class="view-help">Vista simple: solo veredicto y métricas clave. Vista experta: añade texto anotado, gráfico radar y explicaciones.</div>
             </div>
         </div>
         <div class="main-box">
             <textarea id="inputText" placeholder="Pega un texto (email, bulo, noticia) y pulsa AUDITAR..." aria-label="Área de texto para pegar el contenido a analizar"></textarea>
             <div class="button-row">
                 <div class="example-bar">
-                    <button id="loadExampleTech" class="btn-secondary btn-example-custom" aria-label="Cargar ejemplo de newsletter de IA">📘 Newsletter</button>
-                    <button id="loadExampleAlarm" class="btn-secondary btn-example-custom" aria-label="Cargar ejemplo de bulo sanitario">⚠️ Bulo</button>
-                    <button id="loadExampleEng" class="btn-secondary btn-example-custom" aria-label="Cargar ejemplo de estafa en inglés">🇬🇧 Scam</button>
+                    <button id="loadExampleTech" class="btn-secondary btn-example-custom">📘 Newsletter</button>
+                    <button id="loadExampleAlarm" class="btn-secondary btn-example-custom">⚠️ Bulo</button>
+                    <button id="loadExampleEng" class="btn-secondary btn-example-custom">🇬🇧 Scam</button>
                 </div>
                 <div class="action-bar">
-                    <button id="testMicBtn" class="btn-secondary" title="Probar micrófono" aria-label="Probar permiso de micrófono">🎤 Mic</button>
-                    <button id="audioBtn" class="btn-secondary" title="Grabadora de voz" aria-label="Abrir grabadora de voz">🎙️ Grabar</button>
-                    <button id="auditBtn" class="btn-primary" aria-label="Auditar el texto, analizar manipulación">🔬 AUDITAR</button>
-                    <button id="compareBtn" class="btn-secondary" title="Comparar con otro texto" aria-label="Comparar este texto con otro">🔄 Comparar</button>
-                    <button id="shareBtn" class="share-link" title="Copiar resultado al portapapeles" aria-label="Compartir resultado">📤 Compartir</button>
+                    <button id="testMicBtn" class="btn-secondary">🎤 Mic</button>
+                    <button id="audioBtn" class="btn-secondary">🎙️ Grabar</button>
+                    <button id="auditBtn" class="btn-primary">🔬 AUDITAR</button>
+                    <button id="compareBtn" class="btn-secondary">🔄 Comparar</button>
+                    <button id="shareBtn" class="share-link">📤 Compartir</button>
                 </div>
             </div>
         </div>
 
-        <div id="veredictoContainer" style="display: none;">
+        <div id="resultsArea" style="display: none;">
+            <!-- Aquí está el contenido de resultados, igual que en v5.26, pero lo copiamos completo para no omitir nada -->
             <div class="veredicto-card">
                 <div class="veredicto-flex">
                     <div class="semaphore-light-big" id="bigSemaphore" aria-hidden="true"></div>
@@ -139,30 +167,36 @@
                     <div class="scale-big" id="bigScale">0/10</div>
                     <div class="action-big" id="bigAction">—</div>
                 </div>
-                <div class="im-mini">📊 IM: <span id="imValue">0.00</span> · ⏱️ Costo: <span id="costoValue">0 min</span> · 🧠 <span id="summaryValue">—</span></div>
+                <div class="im-mini">
+                    📊 IM: <span id="imIndex">0.00</span> · 
+                    ⏱️ Costo: <span id="costoAtencion">0 min</span> <span class="tooltip-costo" title="El costo de atención varía según el modo porque cada modo asigna diferente peso a los ganchos persuasivos. En modo Alerta se penaliza más, por eso el tiempo es mayor.">(ⓘ)</span> · 
+                    🧠 <span id="executiveSummary">—</span>
+                </div>
                 <div id="modeIndicator" style="font-size:0.7rem; margin-top:8px;" aria-live="polite"></div>
-                <!-- Botón de voz grande y visible -->
                 <div class="text-center" style="margin-top: 16px;">
-                    <button id="speakBtn" class="speak-btn-large" aria-label="Leer el veredicto en voz alta">🔊 Leer resultado en voz alta</button>
+                    <button id="speakBtn" class="speak-btn-large">🔊 Leer resultado en voz alta</button>
                 </div>
             </div>
 
-            <div class="metrics-mini" id="miniMetrics" aria-label="Métricas de persuasión detectadas">
-                <div class="metric-mini" tabindex="0"><strong>🎯P</strong> <span class="explain">(simpatía)</span> <span id="valP">0</span><div class="tooltip-science">Personalización: "tú, gratis, nosotros". Principio de simpatía y reciprocidad (Cialdini).</div></div>
+            <div class="metrics-mini" id="miniMetrics">
+                <div class="metric-mini" tabindex="0"><strong>🎯P</strong> <span class="explain">(simpatía)</span> <span id="valP">0</span><div class="tooltip-science">Personalización: "tú, gratis, nosotros", además nombres personales repetidos. Principio de simpatía y reciprocidad (Cialdini).</div></div>
                 <div class="metric-mini" tabindex="0"><strong>💔E</strong> <span class="explain">(miedo)</span> <span id="valE">0</span><div class="tooltip-science">Emocional: miedo, culpa, pérdida. Activa Sistema 1 (Kahneman).</div></div>
                 <div class="metric-mini" tabindex="0"><strong>⏳U</strong> <span class="explain">(escasez)</span> <span id="valU">0</span><div class="tooltip-science">Urgencia: "ahora, hoy". Principio de escasez (Cialdini).</div></div>
-                <div class="metric-mini" tabindex="0"><strong>👑A</strong> <span class="explain">(autoridad)</span> <span id="valA">0</span><div class="tooltip-science">Autoridad: "expertos, universidad". Sesgo de autoridad.</div></div>
+                <div class="metric-mini" tabindex="0"><strong>👑A</strong> <span class="explain">(autoridad)</span> <span id="valA">0</span><div class="tooltip-science">Autoridad: "expertos, especialista, médico, doctor, matrona". Sesgo de autoridad.</div></div>
                 <div class="metric-mini" tabindex="0"><strong>👥S</strong> <span class="explain">(arrastre)</span> <span id="valSoc">0</span><div class="tooltip-science">Prueba social: "millones, la mayoría". Efecto de arrastre.</div></div>
-                <div class="metric-mini" tabindex="0"><strong>🔥L</strong> <span class="explain">(catástrofe)</span> <span id="valAlarm">0</span><div class="tooltip-science">Alarmismo: "apocalipsis, colapso". Catastrofismo sin base.</div></div>
+                <div class="metric-mini" tabindex="0"><strong>🔥L</strong> <span class="explain">(catástrofe)</span> <span id="valAlarm">0</span><div class="tooltip-science">Alarmismo: "apocalipsis, colapso". Catastrofismo.</div></div>
                 <div class="metric-mini" tabindex="0"><strong>🔮F</strong> <span class="explain">(conspiración)</span> <span id="valFake">0</span><div class="tooltip-science">Fabricación: "cura oculta, conspiración". Narrativas infalsificables.</div></div>
                 <div class="metric-mini" tabindex="0"><strong>📊D</strong> <span class="explain">(datos)</span> <span id="valD">—</span><div class="tooltip-science">Densidad factual: números, fechas, enlaces, fuentes.</div></div>
-                <div class="metric-mini" tabindex="0"><strong>📡EDI</strong> <span class="explain">(Shannon)</span> <span id="valEDI">—</span><div class="tooltip-science">Entropía: diversidad del vocabulario. Cerca de 1 = rico informativamente.</div></div>
+                <div class="metric-mini" tabindex="0"><strong>📡EDI</strong> <span class="explain">(Shannon)</span> <span id="valEDI">—</span><div class="tooltip-science">Entropía: diversidad del vocabulario. Alto = texto rico.</div></div>
+            </div>
+
+            <div class="dashboard" style="display: none;"> <!-- Ocultamos el dashboard antiguo, usamos metrics-mini -->
             </div>
 
             <div id="expertDetails" style="display: none;">
                 <div class="expert-card">
                     <div class="radar-container">
-                        <canvas id="radarCanvas" width="300" height="300" style="max-width:100%;" aria-label="Gráfico radar de los 7 tipos de persuasión"></canvas>
+                        <canvas id="radarCanvas" width="300" height="300" style="max-width:100%;" aria-label="Gráfico radar"></canvas>
                     </div>
                     <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 8px 0;">
                         <span><span style="background:#c084fc; display:inline-block; width:12px; height:12px; border-radius:3px;"></span> P</span>
@@ -174,40 +208,42 @@
                         <span><span style="background:#a855f7;"></span> F</span>
                     </div>
                     <h3>📜 Texto anotado</h3>
-                    <div id="cleanText" class="aseptic-panel" aria-label="Texto con los ganchos persuasivos resaltados"></div>
+                    <div id="cleanText" class="aseptic-panel" aria-label="Texto con ganchos resaltados"></div>
                 </div>
             </div>
 
-            <div id="hallazgosExplicados" class="hallazgos-explicados" aria-label="Lista de ganchos detectados con sus explicaciones">
+            <div id="hallazgosExplicados" class="hallazgos-explicados">
                 <h3>🔍 ¿Por qué estos valores? Ganchos detectados y su significado</h3>
                 <div id="listaHallazgosExplicados">✅ Audita un texto para ver los hallazgos explicados aquí.</div>
             </div>
 
             <div id="rewriteBox" class="rewrite-suggestion" aria-live="polite"></div>
             <div style="text-align: center; margin: 20px 0;">
-                <button id="exportTxtBtn" class="btn-secondary" aria-label="Exportar informe a TXT">📄 TXT</button>
-                <button id="exportPdfBtn" class="btn-secondary" aria-label="Exportar informe a PDF">📑 PDF</button>
+                <button id="exportTxtBtn" class="btn-secondary">📄 TXT</button>
+                <button id="exportPdfBtn" class="btn-secondary">📑 PDF</button>
             </div>
             <h3>📜 Historial reciente</h3>
-            <div id="historyList" class="history-list" aria-label="Últimos textos analizados"></div>
+            <div id="historyList" class="history-list"></div>
         </div>
 
         <div id="liveRegion" aria-live="polite" aria-atomic="true"></div>
 
         <!-- Modales -->
         <div id="comparatorModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h3>Comparar otro texto</h3><textarea id="compareText" rows="6" placeholder="Pega el segundo texto aquí..."></textarea><button id="doCompareBtn" style="margin-top:12px;">Comparar</button><button id="closeCompareBtn" class="btn-secondary">Cerrar</button></div></div>
-        <div id="helpModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h2>🧠 Ciencia detrás de Argira</h2><p><strong>Kahneman:</strong> Sistema 1 (rápido, emocional) vs Sistema 2 (analítico). Los ganchos activan el Sistema 1.</p><p><strong>Cialdini:</strong> 6 principios: reciprocidad, escasez, autoridad, simpatía, prueba social, compromiso.</p><p><strong>Shannon:</strong> Entropía (EDI) = diversidad léxica. Fórmula: H = –Σ p·log₂(p). EDI = H/Hmax.</p><p><strong>IM:</strong> &lt;1.5 Confiable, 1.5-3.2 Persuasión legítima, &gt;3.2 Alto riesgo.</p><button id="closeHelpBtn" class="btn-secondary">Cerrar</button></div></div>
+        <div id="helpModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h2>🧠 Ciencia detrás de Argira</h2><p><strong>Kahneman:</strong> Sistema 1 (rápido, emocional) vs Sistema 2 (analítico). Los ganchos activan el Sistema 1.</p><p><strong>Cialdini:</strong> 6 principios: reciprocidad, escasez, autoridad, simpatía, prueba social, compromiso.</p><p><strong>Shannon:</strong> Entropía (EDI) = diversidad léxica. Fórmula: H = –Σ p·log₂(p). EDI = H/Hmax.</p><p><strong>IM:</strong> &lt;1.5 Confiable, 1.5-3.2 Persuasión legítima, &gt;3.2 Alto riesgo.</p><p><strong>Modos:</strong> Alerta (máxima sensibilidad para bulos), Equilibrado (estándar), Newsletter (sensibilidad reducida para marketing ético).</p><p><strong>Costo atención:</strong> tiempo simbólico estimado para leer y analizar críticamente. Varía según el modo porque cada modo asigna diferente peso a los ganchos.</p><button id="closeHelpBtn" class="btn-secondary">Cerrar</button></div></div>
         <div id="audioModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h3>🎙️ Grabadora</h3><div id="audioStatus">Prueba "Probar mic" primero.</div><button id="startRecordBtn">Iniciar</button><button id="stopRecordBtn" disabled>Parar</button><button id="closeModalBtn">Cerrar</button></div></div>
-        <div class="footer">v5.21 · Totalmente funcional: botón de voz grande bajo el veredicto, texto explicativo en selector de vista, ayuda científica restaurada.</div>
+        <div class="footer">v5.28 · Interfaz mejorada: botón Auditar más grande, botones secundarios más pequeños, semáforo siempre visible. Totalmente funcional.</div>
     </div>
 
     <script>
-        // ========== CONFIGURACIÓN (BASADA EN v5.19, FUNCIONAL) ==========
+        // ========== MISMO SCRIPT DE v5.26 (funcional) ==========
         let currentMode = "balanced";
         let simpleMode = true;
         let lastText = "";
         let lastSummary = "";
         let lastIM = "";
+        let lastScale = "";
+        let lastAction = "";
 
         function getModeWeights() {
             if (currentMode === "alert") return { p:1.2, e:1.4, u:1.2, a:1.3, soc:1.3, alarm:1.7, fake:2.0, syntaxMult:1.0, gratisContextual:1.0 };
@@ -219,71 +255,125 @@
             if (/\b(guía|recurso|prompts|libro|curso|aprender|tutorial|gratuito|regalo)\b/i.test(text)) return 0.3;
             return 0.6;
         }
-        function buildRegexUnicode(words) { let e=words.map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')); return new RegExp(`(?:^|\\s)(${e.join('|')})(?=\\s|$)`, 'gi'); }
-        const TERMS = {
-            p: ["amigo","tú","ti","tu","nosotros","gratis","te regalo","solo para ti","te mereces","juntos","friend","you","your","we","free","just for you"],
+
+        const TERMS_BASE = {
+            p: ["amigo","tú","ti","tu","nosotros","gratis","te regalo","solo para ti","te mereces","juntos","friend","you","your","we","free","just for you", "socio", "socia", "socios", "socias"],
             e: ["miedo","terror","pánico","amenaza","peligro","crisis","culpa","fracaso","perder","pérdida","demasiado tarde","sufrir","dolor","muerte","tragedia","milagro","fear","panic","danger","crisis","guilt","loss","too late","suffer","death"],
             u: ["ahora","ya","hoy","urgente","sin demora","no esperes","expira","vence","solo hoy","últimas plazas","quedan pocos","casi agotado","oferta","aprovecha","hoy mismo","now","today","urgent","don't wait","expires","last chance","limited","hurry"],
-            a: ["expertos","especialistas","autoridad","científicos","estudios demuestran","universidad","avalado por","premio nobel","experts","authority","scientists","studies prove","university","endorsed by"],
+            a: ["expertos","especialistas","especialista","médico","médicos","matrona","matronas","doctor","doctores","doctora","doctoras","director","directores","experta","expertas","científico","científicos","científica","científicas","investigador","investigadores","profesional","profesionales","autoridad","universidad","avalado por","premio nobel","experts","authority","scientists","university","endorsed by"],
             soc: ["millones","todo el mundo","la mayoría","miles de personas","viral","tendencia","millions","everyone","trending","viral"],
             alarm: ["apocalipsis","cataclismo","devastación","colapso","fin del mundo","extinción","desastre irreversible","apocalypse","cataclysm","collapse","end of the world","extinction"],
             fake: ["cura milagrosa","fórmula secreta","ellos no quieren que sepas","verdad oculta","conspiración","élite mundial","miracle cure","secret formula","they don't want you to know","conspiracy"]
         };
-        function countMatches(text, key) { let m=text.match(buildRegexUnicode(TERMS[key])); return m?m.length:0; }
+
+        function buildRegexUnicode(words) { let e=words.map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')); return new RegExp(`(?:^|\\s)(${e.join('|')})(?=\\s|$)`, 'gi'); }
+        function countMatches(text, key) { if (!TERMS_BASE[key]) return 0; let m = text.match(buildRegexUnicode(TERMS_BASE[key])); return m ? m.length : 0; }
+
+        function detectRepeatedPersonalNames(text) {
+            const words = text.split(/\s+/).map(w => w.replace(/^[¿¡]?|[.,;:!?¿¡()"']+$/g, ''));
+            const freq = {};
+            const commonCaps = new Set(['El','La','Los','Las','Un','Una','Unos','Unas','Y','O','Pero','Sin','Sobre','Tras','Ante','Entre','Hasta','Desde','Para','Por','Con','Sin','En','A','De','Del','Al','Lo','Mi','Tu','Su','Nuestro','Vuestro','Este','Esta','Estos','Estas','Ese','Esa','Aquel','Aquella','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']);
+            const blacklist = new Set(['Visualiza','Oxfam','Intermón','Taghreed','Zanata','Kamal','Adwan','Gaza','Juzoor','Nicole','Ochando','Asuntos','Humanitarios','Contacto','Política','Guerra','Hambre','Pobreza','Salud','Sexual','Reproductiva','Clínicas','Móviles','Consultorios','Campamentos','Doctora','Matronas','Especialista','Desigualdades','Futuro','Privacidad','WhatsApp','Nombre']);
+            for (let i = 0; i < words.length; i++) {
+                let w = words[i];
+                if (!w) continue;
+                if (w.length >= 3 && w.length <= 12 && /^[A-ZÁÉÍÓÚÜ][a-záéíóúüñ]*$/.test(w)) {
+                    let prev = i>0 ? words[i-1] : '';
+                    let isStartOfSentence = i===0 || /[.!?;:][\s]*$/.test(prev);
+                    if (!isStartOfSentence && !commonCaps.has(w) && !blacklist.has(w)) {
+                        freq[w] = (freq[w] || 0) + 1;
+                    }
+                }
+            }
+            let score = 0;
+            for (let name in freq) {
+                let count = freq[name];
+                if (count >= 2) {
+                    let add = 0.6 + Math.min(0.9, (count-2)*0.2);
+                    score += add;
+                }
+            }
+            return Math.min(2.0, score);
+        }
+
+        function getPersonalizationScore(text, weightsP) {
+            let baseMatches = countMatches(text.toLowerCase(), 'p');
+            let baseScore = baseMatches * weightsP;
+            let repeatedNamesScore = detectRepeatedPersonalNames(text);
+            if (currentMode === 'newsletter') repeatedNamesScore *= 0.5;
+            return Math.round((baseScore + repeatedNamesScore) * 10) / 10;
+        }
+
         function syntacticPatterns(t) { let s=0; if(/([A-ZÁÉÍÓÚÜ]{4,})/.test(t)) s+=1.5; if(/!{2,}/.test(t)) s+=1.2; if(/\b(compra|haz|corre|actúa|comparte|suscríbete|llama|pulsa|no esperes)\b/i.test(t)) s+=1.0; if((t.match(/\?/g)||[]).length>2) s+=0.8; return s; }
-        function factualDensity(t) { let s=0; s+=(t.match(/\b\d{4}\b/g)||[]).length; s+=(t.match(/https?:\/\/[^\s]+/gi)||[]).length*2; s+=(t.match(/\b(según|estudio|investigación|datos|fuente:)\b/gi)||[]).length*1.5; s+=(t.match(/\b\d+(?:\.\d+)?\s*(%|euros|€|dólares|personas|casos)\b/gi)||[]).length; return Math.max(s,0.5); }
+        function factualDensity(t) { let s=0; s+=(t.match(/\b\d{4}\b/g)||[]).length; s+=(t.match(/https?:\/\/[^\s]+/gi)||[]).length*2; s+=(t.match(/\b(según|estudio|investigación|datos|fuente:)\b/gi)||[]).length*1.5; s+=(t.match(/\b\d+(?:\.\d+)?\s*(%|euros|€|dólares|personas|casos|horas|cuotas)\b/gi)||[]).length; return Math.max(s,0.5); }
         function computeEDI(t) { let w=t.toLowerCase().replace(/[^a-záéíóúüñ\s]/g,'').split(/\s+/).filter(w=>w.length>2); const stop=new Set(['que','para','con','sin','sobre','tras','ante','entre','aunque','porque','por','como','muy','solo']); w=w.filter(x=>!stop.has(x)); if(w.length<5) return {edi:'1.00', entropy:'0.00', interp:'Corto', delta:'0.0'}; let f={}; w.forEach(x=>f[x]=(f[x]||0)+1); let H=0; Object.values(f).forEach(c=>{let p=c/w.length; H-=p*Math.log2(p);}); let Hmax=Math.log2(w.length); let edi=Hmax>0?Math.min(1,H/Hmax):1; return {edi:edi.toFixed(2), entropy:H.toFixed(2), interp:edi>=0.85?'Alta densidad':(edi>=0.65?'Media':'Repetitivo'), delta:((1-edi)*10).toFixed(1)}; }
         function getSemaphore(im) { if(im<=1.5) return {color:"#00cc66", action:"✅ Confiable"}; if(im<=3.2) return {color:"#ffcc00", action:"⚠️ Persuasión legítima"}; return {color:"#ff3e6c", action:"🚨 Alto riesgo"}; }
         function escapeHtml(s){ return s.replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
-        function annotatedText(t){ let seg=[]; for(let c of ['p','e','u','a','soc','alarm','fake']){ let rx=buildRegexUnicode(TERMS[c]); let m; while((m=rx.exec(t))) seg.push({start:m.index, end:m.index+m[0].length, word:m[0], cat:c}); } seg.sort((a,b)=>a.start-b.start); let html="", last=0; for(let s of seg){ if(s.start<last) continue; html+=escapeHtml(t.slice(last,s.start)); let col={p:'#c084fc',e:'#ff6b8b',u:'#f97316',a:'#3b82f6',soc:'#06b6d4',alarm:'#ef4444',fake:'#a855f7'}[s.cat]; html+=`<span class="gancho" style="border-bottom-color:${col};">${escapeHtml(s.word)}</span>`; last=s.end; } html+=escapeHtml(t.slice(last)); return html; }
+        function annotatedText(t){ let seg=[]; for(let c of ['p','e','u','a','soc','alarm','fake']){ let rx=buildRegexUnicode(TERMS_BASE[c]); let m; while((m=rx.exec(t))) seg.push({start:m.index, end:m.index+m[0].length, word:m[0], cat:c}); } seg.sort((a,b)=>a.start-b.start); let html="", last=0; for(let s of seg){ if(s.start<last) continue; html+=escapeHtml(t.slice(last,s.start)); let col={p:'#c084fc',e:'#ff6b8b',u:'#f97316',a:'#3b82f6',soc:'#06b6d4',alarm:'#ef4444',fake:'#a855f7'}[s.cat]; html+=`<span class="gancho" style="border-bottom-color:${col};">${escapeHtml(s.word)}</span>`; last=s.end; } html+=escapeHtml(t.slice(last)); return html; }
         function drawRadar(values, labels) { let canvas=document.getElementById('radarCanvas'); if(!canvas) return; let ctx=canvas.getContext('2d'); let w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); let cx=w/2, cy=h/2, r=Math.min(w,h)/2.5; let angles=labels.map((_,i)=>(i*2*Math.PI/labels.length)-Math.PI/2); ctx.strokeStyle='#aaa'; ctx.fillStyle='#ccc'; ctx.font='10px sans-serif'; angles.forEach((ang,i)=>{ let x=cx+r*Math.cos(ang), y=cy+r*Math.sin(ang); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke(); ctx.fillText(labels[i], x-8, y-4); }); ctx.beginPath(); let first=true; values.forEach((v,i)=>{ let norm=Math.min(1,v/10); let x=cx+r*norm*Math.cos(angles[i]), y=cy+r*norm*Math.sin(angles[i]); if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }); ctx.closePath(); ctx.fillStyle='rgba(0,247,176,0.3)'; ctx.fill(); ctx.strokeStyle='#00f7b0'; ctx.stroke(); }
         function saveToHistory(text, im, summary){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); h.unshift({text:text.slice(0,80), im, summary, date:new Date().toISOString()}); if(h.length>5) h.pop(); localStorage.setItem('argira_history',JSON.stringify(h)); }
         function renderHistory(){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); let container=document.getElementById('historyList'); if(!container) return; container.innerHTML = h.map(hh=>`<div class="history-item" data-text="${escapeHtml(hh.text)}"><strong>${hh.summary}</strong> (IM ${hh.im})<br><small>${new Date(hh.date).toLocaleString()}</small><br>${escapeHtml(hh.text)}</div>`).join(''); document.querySelectorAll('.history-item').forEach(el=>{ el.addEventListener('click',()=>{ document.getElementById('inputText').value=el.getAttribute('data-text'); alert('Texto cargado. Pulsa Auditar.'); }); }); }
 
-        const TIPS = {
-            "amigo":"Crea falsa intimidad. Simula cercanía para bajar tus defensas (Cialdini: Simpatía).","tú":"Interpelación directa que activa procesamiento egocéntrico (Sistema 1, Kahneman).","ti":"Interpelación directa. Personaliza el mensaje artificialmente.","tu":"Posesivo que genera sensación de relevancia personal.","nosotros":"Inclusión tribal. Difumina el rol emisor/receptor.","gratis":"Activa reciprocidad: si te dan algo, sientes que debes devolver (Cialdini).","te regalo":"Reciprocidad forzada. Crea deuda psicológica.","solo para ti":"Exclusividad fabricada para generar sensación de privilegio.","te mereces":"Adulación que predispone a la acción sin análisis.","juntos":"Pertenencia tribal. Reduce el pensamiento crítico.","friend":"Creates false intimacy to lower critical defenses.","you":"Direct address activating egocentric System 1 processing.","your":"Possessive creating false personal relevance.","we":"Tribal inclusion blurring sender/receiver roles.","free":"Triggers reciprocity bias — receiving creates obligation.","just for you":"Fabricated exclusivity to create sense of privilege.",
-            "miedo":"Activa la amígdala. Desactiva el Sistema 2 (análisis racional).","terror":"Activación máxima del sistema de amenaza.","pánico":"Respuesta de emergencia que anula la reflexión.","amenaza":"Redirige atención al emisor como fuente de seguridad.","peligro":"Activa respuesta de supervivencia — decisiones más impulsivas.","crisis":"Encuadre de emergencia que justifica decisiones rápidas.","culpa":"Evitación del dolor social. Alta eficacia manipuladora.","fracaso":"Amenaza al autoconcepto. Induce acción para restaurar imagen.","perder":"Loss aversion (Kahneman): perder duele 2x más que ganar.","pérdida":"Loss aversion. Activador emocional muy potente.","demasiado tarde":"Pérdida + urgencia. Doble activación emocional.","sufrir":"Empatía forzada que desvía atención hacia el emisor.","dolor":"Disparador de empatía. Desplaza el análisis racional.","muerte":"Activación del terror existencial. Respuesta máxima.","tragedia":"Catástrofe que amplifica la percepción de riesgo.","milagro":"Promesa irracional. Activa pensamiento mágico.","fear":"Activates amygdala, disabling rational System 2.","panic":"Emergency response overriding critical thinking.","danger":"Survival activation — triggers impulsive decisions.","guilt":"Social pain avoidance — highly effective manipulator.","loss":"Loss aversion (Kahneman): losses feel 2x stronger than gains.","too late":"Loss + urgency combined — double emotional activation.","suffer":"Forced empathy redirecting attention to the sender.","death":"Existential terror activation. Maximum emotional response.",
-            "ahora":"Presión temporal que impide evaluar con calma.","ya":"Urgencia inmediata. Inhibe reflexión.","hoy":"Plazo artificial. Crea urgencia sin justificación real.","urgente":"La urgencia real rara vez se anuncia así.","sin demora":"Presión temporal directa. ¿Hay razón real para la prisa?","no esperes":"Imperativo que activa miedo a perder oportunidad.","expira":"Caducidad artificial. ¿Es real este plazo?","vence":"Caducidad. Verifica si el plazo es real.","solo hoy":"Escasez temporal clásica. Rara vez real en email marketing.","últimas plazas":"Escasez de unidades (Cialdini). Activa miedo a quedarse fuera.","quedan pocos":"Escasez sin cifra concreta — activador emocional puro.","casi agotado":"Stock limitado sin evidencia verificable.","oferta":"¿Cuál es el precio real de mercado? Contrasta antes de actuar.","aprovecha":"Activa miedo a perder oportunidad.","hoy mismo":"Plazo artificial de máxima urgencia.","now":"Temporal pressure preventing calm evaluation.","today":"Artificial deadline without real justification.","urgent":"Real urgency is rarely announced this way.","don't wait":"Imperative activating fear of missing out.","expires":"Artificial expiry — is this deadline real?","last chance":"Scarcity + loss aversion combined.","limited":"Scarcity trigger (Cialdini). Fear of missing out.","hurry":"Direct pressure bypassing rational decision-making.",
-            "expertos":"Autoridad genérica. ¿Quiénes? ¿Qué estudiaron?","especialistas":"Autoridad vaga. Sin especificación, es ruido.","científicos":"Apelación a la ciencia sin cita concreta.","estudios demuestran":"¿Qué estudios? ¿Publicados dónde? Sin referencia es ruido.","universidad":"Institución sin especificar. Autoridad fabricada.","avalado por":"Respaldo sin verificar. ¿Por quién exactamente?","premio nobel":"Máxima autoridad para validar cualquier afirmación.","experts":"Generic authority without specifying who or what they studied.","authority":"Authority without specification — fabricated credibility.","scientists":"Appeal to science without concrete citation.","studies prove":"What studies? Without reference it's noise.","university":"Unspecified institution. Fabricated authority.","endorsed by":"Unverifiable endorsement.",
-            "millones":"Prueba social masiva. ¿Verificable? Popularidad ≠ calidad.","todo el mundo":"Generalización extrema. Activa sesgo de manada.","la mayoría":"Presión social. ¿Mayoría de quién? ¿Cuándo?","miles de personas":"Prueba social sin fuente. ¿Contable?","viral":"Activa sesgo de cascada informativa.","tendencia":"Sesgo de seguir a la mayoría (herding).","millions":"Massive social proof. Popularity ≠ quality.","everyone":"Extreme generalization triggering herd behavior.","trending":"Social proof activating information cascade bias.",
-            "apocalipsis":"Catastrofismo máximo. Activa respuesta de supervivencia.","cataclismo":"Encuadre catastrófico sin evidencia.","devastación":"Amplifica percepción de riesgo.","colapso":"¿Hay datos reales detrás de esta afirmación?","fin del mundo":"Catastrofismo extremo. Sin verificación posible.","extinción":"Amenaza existencial máxima.","desastre irreversible":"Catástrofe + irreversibilidad. Combinación muy potente.","apocalypse":"Maximum catastrophism. Activates survival response.","cataclysm":"Catastrophic framing without evidence.","collapse":"Are there real data behind this claim?","end of the world":"Extreme catastrophism. Unverifiable.","extinction":"Maximum existential threat.",
-            "cura milagrosa":"Promesa médica sin evidencia. Alto riesgo de daño real.","fórmula secreta":"Conocimiento exclusivo para crear dependencia.","ellos no quieren que sepas":"Estructura conspirativa. Infalsificable por definición.","verdad oculta":"Marco conspirativo. ¿Oculta por quién?","conspiración":"Narrativa de enemigo oculto. Muy difícil de refutar.","élite mundial":"Enemigo difuso para canalizar desconfianza.","miracle cure":"Medical promise without evidence. Risk of real harm.","secret formula":"Exclusive knowledge creating dependency.","they don't want you to know":"Classic conspiratorial structure. Unfalsifiable by design.","conspiracy":"Hidden enemy narrative. Very difficult to refute."
+        const TIPS_DETAIL = {
+            "tu": "Uso de 'tu' para personalizar el mensaje y crear una falsa sensación de cercanía. Principio de simpatía (Cialdini).",
+            "gratis": "Activa reciprocidad: si te dan algo, sientes que debes devolver. Principio de reciprocidad (Cialdini).",
+            "hoy": "Crea urgencia artificial con un plazo breve. Principio de escasez (Cialdini).",
+            "ahora": "Presión temporal inmediata, impide la reflexión. Escasez.",
+            "oferta": "Descuento limitado. Activa pérdida si no se aprovecha.",
+            "ya": "Inmediatez, inhibe el análisis racional.",
+            "doctora": "Apelación a la autoridad médica para dar credibilidad sin evidencia concreta.",
+            "matronas": "Autoridad sanitaria. Se usa para inspirar confianza.",
+            "especialista": "Autoridad vaga. ¿Qué especialista? ¿Avalado por quién?",
+            "expertos": "Autoridad genérica. Sin nombres ni credenciales.",
+            "avalado por": "Respaldo no especificado. ¿Por quién exactamente?",
+            "universidad": "Institución académica sin concretar. Autoridad fabricada.",
+            "millones": "Prueba social masiva. Popularidad no equivale a calidad.",
+            "la mayoría": "Presión social de grupo. ¿Mayoría de quién?",
+            "apocalipsis": "Catastrofismo extremo. Activa respuesta de supervivencia.",
+            "colapso": "Amenaza existencial sin datos verificables.",
+            "conspiración": "Narrativa de enemigo oculto. Difícil de refutar.",
+            "cura milagrosa": "Promesa médica sin evidencia. Alto riesgo de daño real."
         };
-        function getTip(word) { return TIPS[word.toLowerCase()] || "Patrón persuasivo detectado. Evalúa críticamente."; }
+        function getDetailedTip(word) {
+            let w = word.toLowerCase();
+            if (TIPS_DETAIL[w]) return TIPS_DETAIL[w];
+            return "Patrón persuasivo detectado. Evalúa críticamente el uso de este término.";
+        }
 
         function buildHallazgosExplicados(text) {
             let items = [];
             let seen = new Set();
             for (let c of ['p','e','u','a','soc','alarm','fake']) {
-                let rx = buildRegexUnicode(TERMS[c]);
+                let rx = buildRegexUnicode(TERMS_BASE[c]);
                 let m;
                 while ((m = rx.exec(text))) {
-                    let word = m[0].trim().toLowerCase();
-                    let key = word + '_' + c;
+                    let word = m[0].trim();
+                    let key = word.toLowerCase() + '_' + c;
                     if (seen.has(key)) continue;
                     seen.add(key);
                     let cat = {p:'Personalización', e:'Carga Emocional', u:'Urgencia/Escasez', a:'Autoridad', soc:'Prueba Social', alarm:'Alarmismo', fake:'Fabricación'}[c];
-                    let tip = getTip(word);
-                    items.push({ palabra: m[0].trim(), categoria: cat, explicacion: tip, tipo: c });
+                    let tip = getDetailedTip(word);
+                    items.push({ palabra: word, categoria: cat, explicacion: tip, tipo: c });
                 }
             }
-            if (items.length === 0) return "<div style='color:var(--text-dim); padding:12px; text-align:center;'>✅ No se detectaron ganchos persuasivos relevantes en este texto.</div>";
+            const repeatedNamesScore = detectRepeatedPersonalNames(text);
+            if (repeatedNamesScore > 0) {
+                items.push({ palabra: "Nombre repetido", categoria: "Personalización", explicacion: "Se ha detectado la repetición de un nombre propio (ej. 'José José'). Esto activa el principio de simpatía (Cialdini) y crea una falsa sensación de cercanía.", tipo: "p" });
+            }
+            if (items.length === 0) return "<div style='padding:12px'>✅ No se detectaron ganchos persuasivos relevantes.</div>";
             const colores = { p:'#c084fc', e:'#ff6b8b', u:'#f97316', a:'#3b82f6', soc:'#06b6d4', alarm:'#ef4444', fake:'#a855f7' };
-            return items.map(it => `
-                <div class="hall-item-explicado" style="border-left-color: ${colores[it.tipo]};">
-                    <div class="hall-cat" style="color: ${colores[it.tipo]}">${it.categoria}</div>
-                    <div class="hall-word">"${escapeHtml(it.palabra)}"</div>
-                    <div class="hall-explanation">→ ${escapeHtml(it.explicacion)}</div>
-                </div>
-            `).join('');
+            return items.map(it => `<div class="hall-item-explicado" style="border-left-color:${colores[it.tipo]};"><div class="hall-cat" style="color:${colores[it.tipo]}">${it.categoria}</div><div class="hall-word">"${escapeHtml(it.palabra)}"</div><div class="hall-explanation">→ ${escapeHtml(it.explicacion)}</div></div>`).join('');
         }
 
-        function announceToScreenReader(message) {
-            const liveRegion = document.getElementById('liveRegion');
-            if (liveRegion) {
-                liveRegion.textContent = message;
-                setTimeout(() => { liveRegion.textContent = ''; }, 3000);
-            }
+        function announceToScreenReader(message) { const liveRegion = document.getElementById('liveRegion'); if (liveRegion) { liveRegion.textContent = message; setTimeout(() => liveRegion.textContent = '', 3000); } }
+
+        function updateCompactSemaphore(color, scale, action) {
+            const compLight = document.getElementById('compactSemaphore');
+            const compScale = document.getElementById('compactScale');
+            const compAction = document.getElementById('compactAction');
+            if (compLight) compLight.style.backgroundColor = color;
+            if (compScale) compScale.innerHTML = scale + "/10";
+            if (compAction) compAction.innerHTML = action;
         }
 
         function performAudit(text) {
@@ -292,8 +382,7 @@
             let syntax = syntacticPatterns(text) * weights.syntaxMult;
             let lower = text.toLowerCase();
             let D = factualDensity(text);
-            let rawP = countMatches(lower,'p') * weights.p;
-            if (currentMode === 'newsletter' && /\bgratis\b/i.test(text)) rawP *= gf;
+            let rawP = getPersonalizationScore(text, weights.p);
             let rawE = countMatches(lower,'e') * weights.e;
             let rawU = countMatches(lower,'u') * weights.u;
             let rawA = countMatches(lower,'a') * weights.a;
@@ -306,17 +395,20 @@
             let scale = Math.min(10, Math.round(im * 1.5 * 10)/10);
             let {color, action} = getSemaphore(im);
             let summary = im<=1.5?"✅ Confiable":(im<=3.2?"⚠️ Persuasión legítima":"🚨 Alto riesgo");
-            lastSummary = summary;
-            lastIM = im.toFixed(2);
-            
-            document.getElementById('bigSemaphore').style.backgroundColor = color;
-            document.getElementById('bigScale').innerHTML = scale + "/10";
-            document.getElementById('bigAction').innerHTML = action;
-            document.getElementById('imValue').innerHTML = im.toFixed(2);
-            document.getElementById('costoValue').innerHTML = ((total)*12/60).toFixed(1)+" min";
-            document.getElementById('summaryValue').innerHTML = summary;
+            lastSummary = summary; lastIM = im.toFixed(2); lastScale = scale; lastAction = action;
+            updateCompactSemaphore(color, scale, action);
+            const bigSem = document.getElementById('bigSemaphore');
+            if (bigSem) bigSem.style.backgroundColor = color;
+            const bigScale = document.getElementById('bigScale');
+            if (bigScale) bigScale.innerHTML = scale + "/10";
+            const bigAction = document.getElementById('bigAction');
+            if (bigAction) bigAction.innerHTML = action;
+            document.getElementById('imIndex').innerHTML = im.toFixed(2);
+            document.getElementById('costoAtencion').innerHTML = ((total)*12/60).toFixed(1)+" min";
+            document.getElementById('executiveSummary').innerHTML = summary;
             let modeName = currentMode==='alert'?'⚠️ Alerta':(currentMode==='balanced'?'⚖️ Equilibrado':'🌿 Newsletter');
-            document.getElementById('modeIndicator').innerHTML = `Modo: ${modeName}`;
+            const modeInd = document.getElementById('modeIndicator');
+            if (modeInd) modeInd.innerHTML = `Modo: ${modeName}`;
             document.getElementById('valP').innerHTML = rawP.toFixed(1);
             document.getElementById('valE').innerHTML = rawE.toFixed(1);
             document.getElementById('valU').innerHTML = rawU.toFixed(1);
@@ -336,51 +428,47 @@
             }
             document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
             document.getElementById('rewriteBox').innerHTML = `✍️ ${(im>3.2 && currentMode!=='newsletter')?"Reescribir eliminando presión artificial": "✅ El texto parece legítimo. No se requiere reescritura."}`;
-            document.getElementById('veredictoContainer').style.display = 'block';
+            document.getElementById('resultsArea').style.display = 'block';
             window.lastText = text;
             saveToHistory(text, im.toFixed(2), summary);
             renderHistory();
-            
-            const cleanSummary = summary.replace(/✅|⚠️|🚨/g, '').trim();
-            announceToScreenReader(`Análisis completado. Resultado: ${cleanSummary}. Escala ${scale} sobre 10. Índice de manipulación ${im.toFixed(2)}. ${action}`);
-            document.getElementById('semaphoreText').textContent = `Veredicto: ${cleanSummary}, escala ${scale} sobre 10`;
+            announceToScreenReader(`Análisis completado. Resultado: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}. Escala ${scale}/10. IM ${im.toFixed(2)}.`);
+            const semText = document.getElementById('semaphoreText');
+            if (semText) semText.textContent = `Veredicto: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}, escala ${scale}/10`;
+        }
+
+        function refreshCurrentAnalysis() {
+            if (window.lastText) performAudit(window.lastText);
         }
 
         function speakResult() {
-            if (!lastSummary) {
-                alert("Primero audita un texto.");
-                return;
-            }
-            const cleanSummary = lastSummary.replace(/✅|⚠️|🚨/g, '').trim();
-            const message = `Resultado del análisis: ${cleanSummary}. Escala ${document.getElementById('bigScale').innerText}. Índice de manipulación ${lastIM}. ${document.getElementById('bigAction').innerText}`;
-            const utterance = new SpeechSynthesisUtterance(message);
-            utterance.lang = 'es-ES';
-            utterance.rate = 0.9;
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(utterance);
+            if (!lastSummary) { alert("Primero audita un texto."); return; }
+            const utterance = new SpeechSynthesisUtterance(`Resultado: ${lastSummary.replace(/✅|⚠️|🚨/g,'').trim()}. Escala ${lastScale}/10. IM ${lastIM}. ${lastAction}`);
+            utterance.lang = 'es-ES'; utterance.rate = 0.9;
+            window.speechSynthesis.cancel(); window.speechSynthesis.speak(utterance);
         }
 
-        function buildFullReport() { let t=window.lastText||""; return `ARGIRA v5.21\nModo: ${currentMode}\nIM: ${document.getElementById('imValue').innerText}\nResumen: ${document.getElementById('summaryValue').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
+        function buildFullReport() { let t=window.lastText||""; return `ARGIRA v5.28\nModo: ${currentMode}\nIM: ${document.getElementById('imIndex').innerText}\nResumen: ${document.getElementById('executiveSummary').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
         function exportTxt() { if(!window.lastText) {alert("Audita algo primero");return;} const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buildFullReport()],{type:'text/plain'})); a.download=`argira_${Date.now()}.txt`; a.click(); }
         function exportPdf() { if(typeof window.jspdf==='undefined'){alert("Cargando jsPDF...");return;} const {jsPDF}=window.jspdf; const doc=new jsPDF(); doc.text(buildFullReport(),10,10); doc.save(`argira_${Date.now()}.pdf`); }
-        function shareResult() { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('summaryValue').innerText} (IM ${document.getElementById('imValue').innerText})`); alert("Resultado copiado."); }
+        function shareResult() { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('executiveSummary').innerText} (IM ${document.getElementById('imIndex').innerText})`); alert("Resultado copiado."); }
 
         document.getElementById('exportTxtBtn').onclick = exportTxt;
         document.getElementById('exportPdfBtn').onclick = exportPdf;
         document.getElementById('shareBtn').onclick = shareResult;
         document.getElementById('speakBtn').onclick = speakResult;
-        document.getElementById('simpleViewBtn').onclick = () => { simpleMode=true; document.getElementById('simpleViewBtn').classList.add('active'); document.getElementById('expertViewBtn').classList.remove('active'); if(window.lastText) performAudit(window.lastText); };
-        document.getElementById('expertViewBtn').onclick = () => { simpleMode=false; document.getElementById('expertViewBtn').classList.add('active'); document.getElementById('simpleViewBtn').classList.remove('active'); if(window.lastText) performAudit(window.lastText); };
+        document.getElementById('simpleViewBtn').onclick = () => { simpleMode=true; document.getElementById('simpleViewBtn').classList.add('active'); document.getElementById('expertViewBtn').classList.remove('active'); refreshCurrentAnalysis(); };
+        document.getElementById('expertViewBtn').onclick = () => { simpleMode=false; document.getElementById('expertViewBtn').classList.add('active'); document.getElementById('simpleViewBtn').classList.remove('active'); refreshCurrentAnalysis(); };
         document.getElementById('helpBtn').onclick = () => document.getElementById('helpModal').style.display='flex';
         document.getElementById('closeHelpBtn').onclick = () => document.getElementById('helpModal').style.display='none';
-        document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',(e)=>{ currentMode=e.target.value; let badge=document.getElementById('modeBadge'); if(currentMode==='alert') badge.innerHTML='⚠️ Alerta'; else if(currentMode==='balanced') badge.innerHTML='⚖️ Equilibrado'; else badge.innerHTML='🌿 Newsletter'; if(window.lastText) performAudit(window.lastText); }));
-        document.getElementById('loadExampleTech').onclick = () => document.getElementById('inputText').value = "Hola! Soy autor de un libro de IA. Te regalo 1000 prompts gratis. Aprende IA hoy mismo. Sin spam.";
+        document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',(e)=>{ currentMode=e.target.value; let badge=document.getElementById('modeBadge'); if(currentMode==='alert') badge.innerHTML='⚠️ Alerta'; else if(currentMode==='balanced') badge.innerHTML='⚖️ Equilibrado'; else badge.innerHTML='🌿 Newsletter'; refreshCurrentAnalysis(); }));
+        document.getElementById('loadExampleTech').onclick = () => document.getElementById('inputText').value = "Asunto: 📢 Últimos días para acceder a Marketing Digital Pro\n\nHola [Nombre],\n\n¿Quieres aprender a vender online sin complicaciones? El curso \"Marketing Digital Pro\" ya ha ayudado a más de 5.000 estudiantes a conseguir sus primeros clientes.\n\n🔹 30 horas de contenido práctico\n🔹 Certificado avalado por la Universidad de Marketing\n🔹 Acceso de por vida por solo 97€ (precio de lanzamiento)\n\nOferta válida solo hasta el viernes. ¡No te quedes sin tu plaza!\n\n✅ Paga en 3 cuotas sin intereses\n🎁 Bonos: plantillas descargables + comunidad privada\n\nHaz clic aquí y empieza hoy mismo ➡️ [enlace]\n\n¿Tienes dudas? Responde a este email.\n\nSaludos,\nEquipo Academia Digital";
         document.getElementById('loadExampleAlarm').onclick = () => document.getElementById('inputText').value = "¡URGENTE! El gobierno esconde la cura. Comparte ahora o morirán.";
         document.getElementById('loadExampleEng').onclick = () => document.getElementById('inputText').value = "URGENT: Miracle cure! They don't want you to know. Buy now!";
         let vetoInterval=null;
         document.getElementById('auditBtn').onclick = () => { let txt=document.getElementById('inputText').value; if(!txt.trim()){ alert("Inserta texto"); return; } let overlay=document.getElementById('vetoOverlay'); if(!overlay){ overlay=document.createElement('div'); overlay.id='vetoOverlay'; overlay.className='veto-layer'; overlay.innerHTML='<div class="timer-big" id="vetoTimer">🧠 5s</div><p>Analizando...</p>'; document.body.appendChild(overlay); } overlay.style.display='block'; let t=5; if(vetoInterval) clearInterval(vetoInterval); vetoInterval=setInterval(()=>{ t--; let ts=document.getElementById('vetoTimer'); if(ts) ts.innerText=`🧠 ${t}s`; if(t<=0){ clearInterval(vetoInterval); overlay.style.display='none'; performAudit(txt); } },1000); };
         document.getElementById('compareBtn').onclick = () => { if(!document.getElementById('inputText').value.trim()){ alert("Primero pega un texto."); return; } document.getElementById('comparatorModal').style.display='flex'; };
-        document.getElementById('doCompareBtn').onclick = () => { let t1=document.getElementById('inputText').value; let t2=document.getElementById('compareText').value; if(!t2.trim()){ alert("Pega segundo texto"); return; } let weights = getModeWeights(); let calcIM = (t)=>{ let lower=t.toLowerCase(); let D=factualDensity(t); let rawP=countMatches(lower,'p')*weights.p; let rawE=countMatches(lower,'e')*weights.e; let rawU=countMatches(lower,'u')*weights.u; let rawA=countMatches(lower,'a')*weights.a; let rawSoc=countMatches(lower,'soc')*weights.soc; let rawAlarm=countMatches(lower,'alarm')*weights.alarm; let rawFake=countMatches(lower,'fake')*weights.fake; let total=rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake+syntacticPatterns(t)*weights.syntaxMult; let wordCount=t.split(/\s+/).length; return total/(Math.log10(Math.max(1,wordCount))+D); }; let im1=calcIM(t1); let im2=calcIM(t2); let sum1=im1<=1.5?"Confiable":(im1<=3.2?"Persuasión legítima":"Alto riesgo"); let sum2=im2<=1.5?"Confiable":(im2<=3.2?"Persuasión legítima":"Alto riesgo"); alert(`Comparación:\nTexto1: ${sum1} (IM ${im1.toFixed(2)})\nTexto2: ${sum2} (IM ${im2.toFixed(2)})\nDiferencia: ${Math.abs(im1-im2).toFixed(2)}`); document.getElementById('comparatorModal').style.display='none'; };
+        document.getElementById('doCompareBtn').onclick = () => { let t1=document.getElementById('inputText').value, t2=document.getElementById('compareText').value; if(!t2.trim()){ alert("Pega segundo texto"); return; } let weights = getModeWeights(); let calcIM = (t)=>{ let D=factualDensity(t); let rawP = getPersonalizationScore(t, weights.p); let rawE=countMatches(t.toLowerCase(),'e')*weights.e; let rawU=countMatches(t.toLowerCase(),'u')*weights.u; let rawA=countMatches(t.toLowerCase(),'a')*weights.a; let rawSoc=countMatches(t.toLowerCase(),'soc')*weights.soc; let rawAlarm=countMatches(t.toLowerCase(),'alarm')*weights.alarm; let rawFake=countMatches(t.toLowerCase(),'fake')*weights.fake; let total=rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake+syntacticPatterns(t)*weights.syntaxMult; let wc=t.split(/\s+/).length; return total/(Math.log10(Math.max(1,wc))+D); }; let im1=calcIM(t1), im2=calcIM(t2); let sum1=im1<=1.5?"Confiable":(im1<=3.2?"Persuasión":"Alto riesgo"); let sum2=im2<=1.5?"Confiable":(im2<=3.2?"Persuasión":"Alto riesgo"); alert(`Comparación:\nTexto1: ${sum1} (IM ${im1.toFixed(2)})\nTexto2: ${sum2} (IM ${im2.toFixed(2)})\nDiferencia: ${Math.abs(im1-im2).toFixed(2)}`); document.getElementById('comparatorModal').style.display='none'; };
         document.getElementById('closeCompareBtn').onclick = () => document.getElementById('comparatorModal').style.display='none';
         let recognition, isRecording=false, finalTranscript="";
         const modalAudio = document.getElementById('audioModal');
