@@ -628,73 +628,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         if(startRec) startRec.onclick=startRecording;
         if(stopRec) stopRec.onclick=stopRecording;
         document.getElementById('closeModalBtn').onclick = ()=>{ if(isRecording) stopRecording(); modalAudio.style.display='none'; };
-                renderHistory();
-    </script>
-
-    <script>
-        // Motor de Resiliencia v2.0 - Conexión con Render
-        const API_URL = 'https://argira-api-v1.onrender.com';
-
-        async function auditText() {
-            const btn = document.getElementById('auditBtn');
-            const inputText = document.getElementById('inputText').value;
-            const statusBox = document.querySelector('.status-box') || document.getElementById('statusIndicator');
-
-            if (!inputText || !inputText.trim()) return;
-
-            // Bloqueo de UI para evitar fricción cognitiva
-            btn.disabled = true;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "<span>⚙️ ANALIZANDO...</span>";
-            
-            if(statusBox) {
-                statusBox.style.display = 'block';
-                statusBox.innerText = "Consultando al cerebro (Despertando motor)...";
-            }
-
-            // Bucle de persistencia técnica
-            const callEngine = async () => {
-                try {
-                    const response = await fetch(`${API_URL}/analyze`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text: inputText }),
-                        signal: AbortSignal.timeout(45000) 
-                    });
-
-                    if (!response.ok) throw new Error('Servidor durmiendo');
-
-                    const data = await response.json();
-                    
-                    if(statusBox) statusBox.style.display = 'none';
-                    
-                    // Actualización de métricas en pantalla
-                    if(document.getElementById('imValue')) document.getElementById('imValue').innerText = data.im;
-                    if(document.getElementById('deltaValue')) document.getElementById('deltaValue').innerText = data.delta;
-                    
-                    if (typeof drawRadar === 'function') {
-                        drawRadar([data.im, data.delta, 5, 0, 0], ['Manipulación', 'Inercia', 'Factualidad', 'Alarmismo', 'Personalización']);
-                    }
-
-                } catch (err) {
-                    console.log("Reintentando conexión aséptica...");
-                    await new Promise(r => setTimeout(r, 4000));
-                    return callEngine(); 
-                }
-            };
-
-            await callEngine();
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const btn = document.getElementById('auditBtn');
-            if(btn) btn.onclick = auditText;
-
-            // Despertar preventivo del motor
-            fetch(`${API_URL}/ping`).catch(() => console.log("Señal sent."));
-        });
+        renderHistory();
     </script>
 </body>
 </html>
