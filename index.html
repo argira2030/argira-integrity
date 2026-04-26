@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Argira Shield v6.4 · Phishing Defense</title>
+    <title>Argira Shield v6.5 · Estable</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -215,7 +215,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         <div id="audioModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h3>🎙️ Grabadora</h3><div id="audioStatus">Prueba "Probar mic" primero.</div><button id="startRecordBtn">Iniciar</button><button id="stopRecordBtn" disabled>Parar</button><button id="closeModalBtn">Cerrar</button></div></div>
         
         <div class="scientific-footer">
-            <p><strong>Nota Metodológica:</strong> Argira Shield v6.4 utiliza patrones ampliados de phishing y coacción, con raíz cúbica para textos largos. El ΔIC mide la inercia estructural del lenguaje. Auditoría externa disponible en Zenodo.</p>
+            <p><strong>Nota Metodológica:</strong> Argira Shield v6.5 utiliza neutralidad multiplicativa, raíz cúbica y multiplicadores por modo para evitar falsos negativos en textos éticos. Auditoría externa disponible en Zenodo.</p>
         </div>
 
         <div class="author-box" style="margin: 30px auto 20px auto; max-width: 550px; padding: 20px; background: var(--card-bg); border-radius: 32px; border: 1px solid var(--border-dim); text-align: center;">
@@ -236,7 +236,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 Herramienta de auditoría ética · Código abierto (MIT)
             </p>
         </div>
-        <div class="footer">v6.4 · Phishing Defense · Basado en Kahneman, Cialdini, Shannon.</div>
+        <div class="footer">v6.5 · Detección Robusta · Basado en Kahneman, Cialdini, Shannon.</div>
     </div>
 
     <script>
@@ -251,7 +251,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
 
         const NOISE_PATTERN = /\b(bueno|decir|entonces|simplemente|realmente|quizás|un poco|tal vez|claro|entiendo|básicamente|obviamente|por supuesto|en realidad|digamos|supongo|evidentemente|claramente|ciertamente|absolutamente|prácticamente|virtualmente|bien|pues|em|eh|mmm)\b/gi;
 
-        // Base de términos para las métricas complementarias (no se usan para IM, solo para radar y mini-metrics)
+        // Base de términos para las métricas complementarias (radar)
         const TERMS_BASE = {
             p: ["amigo","tú","ti","tu","nosotros","gratis","te regalo","solo para ti","te mereces","juntos","friend","you","your","we","free","just for you","socio","socia","socios","socias"],
             e: ["miedo","terror","pánico","amenaza","peligro","crisis","culpa","fracaso","perder","pérdida","demasiado tarde","sufrir","dolor","muerte","tragedia","milagro","fear","panic","danger","crisis","guilt","loss","too late","suffer","death"],
@@ -262,9 +262,37 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             fake: ["cura milagrosa","fórmula secreta","ellos no quieren que sepas","verdad oculta","conspiración","élite mundial","miracle cure","secret formula","they don't want you to know","conspiracy"]
         };
 
+        // ========== PATRONES GLOBALES COMPARTIDOS ==========
+        const GLOBAL_PATTERNS = {
+            phishing: {
+                p: [ { word: "urgente", weight: 2.0 }, { word: "ya", weight: 1.2 }, { word: "ahora", weight: 1.6 }, { word: "inmediatamente", weight: 1.8 } ],
+                e: [ { word: "sospechosa", weight: 2.2 }, { word: "suspendida", weight: 2.5 }, { word: "verifique", weight: 2.0 }, { word: "perderá", weight: 2.8 }, { word: "fondos", weight: 2.2 }, { word: "permanente", weight: 2.6 } ],
+                a: [ { word: "aviso importante", weight: 2.2 }, { word: "estimado usuario", weight: 1.2 } ],
+                s: [ { word: "clic aquí", weight: 2.0 }, { word: "haga clic", weight: 2.0 } ],
+                u: [ { word: "última oportunidad", weight: 2.2 } ],
+                l: [ { word: "josé", weight: 0.5 } ],
+                f: [ { word: "peligro", weight: 2.0 } ]
+            },
+            legit: [
+                { word: "donativo", weight: 0.2 }, { word: "donación", weight: 0.2 }, { word: "apoyo", weight: 0.15 },
+                { word: "ayuda", weight: 0.15 }, { word: "acompañamiento", weight: 0.1 }, { word: "salud", weight: 0.1 },
+                { word: "mujeres", weight: 0.1 }, { word: "bebé", weight: 0.1 }, { word: "embarazo", weight: 0.15 },
+                { word: "gracias", weight: 0.1 }, { word: "juntos", weight: 0.1 }, { word: "solidaridad", weight: 0.15 },
+                { word: "derechos", weight: 0.1 }, { word: "igualdad", weight: 0.1 }, { word: "justicia", weight: 0.15 }
+            ],
+            coaccion: [
+                { regex: /absolutamente\s+necesario/i, weight: 3.5, label: "Coacción", reason: "Sintaxis de obligatoriedad" },
+                { regex: /cierre\s+definitivo/i, weight: 3.0, label: "Amenaza", reason: "Consecuencia irreversible" },
+                { regex: /no\s+ignore/i, weight: 2.5, label: "Presión", reason: "Imperativo coercitivo" },
+                { regex: /acceso\s+a\s+sus\s+fondos/i, weight: 3.0, label: "Amenaza", reason: "Riesgo financiero" },
+                { regex: /discrepancias\s+no\s+resueltas/i, weight: 2.0, label: "Gaslighting", reason: "Inseguridad técnica" },
+                { regex: /aportar\s+la\s+documentación/i, weight: 2.0, label: "Exigencia", reason: "Obligación documental" }
+            ]
+        };
+
+        // Funciones auxiliares (existentes)
         function buildRegexUnicode(words) { let e=words.map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')); return new RegExp(`(?:^|\\s)(${e.join('|')})(?=\\s|$)`, 'gi'); }
         function countMatches(text, key) { if (!TERMS_BASE[key]) return 0; let m = text.match(buildRegexUnicode(TERMS_BASE[key])); return m ? m.length : 0; }
-
         function detectRepeatedPersonalNames(text) {
             const words = text.split(/\s+/).map(w => w.replace(/^[¿¡]?|[.,;:!?¿¡()"']+$/g, ''));
             const freq = {};
@@ -318,16 +346,12 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         function renderHistory(){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); let container=document.getElementById('historyList'); if(!container) return; container.innerHTML = h.map(hh=>`<div class="history-item" data-text="${escapeHtml(hh.text)}"><strong>${hh.summary}</strong> (IM ${hh.im})<br><small>${new Date(hh.date).toLocaleString()}</small><br>${escapeHtml(hh.text)}</div>`).join(''); document.querySelectorAll('.history-item').forEach(el=>{ el.addEventListener('click',()=>{ document.getElementById('inputText').value=el.getAttribute('data-text'); alert('Texto cargado. Pulsa Auditar.'); }); }); }
 
         const TIPS_DETAIL = {
-            "tu": "Uso de 'tu' para personalizar el mensaje y crear una falsa sensación de cercanía. Principio de simpatía (Cialdini).",
-            "gratis": "Activa reciprocidad: si te dan algo, sientes que debes devolver. Principio de reciprocidad (Cialdini).",
-            "hoy": "Crea urgencia artificial con un plazo breve. Principio de escasez (Cialdini).",
-            "ahora": "Presión temporal inmediata, impide la reflexión. Escasez.",
-            "ya": "Inmediatez, inhibe el análisis racional.",
-            "sospechosa": "Actividad anómala. Genera miedo e inseguridad.",
-            "verifique": "Exigencia de acción. Busca que bajes la guardia.",
-            "perderá": "Consecuencia irreversible. Actúa sobre la pérdida (Kahneman).",
-            "absolutamente necesario": "Falsa obligación. Coacción psicológica.",
-            "acceso a sus fondos": "Apelación al dinero. Riesgo financiero."
+            "josé": "Uso del nombre propio para generar cercanía (principio de simpatía).",
+            "donativo": "Apelación a la solidaridad. Peso bajo porque es persuasión legítima.",
+            "gracias": "Expresión de cortesía. Reduce ligeramente la puntuación.",
+            "urgente": "Presión temporal artificial. Alta manipulación.",
+            "ahora": "Exigencia de inmediatez. Activa el Sistema 1 de Kahneman.",
+            // amplía según necesites
         };
         function getDetailedTip(word) {
             let w = word.toLowerCase();
@@ -335,52 +359,177 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             return "Patrón persuasivo detectado. Evalúa críticamente.";
         }
 
+        // ========== NUEVA buildHallazgosExplicados (basada en GLOBAL_PATTERNS) ==========
         function buildHallazgosExplicados(text) {
             let items = [];
             let seen = new Set();
-            // Usamos los patrones extendidos para mostrar también los nuevos términos
-            const extendedForDisplay = {
-                p: ["urgente","ya","ahora","inmediatamente"],
-                e: ["sospechosa","suspendida","verifique","perderá","fondos","permanente"],
-                a: ["aviso importante","estimado usuario"],
-                s: ["clic aquí","haga clic"],
-                u: ["última oportunidad"],
-                l: ["josé"],
-                f: ["peligro"]
-            };
-            for (let c of ['p','e','u','a','s','l','f']) {
-                let wordsList = extendedForDisplay[c];
-                if (!wordsList) continue;
-                wordsList.forEach(word => {
-                    let regex = new RegExp(`\\b${word}\\b`, 'gi');
-                    let m;
-                    while ((m = regex.exec(text))) {
-                        let w = m[0];
-                        let key = w.toLowerCase() + '_' + c;
+
+            // 1. Phishing patterns
+            for (const [cat, patterns] of Object.entries(GLOBAL_PATTERNS.phishing)) {
+                patterns.forEach(p => {
+                    const regex = new RegExp(`\\b${p.word.replace(/ /g, '\\s+')}\\b`, 'gi');
+                    let match;
+                    while ((match = regex.exec(text)) !== null) {
+                        const word = match[0];
+                        const key = `${word.toLowerCase()}_${cat}`;
                         if (seen.has(key)) continue;
                         seen.add(key);
-                        let cat = {p:'Urgencia', e:'Amenaza/Pérdida', u:'Escasez', a:'Falsa Autoridad', s:'Llamada a la acción', l:'Personalización', f:'Miedo'}[c];
-                        let tip = getDetailedTip(w);
-                        items.push({ palabra: w, categoria: cat, explicacion: tip, tipo: c });
+                        let categoria = '';
+                        if (cat === 'p') categoria = 'Urgencia';
+                        else if (cat === 'e') categoria = 'Amenaza/Pérdida';
+                        else if (cat === 'u') categoria = 'Escasez';
+                        else if (cat === 'a') categoria = 'Falsa Autoridad';
+                        else if (cat === 's') categoria = 'Llamada a la acción';
+                        else if (cat === 'l') categoria = 'Personalización';
+                        else if (cat === 'f') categoria = 'Miedo';
+                        let tip = getDetailedTip(word);
+                        items.push({ palabra: word, categoria, explicacion: tip, tipo: cat });
                     }
                 });
             }
-        
-        function announceToScreenReader(message) { const liveRegion = document.getElementById('liveRegion'); if (liveRegion) { liveRegion.textContent = message; setTimeout(() => liveRegion.textContent = '', 3000); } }
-        function updateCompactSemaphore(color, scale, action, im) {
-            const semDot = document.getElementById('semDot');
-            const semScore = document.getElementById('semScore');
-            const semLabel = document.getElementById('semLabel');
-            const semIM = document.getElementById('semIM');
-            if (semDot) { semDot.style.background = color; semDot.style.boxShadow = `0 0 8px ${color}`; }
-            if (semScore) { semScore.innerHTML = scale + '/10'; semScore.style.color = color; }
-            if (semLabel) semLabel.innerHTML = action;
-            if (semIM) semIM.innerHTML = 'IM ' + im.toFixed(2);
+
+            // 2. Persuasión legítima
+            GLOBAL_PATTERNS.legit.forEach(p => {
+                const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    const word = match[0];
+                    const key = `${word.toLowerCase()}_legit`;
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    items.push({
+                        palabra: word,
+                        categoria: 'Persuasión legítima',
+                        explicacion: 'Término de valor social o educativo.',
+                        tipo: 'legit'
+                    });
+                }
+            });
+
+            // 3. Frases coercitivas
+            GLOBAL_PATTERNS.coaccion.forEach(rule => {
+                if (rule.regex.test(text)) {
+                    const word = rule.regex.source.replace(/\\s\+/g, ' ');
+                    const key = `coacc_${word}`;
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    items.push({
+                        palabra: word,
+                        categoria: rule.label || 'Coacción',
+                        explicacion: rule.reason,
+                        tipo: 'coacc'
+                    });
+                }
+            });
+
+            // 4. Nombres propios adicionales (personalización)
+            const nameMatch = text.match(/\b(José|Juan|María|Ana|Carlos|Laura|Pablo|Nicole|Taghreed)\b/gi);
+            if (nameMatch) {
+                nameMatch.forEach(name => {
+                    const key = `name_${name.toLowerCase()}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        items.push({
+                            palabra: name,
+                            categoria: 'Personalización',
+                            explicacion: 'Uso del nombre propio para crear familiaridad.',
+                            tipo: 'l'
+                        });
+                    }
+                });
+            }
+
+            if (items.length === 0) return "<div style='padding:12px'>✅ No se detectaron ganchos persuasivos relevantes.</div>";
+            
+            const colores = { p:'#c084fc', e:'#ff6b8b', u:'#f97316', a:'#3b82f6', s:'#06b6d4', l:'#ef4444', f:'#a855f7', legit:'#00cc66', coacc:'#ff9900' };
+            return items.map(it => {
+                let tipoColor = it.tipo;
+                if (it.tipo === 'legit') tipoColor = 'legit';
+                if (it.tipo === 'coacc') tipoColor = 'coacc';
+                return `<div class="hall-item-explicado" style="border-left-color:${colores[tipoColor] || '#aaa'};"><div class="hall-cat" style="color:${colores[tipoColor] || '#aaa'}">${it.categoria}</div><div class="hall-word">"${escapeHtml(it.palabra)}"</div><div class="hall-explanation">→ ${escapeHtml(it.explicacion)}</div></div>`;
+            }).join('');
         }
 
-          }
-
+        // ========== FUNCIÓN PERFORM AUDIT UNIFICADA ==========
+        async function performAudit(text, mode) {
+    // 1. Configuración de la URL de tu cerebro privado
+    const API_URL = "https://argira-api-v1.onrender.com/v1/audit";
     
+    // 2. Preparar la interfaz antes de la respuesta
+    window.lastText = text;
+    const resultsArea = document.getElementById('resultsArea');
+    const semLabel = document.getElementById('semLabel');
+    
+    if (semLabel) semLabel.innerText = "Consultando al cerebro v6.5...";
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, mode: currentMode })
+        });
+
+        if (!response.ok) throw new Error("Servidor despertando...");
+
+        const data = await response.json();
+
+        // 3. ACTUALIZACIÓN DE LA WEB CON LOS DATOS PRIVADOS
+        resultsArea.style.display = 'block';
+        
+        // Valores de métricas (Radar y MiniMetrics)
+        document.getElementById('valP').innerText = data.metrics.p;
+        document.getElementById('valE').innerText = data.metrics.e;
+        document.getElementById('valU').innerText = data.metrics.u;
+        document.getElementById('valA').innerText = data.metrics.a;
+        document.getElementById('valSoc').innerText = data.metrics.soc;
+        document.getElementById('valAlarm').innerText = data.metrics.alarm;
+        document.getElementById('valFake').innerText = data.metrics.fake;
+        
+        // IM y Shannon
+        document.getElementById('imIndex').innerText = data.im;
+        document.getElementById('valD').innerText = data.density;
+        document.getElementById('valEDI').innerText = data.edi.edi;
+        document.getElementById('deltaIC').innerText = data.edi.delta;
+        document.getElementById('energyRange').innerText = data.energy;
+
+        // Semáforo Compacto (Veredicto)
+        const sem = getSemaphore(parseFloat(data.im));
+        updateCompactSemaphore(sem.color, data.scale, sem.action, parseFloat(data.im));
+        
+        // Guardar para lectura de voz y exportación
+        lastIM = data.im;
+        lastScale = data.scale;
+        lastAction = sem.action;
+        lastSummary = data.verdict;
+
+        // 4. Lógica Visual Avanzada (Solo si no es modo simple)
+        if (!simpleMode) {
+            document.getElementById('expertDetails').style.display = 'block';
+            document.getElementById('cleanText').innerHTML = annotatedText(text);
+            drawRadar(
+                [data.metrics.p, data.metrics.e, data.metrics.u, data.metrics.a, data.metrics.soc, data.metrics.alarm, data.metrics.fake],
+                ['P', 'E', 'U', 'A', 'S', 'L', 'F']
+            );
+        } else {
+            document.getElementById('expertDetails').style.display = 'none';
+        }
+
+        // 5. Hallazgos Explicados y Sugerencia
+        document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
+        document.getElementById('rewriteBox').innerHTML = `<strong>Sugerencia Ética:</strong> ${data.suggestion}`;
+
+        // Guardar en historial local
+        saveToHistory(text, data.im, sem.action);
+        renderHistory();
+        announceToScreenReader(`Análisis completado. Índice de manipulación: ${data.im}`);
+
+    } catch (error) {
+        console.error("Error de conexión:", error);
+        if (semLabel) semLabel.innerText = "El motor está arrancando (Plan Free). Reintenta en 20s.";
+        alert("El servidor gratuito de Render se está 'despertando'. Por favor, espera unos segundos y vuelve a pulsar AUDITAR.");
+    }
+}
+
         function refreshCurrentAnalysis() {
             const inputText = document.getElementById('inputText').value;
             if (inputText && inputText.trim().length > 0) {
@@ -399,12 +548,25 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             window.speechSynthesis.speak(utterance);
         }
 
-        function buildFullReport() { let t=window.lastText||""; return `ARGIRA v6.4\nModo: ${currentMode}\nIM: ${document.getElementById('imIndex').innerText}\nResumen: ${document.getElementById('semLabel').innerText}\nEnergía: ${document.getElementById('energyRange').innerText}\nΔIC: ${document.getElementById('deltaIC').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
+        function buildFullReport() { let t=window.lastText||""; return `ARGIRA v6.5\nModo: ${currentMode}\nIM: ${document.getElementById('imIndex').innerText}\nResumen: ${document.getElementById('semLabel').innerText}\nEnergía: ${document.getElementById('energyRange').innerText}\nΔIC: ${document.getElementById('deltaIC').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
         function exportTxt() { if(!window.lastText) {alert("Audita algo primero");return;} const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buildFullReport()],{type:'text/plain'})); a.download=`argira_${Date.now()}.txt`; a.click(); }
         function exportPdf() { if(typeof window.jspdf==='undefined'){alert("Cargando jsPDF...");return;} const {jsPDF}=window.jspdf; const doc=new jsPDF(); doc.text(buildFullReport(),10,10); doc.save(`argira_${Date.now()}.pdf`); }
         function shareResult() { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('semLabel').innerText} (IM ${document.getElementById('imIndex').innerText})`); alert("Resultado copiado."); }
 
-        // Eventos y listeners
+        function updateCompactSemaphore(color, scale, action, im) {
+            const semDot = document.getElementById('semDot');
+            const semScore = document.getElementById('semScore');
+            const semLabel = document.getElementById('semLabel');
+            const semIM = document.getElementById('semIM');
+            if (semDot) { semDot.style.background = color; semDot.style.boxShadow = `0 0 8px ${color}`; }
+            if (semScore) { semScore.innerHTML = scale + '/10'; semScore.style.color = color; }
+            if (semLabel) semLabel.innerHTML = action;
+            if (semIM) semIM.innerHTML = 'IM ' + im.toFixed(2);
+        }
+
+        function announceToScreenReader(message) { const liveRegion = document.getElementById('liveRegion'); if (liveRegion) { liveRegion.textContent = message; setTimeout(() => liveRegion.textContent = '', 3000); } }
+
+        // Event listeners
         document.getElementById('exportTxtBtn').onclick = exportTxt;
         document.getElementById('exportPdfBtn').onclick = exportPdf;
         document.getElementById('shareBtn').onclick = shareResult;
@@ -452,7 +614,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         document.getElementById('compareBtn').onclick = () => { if(!document.getElementById('inputText').value.trim()){ alert("Primero pega un texto."); return; } document.getElementById('comparatorModal').style.display='flex'; };
         document.getElementById('doCompareBtn').onclick = () => { let t1=document.getElementById('inputText').value, t2=document.getElementById('compareText').value; if(!t2.trim()){ alert("Pega segundo texto"); return; } let weights = getModeWeights(); let calcMetrics = (t)=>{ let D=factualDensity(t); let rawP=getPersonalizationScore(t,weights.p); let rawE=countMatches(t.toLowerCase(),'e')*weights.e; let rawU=countMatches(t.toLowerCase(),'u')*weights.u; let rawA=countMatches(t.toLowerCase(),'a')*weights.a; let rawSoc=countMatches(t.toLowerCase(),'soc')*weights.soc; let rawAlarm=countMatches(t.toLowerCase(),'alarm')*weights.alarm; let rawFake=countMatches(t.toLowerCase(),'fake')*weights.fake; let total=rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake+syntacticPatterns(t)*weights.syntaxMult; let wc=t.split(/\s+/).length; let im=total/(Math.log10(Math.max(1,wc))+D); let noise=(t.match(NOISE_PATTERN)||[]).length; let delta=wc>0?((noise/wc)*10).toFixed(1):0; let energy=`${(wc*0.2).toFixed(1)}-${(wc*0.5).toFixed(1)} mWh`; return {im, delta, energy}; }; let m1=calcMetrics(t1), m2=calcMetrics(t2); alert(`Comparación:\nTexto1: IM ${m1.im.toFixed(2)}, ΔIC ${m1.delta}/10\nTexto2: IM ${m2.im.toFixed(2)}, ΔIC ${m2.delta}/10`); document.getElementById('comparatorModal').style.display='none'; };
         document.getElementById('closeCompareBtn').onclick = () => document.getElementById('comparatorModal').style.display='none';
-        9
+        
         let recognition, isRecording=false, finalTranscript="";
         const modalAudio = document.getElementById('audioModal');
         const audioStatus = document.getElementById('audioStatus');
