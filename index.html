@@ -387,152 +387,174 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         }
 
         // ========== NUEVA FUNCIÓN PERFORM AUDIT CON PATRONES DE PHISHING Y RAÍZ CÚBICA ==========
-        function performAudit(text) {
-            if (!text.trim()) return;
+        // ========== FUNCIÓN PERFORM AUDIT CON DETECCIÓN ELÁSTICA Y BONOS CONTEXTUALES ==========
+function performAudit(text) {
+    if (!text.trim()) return;
 
-            const words = text.trim().split(/\s+/);
-            let totalScore = 0;
-            const rawStats = { p:0, e:0, u:0, a:0, s:0, l:0, f:0, d:0 };
-            const triggersFound = [];
+    const words = text.trim().split(/\s+/);
+    let totalScore = 0;
+    const rawStats = { p:0, e:0, u:0, a:0, s:0, l:0, f:0, d:0 };
+    const triggersFound = [];
 
-            // 1. PATRONES AMPLIADOS (Phishing + Coacción)
-            const extendedPatterns = {
-                p: [ // urgencia
-                    { word: "urgente", weight: 2.0, label: "Urgencia", reason: "Presión temporal" },
-                    { word: "ya", weight: 1.2, label: "Inmediatez", reason: "Exigencia inmediata" },
-                    { word: "ahora", weight: 1.6, label: "Ahora", reason: "Falsa escasez" },
-                    { word: "inmediatamente", weight: 1.8, label: "Inmediato", reason: "Alta presión" }
-                ],
-                e: [ // miedo / amenaza
-                    { word: "sospechosa", weight: 2.2, label: "Amenaza", reason: "Actividad anómala" },
-                    { word: "suspendida", weight: 2.5, label: "Pérdida", reason: "Cierre de cuenta" },
-                    { word: "verifique", weight: 2.0, label: "Exigencia", reason: "Obligación" },
-                    { word: "perderá", weight: 2.8, label: "Pérdida", reason: "Consecuencia irreversible" },
-                    { word: "fondos", weight: 2.2, label: "Dinero", reason: "Alusión a capital" },
-                    { word: "permanente", weight: 2.6, label: "Irreversible", reason: "Efecto definitivo" }
-                ],
-                u: [ // escasez
-                    { word: "última oportunidad", weight: 2.2, label: "Escasez", reason: "Pérdida inminente" }
-                ],
-                a: [ // falsa autoridad
-                    { word: "aviso importante", weight: 2.2, label: "Autoridad", reason: "Simula oficialidad" },
-                    { word: "estimado usuario", weight: 1.2, label: "Falsa familiaridad", reason: "Simula cercanía" }
-                ],
-                s: [ // llamadas a la acción
-                    { word: "clic aquí", weight: 2.0, label: "CTA", reason: "Instrucción directa" },
-                    { word: "haga clic", weight: 2.0, label: "CTA", reason: "Enlace malicioso" }
-                ],
-                l: [ // personalización
-                    { word: "josé", weight: 0.5, label: "Personalización", reason: "Uso del nombre" }
-                ],
-                f: [ // miedo (adicional)
-                    { word: "peligro", weight: 2.0, label: "Miedo", reason: "Amenaza" }
-                ]
-            };
+    // 1. PATRONES AMPLIADOS (Phishing + Coacción) - mismos que tenías
+    const extendedPatterns = {
+        p: [ // urgencia
+            { word: "urgente", weight: 2.0, label: "Urgencia", reason: "Presión temporal" },
+            { word: "ya", weight: 1.2, label: "Inmediatez", reason: "Exigencia inmediata" },
+            { word: "ahora", weight: 1.6, label: "Ahora", reason: "Falsa escasez" },
+            { word: "inmediatamente", weight: 1.8, label: "Inmediato", reason: "Alta presión" }
+        ],
+        e: [ // miedo / amenaza
+            { word: "sospechosa", weight: 2.2, label: "Amenaza", reason: "Actividad anómala" },
+            { word: "suspendida", weight: 2.5, label: "Pérdida", reason: "Cierre de cuenta" },
+            { word: "verifique", weight: 2.0, label: "Exigencia", reason: "Obligación" },
+            { word: "perderá", weight: 2.8, label: "Pérdida", reason: "Consecuencia irreversible" },
+            { word: "fondos", weight: 2.2, label: "Dinero", reason: "Alusión a capital" },
+            { word: "permanente", weight: 2.6, label: "Irreversible", reason: "Efecto definitivo" }
+        ],
+        u: [ { word: "última oportunidad", weight: 2.2, label: "Escasez", reason: "Pérdida inminente" } ],
+        a: [ // falsa autoridad
+            { word: "aviso importante", weight: 2.2, label: "Autoridad", reason: "Simula oficialidad" },
+            { word: "estimado usuario", weight: 1.2, label: "Falsa familiaridad", reason: "Simula cercanía" }
+        ],
+        s: [ // llamadas a la acción
+            { word: "clic aquí", weight: 2.0, label: "CTA", reason: "Instrucción directa" },
+            { word: "haga clic", weight: 2.0, label: "CTA", reason: "Enlace malicioso" }
+        ],
+        l: [ { word: "josé", weight: 0.5, label: "Personalización", reason: "Uso del nombre" } ],
+        f: [ { word: "peligro", weight: 2.0, label: "Miedo", reason: "Amenaza" } ]
+    };
 
-            for (const [category, patterns] of Object.entries(extendedPatterns)) {
-                patterns.forEach(p => {
-                    const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
-                    const matches = text.match(regex);
-                    if (matches) {
-                        const count = matches.length;
-                        const score = count * p.weight;
-                        totalScore += score;
-                        rawStats[category] += score;
-                        triggersFound.push({ label: p.label, word: p.word, reason: p.reason });
-                    }
-                });
+    for (const [category, patterns] of Object.entries(extendedPatterns)) {
+        patterns.forEach(p => {
+            const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
+            const matches = text.match(regex);
+            if (matches) {
+                const count = matches.length;
+                const score = count * p.weight;
+                totalScore += score;
+                rawStats[category] += score;
+                triggersFound.push({ label: p.label, word: p.word, reason: p.reason });
             }
+        });
+    }
 
-            // 2. DETECTORES DE INTENSIDAD Y COACCIÓN (Regex)
-            if (/\babso[lutamente]?\s*necesario\b/i.test(text)) totalScore += 2.5;
-            if (/\bde manera permanente\b/i.test(text)) totalScore += 2.2;
-            if (/\bacceso a sus fondos\b/i.test(text)) totalScore += 2.5;
+    // 2. DETECTORES DE COACCIÓN CONCEPTUAL (robustos ante espacios y saltos de línea)
+    const coaccionRules = [
+        { regex: /absolutamente\s+necesario/i, weight: 3.5, label: "Coacción", reason: "Sintaxis de obligatoriedad" },
+        { regex: /cierre\s+definitivo/i, weight: 3.0, label: "Amenaza", reason: "Consecuencia irreversible" },
+        { regex: /no\s+ignore/i, weight: 2.5, label: "Presión", reason: "Imperativo coercitivo" },
+        { regex: /acceso\s+a\s+sus\s+fondos/i, weight: 3.0, label: "Amenaza", reason: "Riesgo financiero" },
+        { regex: /discrepancias\s+no\s+resueltas/i, weight: 2.0, label: "Gaslighting", reason: "Creación de inseguridad técnica" },
+        { regex: /aportar\s+la\s+documentación/i, weight: 2.0, label: "Exigencia", reason: "Obligación documental" }
+    ];
 
-            // Mayúsculas
-            const capsMatch = text.replace(/[^A-Z]/g, "").length;
-            const totalChars = text.replace(/\s/g, "").length;
-            const capsRatio = totalChars > 0 ? capsMatch / totalChars : 0;
-            if (capsRatio > 0.2) totalScore += Math.min(5, capsRatio * 5);
-
-            // Exclamaciones
-            const exclamationCount = (text.match(/!/g) || []).length;
-            if (exclamationCount >= 3) totalScore += Math.min(3, exclamationCount * 0.6);
-
-            // 3. FÓRMULA CON RAÍZ CÚBICA (para que textos largos no sean infravalorados)
-            let divisor;
-            if (words.length < 20) {
-                divisor = 1.5;   // valor fijo para textos muy cortos
-            } else {
-                divisor = Math.pow(words.length, 1/3); // raíz cúbica
-            }
-            let finalIM = (totalScore / divisor) * 5.0;
-            finalIM = Math.min(10, finalIM);
-
-            // Ajuste por modo de usuario
-            if (currentMode === 'alert') finalIM = Math.min(10, finalIM * 1.2);
-            if (currentMode === 'newsletter') finalIM = finalIM * 0.7;
-
-            let im = finalIM;
-            let scale = Math.min(10, Math.round(im * 10) / 10);
-            let {color, action} = getSemaphore(im);
-            let summary = im<=1.5?"✅ Confiable":(im<=3.2?"⚠️ Persuasión legítima":"🚨 Alto riesgo");
-            lastSummary = summary; lastIM = im.toFixed(2); lastScale = scale; lastAction = action;
-
-            // 4. MÉTRICAS COMPLEMENTARIAS (usamos las funciones originales para mantener coherencia con la UI)
-            const weights = getModeWeights();
-            let D = factualDensity(text);
-            let rawP = getPersonalizationScore(text, weights.p);
-            let rawE = countMatches(text.toLowerCase(),'e') * weights.e;
-            let rawU = countMatches(text.toLowerCase(),'u') * weights.u;
-            let rawA = countMatches(text.toLowerCase(),'a') * weights.a;
-            let rawSoc = countMatches(text.toLowerCase(),'soc') * weights.soc;
-            let rawAlarm = countMatches(text.toLowerCase(),'alarm') * weights.alarm;
-            let rawFake = countMatches(text.toLowerCase(),'fake') * weights.fake;
-
-            const tokens = words.length;
-            const energyLow = (tokens * 0.2).toFixed(1);
-            const energyHigh = (tokens * 0.5).toFixed(1);
-            const energyRange = `${energyLow} - ${energyHigh} mWh`;
-            const noiseMatches = text.match(NOISE_PATTERN) || [];
-            const noiseCount = noiseMatches.length;
-            const deltaIC = tokens > 0 ? ((noiseCount / tokens) * 10).toFixed(1) : "0.0";
-
-            // Actualizar UI
-            updateCompactSemaphore(color, scale, action, im);
-            document.getElementById('imIndex').innerHTML = im.toFixed(2);
-            document.getElementById('energyRange').innerHTML = energyRange;
-            document.getElementById('deltaIC').innerHTML = `${deltaIC}/10`;
-            let modeName = currentMode==='alert'?'⚠️ Alerta':(currentMode==='balanced'?'⚖️ Equilibrado':'🌿 Newsletter');
-            document.getElementById('modeIndicator').innerHTML = `Modo: ${modeName}`;
-            document.getElementById('valP').innerHTML = rawP.toFixed(1);
-            document.getElementById('valE').innerHTML = rawE.toFixed(1);
-            document.getElementById('valU').innerHTML = rawU.toFixed(1);
-            document.getElementById('valA').innerHTML = rawA.toFixed(1);
-            document.getElementById('valSoc').innerHTML = rawSoc.toFixed(1);
-            document.getElementById('valAlarm').innerHTML = rawAlarm.toFixed(1);
-            document.getElementById('valFake').innerHTML = rawFake.toFixed(1);
-            document.getElementById('valD').innerHTML = D.toFixed(1);
-            const edi = computeEDI(text);
-            document.getElementById('valEDI').innerHTML = edi.edi;
-
-            if (!simpleMode) {
-                document.getElementById('expertDetails').style.display = 'block';
-                document.getElementById('cleanText').innerHTML = annotatedText(text);
-                drawRadar([Math.min(10,rawP), Math.min(10,rawE), Math.min(10,rawU), Math.min(10,rawA), Math.min(10,rawSoc), Math.min(10,rawAlarm), Math.min(10,rawFake)], ['P','E','U','A','S','L','F']);
-            } else {
-                document.getElementById('expertDetails').style.display = 'none';
-            }
-            document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
-            document.getElementById('rewriteBox').innerHTML = `✍️ ${(im>3.2 && currentMode!=='newsletter')?"Reescribir eliminando presión artificial": "✅ El texto parece legítimo."}`;
-            document.getElementById('resultsArea').style.display = 'block';
-            window.lastText = text;
-            saveToHistory(text, im.toFixed(2), summary);
-            renderHistory();
-            announceToScreenReader(`Análisis completado. Resultado: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}. Escala ${scale}/10. IM ${im.toFixed(2)}.`);
-            document.getElementById('semaphoreText').textContent = `Veredicto: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}, escala ${scale}/10`;
+    coaccionRules.forEach(rule => {
+        if (rule.regex.test(text)) {
+            totalScore += rule.weight;
+            triggersFound.push({ label: rule.label, word: rule.regex.source.replace(/\\s\+/g, ' '), reason: rule.reason });
         }
+    });
 
+    // 2.B. BONO ADICIONAL PARA TEXTOS CORTOS CON PERFIL DE PHISHING
+    // Si el texto es corto (<30 palabras) y contiene palabras clave de estafa, añadimos un plus
+    if (words.length < 30 && /urgente|ahora|fondos|cuenta|dinero|peligro|verifique|ayudar|necesito/i.test(text)) {
+        totalScore += 2.0;
+        triggersFound.push({ label: "Contexto corto", word: "texto breve con urgencia", reason: "Alta densidad de phishing en mensaje corto" });
+    }
+
+    // 2.C. MAYÚSCULAS (basado en proporción sobre letras, no sobre caracteres totales)
+    const upperCount = (text.match(/[A-ZÁÉÍÓÚÑ]/g) || []).length;
+    const lowerCount = (text.match(/[a-záéíóúñ]/g) || []).length;
+    const totalLetters = upperCount + lowerCount;
+    const capsRatio = totalLetters > 0 ? upperCount / totalLetters : 0;
+    
+    if (capsRatio > 0.15) {
+        const capsBonus = capsRatio * 6;   // máx 6 si es 100% mayúsculas
+        totalScore += Math.min(5, capsBonus);
+        triggersFound.push({ label: "Mayúsculas", word: `${Math.round(capsRatio*100)}% mayúsculas`, reason: "Énfasis coercitivo visual" });
+    }
+
+    // 2.D. EXCLAMACIONES
+    const exclamationCount = (text.match(/!/g) || []).length;
+    if (exclamationCount >= 3) {
+        totalScore += Math.min(3, exclamationCount * 0.6);
+        triggersFound.push({ label: "Exclamaciones", word: "!!!", reason: "Gritos tipográficos" });
+    }
+
+    // 3. FÓRMULA CON RAÍZ CÚBICA (mantenemos la buena base)
+    let divisor;
+    if (words.length < 20) {
+        divisor = 1.5;
+    } else {
+        divisor = Math.pow(words.length, 1/3);
+    }
+    let finalIM = (totalScore / divisor) * 5.0;
+    finalIM = Math.min(10, finalIM);
+
+    // Ajuste por modo de usuario
+    if (currentMode === 'alert') finalIM = Math.min(10, finalIM * 1.2);
+    if (currentMode === 'newsletter') finalIM = finalIM * 0.7;
+
+    let im = finalIM;
+    let scale = Math.min(10, Math.round(im * 10) / 10);
+    let {color, action} = getSemaphore(im);
+    let summary = im<=1.5?"✅ Confiable":(im<=3.2?"⚠️ Persuasión legítima":"🚨 Alto riesgo");
+    lastSummary = summary; lastIM = im.toFixed(2); lastScale = scale; lastAction = action;
+
+    // 4. MÉTRICAS COMPLEMENTARIAS (igual que antes, no tocar)
+    const weights = getModeWeights();
+    let D = factualDensity(text);
+    let rawP = getPersonalizationScore(text, weights.p);
+    let rawE = countMatches(text.toLowerCase(),'e') * weights.e;
+    let rawU = countMatches(text.toLowerCase(),'u') * weights.u;
+    let rawA = countMatches(text.toLowerCase(),'a') * weights.a;
+    let rawSoc = countMatches(text.toLowerCase(),'soc') * weights.soc;
+    let rawAlarm = countMatches(text.toLowerCase(),'alarm') * weights.alarm;
+    let rawFake = countMatches(text.toLowerCase(),'fake') * weights.fake;
+
+    const tokens = words.length;
+    const energyLow = (tokens * 0.2).toFixed(1);
+    const energyHigh = (tokens * 0.5).toFixed(1);
+    const energyRange = `${energyLow} - ${energyHigh} mWh`;
+    const noiseMatches = text.match(NOISE_PATTERN) || [];
+    const noiseCount = noiseMatches.length;
+    const deltaIC = tokens > 0 ? ((noiseCount / tokens) * 10).toFixed(1) : "0.0";
+
+    // Actualizar UI
+    updateCompactSemaphore(color, scale, action, im);
+    document.getElementById('imIndex').innerHTML = im.toFixed(2);
+    document.getElementById('energyRange').innerHTML = energyRange;
+    document.getElementById('deltaIC').innerHTML = `${deltaIC}/10`;
+    let modeName = currentMode==='alert'?'⚠️ Alerta':(currentMode==='balanced'?'⚖️ Equilibrado':'🌿 Newsletter');
+    document.getElementById('modeIndicator').innerHTML = `Modo: ${modeName}`;
+    document.getElementById('valP').innerHTML = rawP.toFixed(1);
+    document.getElementById('valE').innerHTML = rawE.toFixed(1);
+    document.getElementById('valU').innerHTML = rawU.toFixed(1);
+    document.getElementById('valA').innerHTML = rawA.toFixed(1);
+    document.getElementById('valSoc').innerHTML = rawSoc.toFixed(1);
+    document.getElementById('valAlarm').innerHTML = rawAlarm.toFixed(1);
+    document.getElementById('valFake').innerHTML = rawFake.toFixed(1);
+    document.getElementById('valD').innerHTML = D.toFixed(1);
+    const edi = computeEDI(text);
+    document.getElementById('valEDI').innerHTML = edi.edi;
+
+    if (!simpleMode) {
+        document.getElementById('expertDetails').style.display = 'block';
+        document.getElementById('cleanText').innerHTML = annotatedText(text);
+        drawRadar([Math.min(10,rawP), Math.min(10,rawE), Math.min(10,rawU), Math.min(10,rawA), Math.min(10,rawSoc), Math.min(10,rawAlarm), Math.min(10,rawFake)], ['P','E','U','A','S','L','F']);
+    } else {
+        document.getElementById('expertDetails').style.display = 'none';
+    }
+    document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
+    document.getElementById('rewriteBox').innerHTML = `✍️ ${(im>3.2 && currentMode!=='newsletter')?"Reescribir eliminando presión artificial": "✅ El texto parece legítimo."}`;
+    document.getElementById('resultsArea').style.display = 'block';
+    window.lastText = text;
+    saveToHistory(text, im.toFixed(2), summary);
+    renderHistory();
+    announceToScreenReader(`Análisis completado. Resultado: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}. Escala ${scale}/10. IM ${im.toFixed(2)}.`);
+    document.getElementById('semaphoreText').textContent = `Veredicto: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}, escala ${scale}/10`;
+}
         function refreshCurrentAnalysis() {
             const inputText = document.getElementById('inputText').value;
             if (inputText && inputText.trim().length > 0) {
@@ -622,4 +644,3 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
     </script>
 </body>
 </html>
-        
