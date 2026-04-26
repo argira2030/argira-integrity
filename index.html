@@ -365,15 +365,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                     }
                 });
             }
-            // También frases coercitivas
-            if (/\babso[lutamente]?\s*necesario\b/i.test(text)) items.push({ palabra: "absolutamente necesario", categoria: "Coacción", explicacion: "Frase que anula la reflexión. Crea obligación artificial.", tipo: "e" });
-            if (/\bde manera permanente\b/i.test(text)) items.push({ palabra: "de manera permanente", categoria: "Irreversibilidad", explicacion: "Pérdida definitiva. Intensifica el miedo.", tipo: "e" });
-            if (/\bacceso a sus fondos\b/i.test(text)) items.push({ palabra: "acceso a sus fondos", categoria: "Riesgo financiero", explicacion: "Alerta sobre el dinero para activar pérdida.", tipo: "e" });
-            if (items.length === 0) return "<div style='padding:12px'>✅ No se detectaron ganchos persuasivos relevantes.</div>";
-            const colores = { p:'#c084fc', e:'#ff6b8b', u:'#f97316', a:'#3b82f6', s:'#06b6d4', l:'#ef4444', f:'#a855f7' };
-            return items.map(it => `<div class="hall-item-explicado" style="border-left-color:${colores[it.tipo]};"><div class="hall-cat" style="color:${colores[it.tipo]}">${it.categoria}</div><div class="hall-word">"${escapeHtml(it.palabra)}"</div><div class="hall-explanation">→ ${escapeHtml(it.explicacion)}</div></div>`).join('');
-        }
-
+        
         function announceToScreenReader(message) { const liveRegion = document.getElementById('liveRegion'); if (liveRegion) { liveRegion.textContent = message; setTimeout(() => liveRegion.textContent = '', 3000); } }
         function updateCompactSemaphore(color, scale, action, im) {
             const semDot = document.getElementById('semDot');
@@ -387,25 +379,6 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         }
 
           }
-
-    // 2.C. MAYÚSCULAS (basado en proporción sobre letras, no sobre caracteres totales)
-    const upperCount = (text.match(/[A-ZÁÉÍÓÚÑ]/g) || []).length;
-    const lowerCount = (text.match(/[a-záéíóúñ]/g) || []).length;
-    const totalLetters = upperCount + lowerCount;
-    const capsRatio = totalLetters > 0 ? upperCount / totalLetters : 0;
-    
-    if (capsRatio > 0.15) {
-        const capsBonus = capsRatio * 6;   // máx 6 si es 100% mayúsculas
-        totalScore += Math.min(5, capsBonus);
-        triggersFound.push({ label: "Mayúsculas", word: `${Math.round(capsRatio*100)}% mayúsculas`, reason: "Énfasis coercitivo visual" });
-    }
-
-    // 2.D. EXCLAMACIONES
-    const exclamationCount = (text.match(/!/g) || []).length;
-    if (exclamationCount >= 3) {
-        totalScore += Math.min(3, exclamationCount * 0.6);
-        triggersFound.push({ label: "Exclamaciones", word: "!!!", reason: "Gritos tipográficos" });
-    }
 
     
         function refreshCurrentAnalysis() {
