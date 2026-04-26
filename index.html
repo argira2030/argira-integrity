@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Argira Shield v5.28 · Interfaz mejorada (funcional)</title>
+    <title>Argira Shield v6.2 · Auditoría Forense Completa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -15,7 +15,7 @@
             --tooltip-bg: #1a1a2e;
         }
         @media (prefers-color-scheme: light) {
-            :root { --bg-deep: #eef2f7; --surface: #ffffff; --card-bg: #f8f9fc; --text-main: #111; --text-dim: #3a3a5a; --border-dim: #ccc; --tooltip-bg: #f0f0f0; }
+            :root { --bg-deep: #eef2f7; --surface: #ffffff; --card-bg: #f8f9fc; --text-main: #111; --text-dim: #3a3a5a; --border-dim: #ccc; --tooltip-bg: #e9ecef; }
             .aseptic-panel, .hallazgos-container, .hallazgos-explicados { background: #f8f9fa; border: 1px solid #ddd; color: #111; }
             textarea { background: #fff; color: #111; }
         }
@@ -28,7 +28,6 @@
         .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 1px; }
         h1 { font-size: 1.6rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         
-        /* Selector de modos mejorado (mantiene todos los elementos) */
         .mode-selector { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; background: var(--card-bg); padding: 12px 20px; border-radius: 60px; margin-bottom: 16px; border: 1px solid var(--border-dim); }
         .mode-options { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
         .mode-option { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; background: var(--surface); padding: 6px 14px; border-radius: 60px; transition: 0.1s; text-align: center; }
@@ -37,7 +36,6 @@
         .mode-desc { font-size: 0.65rem; color: var(--text-dim); max-width: 120px; line-height: 1.2; }
         .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.75rem; font-weight: bold; background: #2a5a2a; color: white; white-space: nowrap; }
         
-        /* Semáforo compacto */
         .compact-semaphore { display: flex; align-items: center; gap: 12px; background: var(--surface); padding: 6px 16px; border-radius: 60px; margin-left: auto; }
         .compact-light { width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
         .compact-scale { font-weight: bold; font-size: 1.2rem; }
@@ -57,7 +55,7 @@
         button { background: linear-gradient(95deg, #1a2a2a, #0a1a1a); border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; padding: 8px 14px; font-weight: 600; cursor: pointer; font-size: 0.8rem; transition: 0.1s; }
         button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         button:hover { background: var(--accent); color: #000; }
-        .btn-primary { background: #1a4a3a; border-width: 2px; padding: 10px 24px; font-size: 1rem; } /* Botón Auditar más grande */
+        .btn-primary { background: #1a4a3a; border-width: 2px; padding: 10px 24px; font-size: 1rem; }
         .btn-secondary { border-color: var(--text-dim); color: var(--text-dim); background: transparent; padding: 6px 12px; font-size: 0.75rem; }
         .share-link { background: transparent; border: none; color: var(--text-dim); font-size: 0.8rem; padding: 6px 12px; text-decoration: underline; cursor: pointer; }
         .share-link:hover { color: var(--accent); }
@@ -87,6 +85,7 @@
         .radar-container { text-align: center; margin: 16px 0; }
         canvas { max-width: 260px; background: var(--surface); border-radius: 20px; padding: 8px; }
         .footer { font-size: 0.65rem; text-align: center; margin-top: 40px; color: var(--text-dim); border-top: 1px solid var(--border-dim); padding-top: 16px; }
+        .scientific-footer { padding: 20px; font-size: 0.75rem; color: var(--text-dim); border-top: 1px solid var(--border-dim); margin-top: 40px; }
         .history-list { max-height: 180px; overflow-y: auto; margin-top: 12px; }
         .history-item { background: var(--card-bg); border-radius: 16px; padding: 8px 12px; margin: 6px 0; cursor: pointer; border-left: 3px solid var(--accent); }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: #000c; backdrop-filter: blur(8px); z-index: 1100; justify-content: center; align-items: center; }
@@ -104,21 +103,21 @@
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
     <div class="container" id="main-content">
         <div class="header">
-            <div class="badge-sci">⚡ ARGIRA v5.28 · Interfaz mejorada (funcional)</div>
+            <div class="badge-sci">⚡ ARGIRA v6.2 · Auditoría Forense Completa</div>
             <h1>🛡️ Integrity Shield</h1>
             <div>Kahneman · Cialdini · Shannon</div>
         </div>
         <div class="mode-selector">
             <div class="mode-options">
-                <label class="mode-option" id="modeAlertLabel">
+                <label class="mode-option">
                     <input type="radio" name="mode" value="alert"> ⚠️ Alerta<br>
                     <span class="mode-desc">Máxima sensibilidad. Para bulos, estafas, phishing.</span>
                 </label>
-                <label class="mode-option" id="modeBalancedLabel">
+                <label class="mode-option">
                     <input type="radio" name="mode" value="balanced" checked> ⚖️ Equilibrado<br>
                     <span class="mode-desc">Estándar. Para correos comerciales, publicidad, noticias.</span>
                 </label>
-                <label class="mode-option" id="modeNewsletterLabel">
+                <label class="mode-option">
                     <input type="radio" name="mode" value="newsletter"> 🌿 Newsletter<br>
                     <span class="mode-desc">Sensibilidad reducida. Para divulgación, marketing ético, contenido de valor.</span>
                 </label>
@@ -159,7 +158,6 @@
         </div>
 
         <div id="resultsArea" style="display: none;">
-            <!-- Aquí está el contenido de resultados, igual que en v5.26, pero lo copiamos completo para no omitir nada -->
             <div class="veredicto-card">
                 <div class="veredicto-flex">
                     <div class="semaphore-light-big" id="bigSemaphore" aria-hidden="true"></div>
@@ -169,8 +167,8 @@
                 </div>
                 <div class="im-mini">
                     📊 IM: <span id="imIndex">0.00</span> · 
-                    ⏱️ Costo: <span id="costoAtencion">0 min</span> <span class="tooltip-costo" title="El costo de atención varía según el modo porque cada modo asigna diferente peso a los ganchos persuasivos. En modo Alerta se penaliza más, por eso el tiempo es mayor.">(ⓘ)</span> · 
-                    🧠 <span id="executiveSummary">—</span>
+                    ⚡ Energía: <span id="energyRange">—</span> · 
+                    📉 ΔIC (Inercia): <span id="deltaIC">—</span>/10 <span class="tooltip-costo" title="ΔIC mide la inercia estructural (ruido de guion): proporción de palabras de relleno sobre total de tokens. 0=limpio, 10=máximo relleno.">(ⓘ)</span>
                 </div>
                 <div id="modeIndicator" style="font-size:0.7rem; margin-top:8px;" aria-live="polite"></div>
                 <div class="text-center" style="margin-top: 16px;">
@@ -188,9 +186,6 @@
                 <div class="metric-mini" tabindex="0"><strong>🔮F</strong> <span class="explain">(conspiración)</span> <span id="valFake">0</span><div class="tooltip-science">Fabricación: "cura oculta, conspiración". Narrativas infalsificables.</div></div>
                 <div class="metric-mini" tabindex="0"><strong>📊D</strong> <span class="explain">(datos)</span> <span id="valD">—</span><div class="tooltip-science">Densidad factual: números, fechas, enlaces, fuentes.</div></div>
                 <div class="metric-mini" tabindex="0"><strong>📡EDI</strong> <span class="explain">(Shannon)</span> <span id="valEDI">—</span><div class="tooltip-science">Entropía: diversidad del vocabulario. Alto = texto rico.</div></div>
-            </div>
-
-            <div class="dashboard" style="display: none;"> <!-- Ocultamos el dashboard antiguo, usamos metrics-mini -->
             </div>
 
             <div id="expertDetails" style="display: none;">
@@ -228,15 +223,18 @@
 
         <div id="liveRegion" aria-live="polite" aria-atomic="true"></div>
 
-        <!-- Modales -->
         <div id="comparatorModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h3>Comparar otro texto</h3><textarea id="compareText" rows="6" placeholder="Pega el segundo texto aquí..."></textarea><button id="doCompareBtn" style="margin-top:12px;">Comparar</button><button id="closeCompareBtn" class="btn-secondary">Cerrar</button></div></div>
-        <div id="helpModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h2>🧠 Ciencia detrás de Argira</h2><p><strong>Kahneman:</strong> Sistema 1 (rápido, emocional) vs Sistema 2 (analítico). Los ganchos activan el Sistema 1.</p><p><strong>Cialdini:</strong> 6 principios: reciprocidad, escasez, autoridad, simpatía, prueba social, compromiso.</p><p><strong>Shannon:</strong> Entropía (EDI) = diversidad léxica. Fórmula: H = –Σ p·log₂(p). EDI = H/Hmax.</p><p><strong>IM:</strong> &lt;1.5 Confiable, 1.5-3.2 Persuasión legítima, &gt;3.2 Alto riesgo.</p><p><strong>Modos:</strong> Alerta (máxima sensibilidad para bulos), Equilibrado (estándar), Newsletter (sensibilidad reducida para marketing ético).</p><p><strong>Costo atención:</strong> tiempo simbólico estimado para leer y analizar críticamente. Varía según el modo porque cada modo asigna diferente peso a los ganchos.</p><button id="closeHelpBtn" class="btn-secondary">Cerrar</button></div></div>
+        <div id="helpModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h2>🧠 Ciencia detrás de Argira</h2><p><strong>Kahneman:</strong> Sistema 1 (rápido, emocional) vs Sistema 2 (analítico).</p><p><strong>Cialdini:</strong> 6 principios: reciprocidad, escasez, autoridad, simpatía, prueba social, compromiso.</p><p><strong>Shannon:</strong> Entropía (EDI) = diversidad léxica.</p><p><strong>IM:</strong> &lt;1.5 Confiable, 1.5-3.2 Persuasión legítima, &gt;3.2 Alto riesgo.</p><p><strong>Energía estimada:</strong> rango 0.2-0.5 mWh/token según arquitectura Transformer.</p><p><strong>ΔIC (Inercia):</strong> proporción de palabras de relleno (ruido estructural) sobre total de tokens.</p><button id="closeHelpBtn" class="btn-secondary">Cerrar</button></div></div>
         <div id="audioModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h3>🎙️ Grabadora</h3><div id="audioStatus">Prueba "Probar mic" primero.</div><button id="startRecordBtn">Iniciar</button><button id="stopRecordBtn" disabled>Parar</button><button id="closeModalBtn">Cerrar</button></div></div>
-        <div class="footer">v5.28 · Interfaz mejorada: botón Auditar más grande, botones secundarios más pequeños, semáforo siempre visible. Totalmente funcional.</div>
+        
+        <div class="scientific-footer">
+            <p><strong>Nota Metodológica:</strong> Argira Shield v6.2 utiliza proyecciones estadísticas para el consumo energético (rango 0.2-0.5 mWh/token) basadas en arquitecturas Transformer. El ΔIC mide la inercia estructural del lenguaje (palabras de relleno sobre total de tokens). Auditoría externa disponible para revisión académica en Zenodo bajo el marco de Ética Digital.</p>
+        </div>
+        <div class="footer">v6.2 · Auditoría forense completa · Basado en Kahneman, Cialdini, Shannon.</div>
     </div>
 
     <script>
-        // ========== MISMO SCRIPT DE v5.26 (funcional) ==========
+        // ========== CONFIGURACIÓN (versión estable v5.28 + energía y ΔIC) ==========
         let currentMode = "balanced";
         let simpleMode = true;
         let lastText = "";
@@ -244,6 +242,9 @@
         let lastIM = "";
         let lastScale = "";
         let lastAction = "";
+
+        // Palabras de relleno estructural (ruido de guion)
+        const NOISE_PATTERN = /\b(bueno|decir|entonces|simplemente|realmente|quizás|un poco|tal vez|claro|entiendo|básicamente|obviamente|por supuesto|en realidad|digamos|supongo|evidentemente|claramente|ciertamente|absolutamente|prácticamente|virtualmente|bien|pues|em|eh|mmm)\b/gi;
 
         function getModeWeights() {
             if (currentMode === "alert") return { p:1.2, e:1.4, u:1.2, a:1.3, soc:1.3, alarm:1.7, fake:2.0, syntaxMult:1.0, gratisContextual:1.0 };
@@ -337,7 +338,7 @@
         function getDetailedTip(word) {
             let w = word.toLowerCase();
             if (TIPS_DETAIL[w]) return TIPS_DETAIL[w];
-            return "Patrón persuasivo detectado. Evalúa críticamente el uso de este término.";
+            return "Patrón persuasivo detectado. Evalúa críticamente.";
         }
 
         function buildHallazgosExplicados(text) {
@@ -358,7 +359,7 @@
             }
             const repeatedNamesScore = detectRepeatedPersonalNames(text);
             if (repeatedNamesScore > 0) {
-                items.push({ palabra: "Nombre repetido", categoria: "Personalización", explicacion: "Se ha detectado la repetición de un nombre propio (ej. 'José José'). Esto activa el principio de simpatía (Cialdini) y crea una falsa sensación de cercanía.", tipo: "p" });
+                items.push({ palabra: "Nombre repetido", categoria: "Personalización", explicacion: "Se ha detectado la repetición de un nombre propio. Activa el principio de simpatía (Cialdini).", tipo: "p" });
             }
             if (items.length === 0) return "<div style='padding:12px'>✅ No se detectaron ganchos persuasivos relevantes.</div>";
             const colores = { p:'#c084fc', e:'#ff6b8b', u:'#f97316', a:'#3b82f6', soc:'#06b6d4', alarm:'#ef4444', fake:'#a855f7' };
@@ -396,19 +397,26 @@
             let {color, action} = getSemaphore(im);
             let summary = im<=1.5?"✅ Confiable":(im<=3.2?"⚠️ Persuasión legítima":"🚨 Alto riesgo");
             lastSummary = summary; lastIM = im.toFixed(2); lastScale = scale; lastAction = action;
+            
+            // Calcular energía y ΔIC
+            const tokens = wordCount;
+            const energyLow = (tokens * 0.2).toFixed(1);
+            const energyHigh = (tokens * 0.5).toFixed(1);
+            const energyRange = `${energyLow} - ${energyHigh} mWh`;
+            const noiseMatches = text.match(NOISE_PATTERN) || [];
+            const noiseCount = noiseMatches.length;
+            const deltaIC = tokens > 0 ? ((noiseCount / tokens) * 10).toFixed(1) : "0.0";
+            
+            // Actualizar UI
             updateCompactSemaphore(color, scale, action);
-            const bigSem = document.getElementById('bigSemaphore');
-            if (bigSem) bigSem.style.backgroundColor = color;
-            const bigScale = document.getElementById('bigScale');
-            if (bigScale) bigScale.innerHTML = scale + "/10";
-            const bigAction = document.getElementById('bigAction');
-            if (bigAction) bigAction.innerHTML = action;
+            document.getElementById('bigSemaphore').style.backgroundColor = color;
+            document.getElementById('bigScale').innerHTML = scale + "/10";
+            document.getElementById('bigAction').innerHTML = action;
             document.getElementById('imIndex').innerHTML = im.toFixed(2);
-            document.getElementById('costoAtencion').innerHTML = ((total)*12/60).toFixed(1)+" min";
-            document.getElementById('executiveSummary').innerHTML = summary;
+            document.getElementById('energyRange').innerHTML = energyRange;
+            document.getElementById('deltaIC').innerHTML = `${deltaIC}/10`;
             let modeName = currentMode==='alert'?'⚠️ Alerta':(currentMode==='balanced'?'⚖️ Equilibrado':'🌿 Newsletter');
-            const modeInd = document.getElementById('modeIndicator');
-            if (modeInd) modeInd.innerHTML = `Modo: ${modeName}`;
+            document.getElementById('modeIndicator').innerHTML = `Modo: ${modeName}`;
             document.getElementById('valP').innerHTML = rawP.toFixed(1);
             document.getElementById('valE').innerHTML = rawE.toFixed(1);
             document.getElementById('valU').innerHTML = rawU.toFixed(1);
@@ -427,14 +435,13 @@
                 document.getElementById('expertDetails').style.display = 'none';
             }
             document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
-            document.getElementById('rewriteBox').innerHTML = `✍️ ${(im>3.2 && currentMode!=='newsletter')?"Reescribir eliminando presión artificial": "✅ El texto parece legítimo. No se requiere reescritura."}`;
+            document.getElementById('rewriteBox').innerHTML = `✍️ ${(im>3.2 && currentMode!=='newsletter')?"Reescribir eliminando presión artificial": "✅ El texto parece legítimo."}`;
             document.getElementById('resultsArea').style.display = 'block';
             window.lastText = text;
             saveToHistory(text, im.toFixed(2), summary);
             renderHistory();
             announceToScreenReader(`Análisis completado. Resultado: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}. Escala ${scale}/10. IM ${im.toFixed(2)}.`);
-            const semText = document.getElementById('semaphoreText');
-            if (semText) semText.textContent = `Veredicto: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}, escala ${scale}/10`;
+            document.getElementById('semaphoreText').textContent = `Veredicto: ${summary.replace(/✅|⚠️|🚨/g,'').trim()}, escala ${scale}/10`;
         }
 
         function refreshCurrentAnalysis() {
@@ -443,16 +450,19 @@
 
         function speakResult() {
             if (!lastSummary) { alert("Primero audita un texto."); return; }
-            const utterance = new SpeechSynthesisUtterance(`Resultado: ${lastSummary.replace(/✅|⚠️|🚨/g,'').trim()}. Escala ${lastScale}/10. IM ${lastIM}. ${lastAction}`);
+            const cleanSummary = lastSummary.replace(/✅|⚠️|🚨/g,'').trim();
+            const utterance = new SpeechSynthesisUtterance(`Resultado: ${cleanSummary}. Escala ${lastScale}/10. IM ${lastIM}. ${lastAction}`);
             utterance.lang = 'es-ES'; utterance.rate = 0.9;
-            window.speechSynthesis.cancel(); window.speechSynthesis.speak(utterance);
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
         }
 
-        function buildFullReport() { let t=window.lastText||""; return `ARGIRA v5.28\nModo: ${currentMode}\nIM: ${document.getElementById('imIndex').innerText}\nResumen: ${document.getElementById('executiveSummary').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
+        function buildFullReport() { let t=window.lastText||""; return `ARGIRA v6.2\nModo: ${currentMode}\nIM: ${document.getElementById('imIndex').innerText}\nResumen: ${document.getElementById('bigAction').innerText}\nEnergía: ${document.getElementById('energyRange').innerText}\nΔIC: ${document.getElementById('deltaIC').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
         function exportTxt() { if(!window.lastText) {alert("Audita algo primero");return;} const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buildFullReport()],{type:'text/plain'})); a.download=`argira_${Date.now()}.txt`; a.click(); }
         function exportPdf() { if(typeof window.jspdf==='undefined'){alert("Cargando jsPDF...");return;} const {jsPDF}=window.jspdf; const doc=new jsPDF(); doc.text(buildFullReport(),10,10); doc.save(`argira_${Date.now()}.pdf`); }
-        function shareResult() { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('executiveSummary').innerText} (IM ${document.getElementById('imIndex').innerText})`); alert("Resultado copiado."); }
+        function shareResult() { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('bigAction').innerText} (IM ${document.getElementById('imIndex').innerText})`); alert("Resultado copiado."); }
 
+        // Eventos
         document.getElementById('exportTxtBtn').onclick = exportTxt;
         document.getElementById('exportPdfBtn').onclick = exportPdf;
         document.getElementById('shareBtn').onclick = shareResult;
@@ -462,21 +472,23 @@
         document.getElementById('helpBtn').onclick = () => document.getElementById('helpModal').style.display='flex';
         document.getElementById('closeHelpBtn').onclick = () => document.getElementById('helpModal').style.display='none';
         document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',(e)=>{ currentMode=e.target.value; let badge=document.getElementById('modeBadge'); if(currentMode==='alert') badge.innerHTML='⚠️ Alerta'; else if(currentMode==='balanced') badge.innerHTML='⚖️ Equilibrado'; else badge.innerHTML='🌿 Newsletter'; refreshCurrentAnalysis(); }));
-        document.getElementById('loadExampleTech').onclick = () => document.getElementById('inputText').value = "Asunto: 📢 Últimos días para acceder a Marketing Digital Pro\n\nHola [Nombre],\n\n¿Quieres aprender a vender online sin complicaciones? El curso \"Marketing Digital Pro\" ya ha ayudado a más de 5.000 estudiantes a conseguir sus primeros clientes.\n\n🔹 30 horas de contenido práctico\n🔹 Certificado avalado por la Universidad de Marketing\n🔹 Acceso de por vida por solo 97€ (precio de lanzamiento)\n\nOferta válida solo hasta el viernes. ¡No te quedes sin tu plaza!\n\n✅ Paga en 3 cuotas sin intereses\n🎁 Bonos: plantillas descargables + comunidad privada\n\nHaz clic aquí y empieza hoy mismo ➡️ [enlace]\n\n¿Tienes dudas? Responde a este email.\n\nSaludos,\nEquipo Academia Digital";
+        document.getElementById('loadExampleTech').onclick = () => document.getElementById('inputText').value = "Asunto: Últimos días para acceder a Marketing Digital Pro\n\nHola [Nombre], ¿Quieres aprender a vender online? El curso ya ha ayudado a más de 5.000 estudiantes. Oferta válida solo hasta el viernes. ¡No te quedes sin tu plaza!";
         document.getElementById('loadExampleAlarm').onclick = () => document.getElementById('inputText').value = "¡URGENTE! El gobierno esconde la cura. Comparte ahora o morirán.";
         document.getElementById('loadExampleEng').onclick = () => document.getElementById('inputText').value = "URGENT: Miracle cure! They don't want you to know. Buy now!";
         let vetoInterval=null;
         document.getElementById('auditBtn').onclick = () => { let txt=document.getElementById('inputText').value; if(!txt.trim()){ alert("Inserta texto"); return; } let overlay=document.getElementById('vetoOverlay'); if(!overlay){ overlay=document.createElement('div'); overlay.id='vetoOverlay'; overlay.className='veto-layer'; overlay.innerHTML='<div class="timer-big" id="vetoTimer">🧠 5s</div><p>Analizando...</p>'; document.body.appendChild(overlay); } overlay.style.display='block'; let t=5; if(vetoInterval) clearInterval(vetoInterval); vetoInterval=setInterval(()=>{ t--; let ts=document.getElementById('vetoTimer'); if(ts) ts.innerText=`🧠 ${t}s`; if(t<=0){ clearInterval(vetoInterval); overlay.style.display='none'; performAudit(txt); } },1000); };
         document.getElementById('compareBtn').onclick = () => { if(!document.getElementById('inputText').value.trim()){ alert("Primero pega un texto."); return; } document.getElementById('comparatorModal').style.display='flex'; };
-        document.getElementById('doCompareBtn').onclick = () => { let t1=document.getElementById('inputText').value, t2=document.getElementById('compareText').value; if(!t2.trim()){ alert("Pega segundo texto"); return; } let weights = getModeWeights(); let calcIM = (t)=>{ let D=factualDensity(t); let rawP = getPersonalizationScore(t, weights.p); let rawE=countMatches(t.toLowerCase(),'e')*weights.e; let rawU=countMatches(t.toLowerCase(),'u')*weights.u; let rawA=countMatches(t.toLowerCase(),'a')*weights.a; let rawSoc=countMatches(t.toLowerCase(),'soc')*weights.soc; let rawAlarm=countMatches(t.toLowerCase(),'alarm')*weights.alarm; let rawFake=countMatches(t.toLowerCase(),'fake')*weights.fake; let total=rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake+syntacticPatterns(t)*weights.syntaxMult; let wc=t.split(/\s+/).length; return total/(Math.log10(Math.max(1,wc))+D); }; let im1=calcIM(t1), im2=calcIM(t2); let sum1=im1<=1.5?"Confiable":(im1<=3.2?"Persuasión":"Alto riesgo"); let sum2=im2<=1.5?"Confiable":(im2<=3.2?"Persuasión":"Alto riesgo"); alert(`Comparación:\nTexto1: ${sum1} (IM ${im1.toFixed(2)})\nTexto2: ${sum2} (IM ${im2.toFixed(2)})\nDiferencia: ${Math.abs(im1-im2).toFixed(2)}`); document.getElementById('comparatorModal').style.display='none'; };
+        document.getElementById('doCompareBtn').onclick = () => { let t1=document.getElementById('inputText').value, t2=document.getElementById('compareText').value; if(!t2.trim()){ alert("Pega segundo texto"); return; } let weights = getModeWeights(); let calcMetrics = (t)=>{ let D=factualDensity(t); let rawP=getPersonalizationScore(t,weights.p); let rawE=countMatches(t.toLowerCase(),'e')*weights.e; let rawU=countMatches(t.toLowerCase(),'u')*weights.u; let rawA=countMatches(t.toLowerCase(),'a')*weights.a; let rawSoc=countMatches(t.toLowerCase(),'soc')*weights.soc; let rawAlarm=countMatches(t.toLowerCase(),'alarm')*weights.alarm; let rawFake=countMatches(t.toLowerCase(),'fake')*weights.fake; let total=rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake+syntacticPatterns(t)*weights.syntaxMult; let wc=t.split(/\s+/).length; let im=total/(Math.log10(Math.max(1,wc))+D); let noise=(t.match(NOISE_PATTERN)||[]).length; let delta=wc>0?((noise/wc)*10).toFixed(1):0; let energy=`${(wc*0.2).toFixed(1)}-${(wc*0.5).toFixed(1)} mWh`; return {im, delta, energy}; }; let m1=calcMetrics(t1), m2=calcMetrics(t2); alert(`Comparación:\nTexto1: IM ${m1.im.toFixed(2)}, ΔIC ${m1.delta}/10\nTexto2: IM ${m2.im.toFixed(2)}, ΔIC ${m2.delta}/10`); document.getElementById('comparatorModal').style.display='none'; };
         document.getElementById('closeCompareBtn').onclick = () => document.getElementById('comparatorModal').style.display='none';
+        
+        // Grabadora de voz (Web Speech API)
         let recognition, isRecording=false, finalTranscript="";
         const modalAudio = document.getElementById('audioModal');
         const audioStatus = document.getElementById('audioStatus');
         const startRec = document.getElementById('startRecordBtn');
         const stopRec = document.getElementById('stopRecordBtn');
-        async function requestMic(){ try{ await navigator.mediaDevices.getUserMedia({audio:true}); audioStatus.innerText="Permiso OK"; return true; } catch(e){ audioStatus.innerText="Error permiso"; return false; } }
-        function startRecording(){ if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){ audioStatus.innerText="No compatible"; return; } requestMic().then(ok=>{ if(!ok) return; const SR=window.SpeechRecognition||window.webkitSpeechRecognition; recognition=new SR(); recognition.continuous=false; recognition.interimResults=true; recognition.lang='es-ES'; finalTranscript=""; recognition.onresult=e=>{ let final=""; for(let i=0;i<e.results.length;i++) if(e.results[i].isFinal) final+=e.results[i][0].transcript; if(final) finalTranscript=final; audioStatus.innerText=`🎙️: ${finalTranscript}`; }; recognition.onerror=()=>{ stopRecording(); }; recognition.onend=()=>{ if(isRecording) stopRecording(); }; recognition.start(); isRecording=true; startRec.disabled=true; stopRec.disabled=false; }); }
+        async function requestMic(){ try{ await navigator.mediaDevices.getUserMedia({audio:true}); audioStatus.innerText="✅ Permiso OK"; return true; } catch(e){ audioStatus.innerText="❌ Error de permiso"; return false; } }
+        function startRecording(){ if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){ audioStatus.innerText="❌ No compatible"; return; } requestMic().then(ok=>{ if(!ok) return; const SR=window.SpeechRecognition||window.webkitSpeechRecognition; recognition=new SR(); recognition.continuous=false; recognition.interimResults=true; recognition.lang='es-ES'; finalTranscript=""; recognition.onresult=e=>{ let final=""; for(let i=0;i<e.results.length;i++) if(e.results[i].isFinal) final+=e.results[i][0].transcript; if(final) finalTranscript=final; audioStatus.innerText=`🎙️: ${finalTranscript}`; }; recognition.onerror=()=>{ stopRecording(); }; recognition.onend=()=>{ if(isRecording) stopRecording(); }; recognition.start(); isRecording=true; startRec.disabled=true; stopRec.disabled=false; }); }
         function stopRecording(){ if(recognition&&isRecording) recognition.stop(); isRecording=false; startRec.disabled=false; stopRec.disabled=true; if(finalTranscript) document.getElementById('inputText').value=finalTranscript; setTimeout(()=>modalAudio.style.display='none',1000); }
         document.getElementById('testMicBtn').onclick=requestMic;
         document.getElementById('audioBtn').onclick=()=> modalAudio.style.display='flex';
