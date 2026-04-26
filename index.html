@@ -6,91 +6,98 @@
     <title>Argira Shield v6.2 · Auditoría Forense Completa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-            <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-        --bg-deep: #02020a; --surface: #0b0b14; --card-bg: #11111f; --accent: #00f7b0;
-        --danger: #ff3e6c; --warning: #ff9f2e; --info: #3b82f6;
-        --text-main: #eaeaef; --text-dim: #b0b0cc; --border-dim: #2a2a40;
-        --tooltip-bg: #1a1a2e;
-    }
-    body { font-family: 'Segoe UI', Roboto, system-ui; background: var(--bg-deep); color: var(--text-main); padding: 20px; line-height: 1.5; }
-    .container { max-width: 1200px; margin: 0 auto; }
-    .header { text-align: center; margin-bottom: 20px; }
-    .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 1px; }
-    h1 { font-size: 1.6rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    
-    .mode-selector { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; background: var(--card-bg); padding: 12px 20px; border-radius: 60px; margin-bottom: 16px; border: 1px solid var(--border-dim); }
-    .mode-options { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
-    .mode-option { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; background: var(--surface); padding: 6px 14px; border-radius: 60px; transition: 0.1s; text-align: center; }
-    .mode-option.selected { background: var(--accent); color: #000; }
-    .mode-option input { margin-bottom: 2px; }
-    .mode-desc { font-size: 0.65rem; color: var(--text-dim); max-width: 120px; line-height: 1.2; }
-    .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.75rem; font-weight: bold; background: #2a5a2a; color: white; white-space: nowrap; }
-    
-    .compact-semaphore { display: flex; align-items: center; gap: 12px; background: var(--surface); padding: 6px 16px; border-radius: 60px; margin-left: auto; }
-    .compact-light { width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
-    .compact-scale { font-weight: bold; font-size: 1.2rem; }
-    .compact-action { font-weight: bold; font-size: 0.9rem; }
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-deep: #02020a; --surface: #0b0b14; --card-bg: #11111f; --accent: #00f7b0;
+            --danger: #ff3e6c; --warning: #ff9f2e; --info: #3b82f6;
+            --text-main: #eaeaef; --text-dim: #b0b0cc; --border-dim: #2a2a40;
+            --tooltip-bg: #1a1a2e;
+        }
+        @media (prefers-color-scheme: light) {
+            :root { --bg-deep: #eef2f7; --surface: #ffffff; --card-bg: #f8f9fc; --text-main: #111; --text-dim: #3a3a5a; --border-dim: #ccc; --tooltip-bg: #e9ecef; }
+            .aseptic-panel, .hallazgos-container, .hallazgos-explicados { background: #f8f9fa; border: 1px solid #ddd; color: #111; }
+            textarea { background: #fff; color: #111; }
+        }
+        .skip-link { position: absolute; top: -40px; left: 0; background: var(--accent); color: #000; padding: 8px; z-index: 100; text-decoration: none; border-radius: 0 0 8px 0; }
+        .skip-link:focus { top: 0; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        body { font-family: 'Segoe UI', Roboto, system-ui; background: var(--bg-deep); color: var(--text-main); padding: 20px; line-height: 1.5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 1px; }
+        h1 { font-size: 1.6rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .mode-selector { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; background: var(--card-bg); padding: 12px 20px; border-radius: 60px; margin-bottom: 16px; border: 1px solid var(--border-dim); }
+        .mode-options { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+        .mode-option { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; background: var(--surface); padding: 6px 14px; border-radius: 60px; transition: 0.1s; text-align: center; }
+        .mode-option.selected { background: var(--accent); color: #000; }
+        .mode-option input { margin-bottom: 2px; }
+        .mode-desc { font-size: 0.65rem; color: var(--text-dim); max-width: 120px; line-height: 1.2; }
+        .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.75rem; font-weight: bold; background: #2a5a2a; color: white; white-space: nowrap; }
+        
+        .compact-semaphore { display: flex; align-items: center; gap: 12px; background: var(--surface); padding: 6px 16px; border-radius: 60px; margin-left: auto; }
+        .compact-light { width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+        .compact-scale { font-weight: bold; font-size: 1.2rem; }
+        .compact-action { font-weight: bold; font-size: 0.9rem; }
 
-    .view-selector { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: 20px; }
-    .view-buttons { display: flex; gap: 8px; }
-    .view-help { font-size: 0.65rem; color: var(--text-dim); max-width: 280px; text-align: right; }
-    .view-btn { background: transparent; border: 1px solid var(--border-dim); border-radius: 30px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
-    .view-btn.active { background: var(--accent); color: #000; }
-    
-    .main-box { background: var(--surface); border-radius: 32px; padding: 20px; border: 1px solid var(--border-dim); margin-bottom: 20px; }
-    textarea { width: 100%; height: 140px; background: var(--surface); border-radius: 20px; padding: 12px; font-family: monospace; border: 1px solid var(--border-dim); color: var(--text-main); font-size: 0.9rem; }
-    textarea::placeholder { color: var(--text-dim); opacity: 0.7; }
-    .button-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 12px; }
-    .example-bar { display: flex; gap: 8px; flex-wrap: wrap; }
-    .action-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    button { background: linear-gradient(95deg, #1a2a2a, #0a1a1a); border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; padding: 8px 14px; font-weight: 600; cursor: pointer; font-size: 0.8rem; transition: 0.1s; }
-    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    button:hover { background: var(--accent); color: #000; }
-    .btn-primary { background: #1a4a3a; border-width: 2px; padding: 10px 24px; font-size: 1rem; }
-    .btn-secondary { border-color: var(--text-dim); color: var(--text-dim); background: transparent; padding: 6px 12px; font-size: 0.75rem; }
-    .share-link { background: transparent; border: none; color: var(--text-dim); font-size: 0.8rem; padding: 6px 12px; text-decoration: underline; cursor: pointer; }
-    .share-link:hover { color: var(--accent); }
-    .speak-btn-large { background: #2a4a6a; border: 2px solid var(--accent); color: white; font-size: 1rem; padding: 10px 20px; margin-top: 12px; width: 100%; max-width: 300px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 60px; cursor: pointer; transition: 0.2s; }
-    .speak-btn-large:hover { background: var(--accent); color: #000; }
-    .veredicto-card { background: var(--card-bg); border-radius: 48px; padding: 20px; margin: 20px 0; text-align: center; border: 1px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-    .veredicto-flex { display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; }
-    .semaphore-light-big { width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0 15px currentColor; }
-    .scale-big { font-size: 3rem; font-weight: 800; }
-    .action-big { font-size: 1.4rem; font-weight: bold; background: #00000066; padding: 4px 16px; border-radius: 60px; }
-    .im-mini { font-size: 0.85rem; margin-top: 12px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .tooltip-costo { border-bottom: 1px dashed var(--accent); cursor: help; }
-    .metrics-mini { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px 0; }
-    .metric-mini { background: var(--surface); border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; border-left: 3px solid var(--accent); display: inline-flex; align-items: baseline; gap: 6px; cursor: help; position: relative; }
-    .metric-mini strong { font-size: 0.9rem; margin-right: 2px; }
-    .metric-mini .explain { font-size: 0.65rem; color: var(--text-dim); }
-    .tooltip-science { display: none; position: absolute; bottom: 130%; left: 0; background: var(--tooltip-bg); border-radius: 16px; padding: 8px; width: 220px; font-size: 0.7rem; z-index: 200; box-shadow: 0 2px 8px black; white-space: normal; }
-    .metric-mini:hover .tooltip-science, .metric-mini:focus-within .tooltip-science { display: block; }
-    .expert-card { background: var(--surface); border-radius: 28px; padding: 16px; margin-top: 20px; border: 1px solid var(--border-dim); }
-    .aseptic-panel { background: var(--surface); border-radius: 20px; padding: 16px; font-family: 'Segoe UI', monospace; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; border: 1px solid var(--border-dim); margin-top: 12px; }
-    .hallazgos-explicados { background: var(--surface); border-radius: 24px; padding: 20px; margin-top: 24px; border: 1px solid var(--border-dim); }
-    .hallazgos-explicados h3 { margin-bottom: 12px; color: var(--accent); }
-    .hall-item-explicado { border-left: 3px solid; margin: 12px 0; padding-left: 14px; background: var(--card-bg); border-radius: 16px; padding: 10px 16px; }
-    .hall-cat { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-    .hall-word { font-weight: bold; font-family: monospace; font-size: 1rem; }
-    .hall-explanation { font-size: 0.8rem; margin-top: 6px; color: var(--text-dim); }
-    .radar-container { text-align: center; margin: 16px 0; }
-    canvas { max-width: 260px; background: var(--surface); border-radius: 20px; padding: 8px; }
-    .footer { font-size: 0.65rem; text-align: center; margin-top: 40px; color: var(--text-dim); border-top: 1px solid var(--border-dim); padding-top: 16px; }
-    .scientific-footer { padding: 20px; font-size: 0.75rem; color: var(--text-dim); border-top: 1px solid var(--border-dim); margin-top: 40px; }
-    .history-list { max-height: 180px; overflow-y: auto; margin-top: 12px; }
-    .history-item { background: var(--card-bg); border-radius: 16px; padding: 8px 12px; margin: 6px 0; cursor: pointer; border-left: 3px solid var(--accent); }
-    .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: #000c; backdrop-filter: blur(8px); z-index: 1100; justify-content: center; align-items: center; }
-    .modal-content { background: var(--surface); border-radius: 32px; padding: 20px; max-width: 550px; width: 90%; max-height: 80vh; overflow: auto; border: 1px solid var(--accent); }
-    .veto-layer { display: none; position: fixed; top:50%; left:50%; transform: translate(-50%,-50%); background: #000c; backdrop-filter: blur(12px); border-radius: 40px; padding: 30px; text-align: center; z-index: 1000; width: 260px; border: 2px solid var(--danger); }
-    .timer-big { font-size: 2.5rem; font-family: monospace; color: var(--danger); }
-    .btn-example-custom { background: #2a2a44; border-color: var(--text-dim); color: #ddddff; padding: 4px 10px; font-size: 0.7rem; }
-    .rewrite-suggestion { background: #0a2a1f; border-radius: 24px; padding: 12px; margin: 16px 0; color: #c0ffc0; }
-    .gancho { display: inline; background: rgba(0,247,176,0.15); border-bottom: 1px dashed var(--accent); padding: 0 2px; border-radius: 6px; font-family: monospace; }
-    #liveRegion { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-    .text-center { text-align: center; }
-</style>
+        .view-selector { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: 20px; }
+        .view-buttons { display: flex; gap: 8px; }
+        .view-help { font-size: 0.65rem; color: var(--text-dim); max-width: 280px; text-align: right; }
+        .view-btn { background: transparent; border: 1px solid var(--border-dim); border-radius: 30px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
+        .view-btn.active { background: var(--accent); color: #000; }
+        
+        .main-box { background: var(--surface); border-radius: 32px; padding: 20px; border: 1px solid var(--border-dim); margin-bottom: 20px; }
+        textarea { width: 100%; height: 140px; background: var(--surface); border-radius: 20px; padding: 12px; font-family: monospace; border: 1px solid var(--border-dim); color: var(--text-main); font-size: 0.9rem; }
+        .button-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 12px; }
+        .example-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+        .action-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        button { background: linear-gradient(95deg, #1a2a2a, #0a1a1a); border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; padding: 8px 14px; font-weight: 600; cursor: pointer; font-size: 0.8rem; transition: 0.1s; }
+        button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        button:hover { background: var(--accent); color: #000; }
+        .btn-primary { background: #1a4a3a; border-width: 2px; padding: 10px 24px; font-size: 1rem; }
+        .btn-secondary { border-color: var(--text-dim); color: var(--text-dim); background: transparent; padding: 6px 12px; font-size: 0.75rem; }
+        .share-link { background: transparent; border: none; color: var(--text-dim); font-size: 0.8rem; padding: 6px 12px; text-decoration: underline; cursor: pointer; }
+        .share-link:hover { color: var(--accent); }
+        .speak-btn-large { background: #2a4a6a; border: 2px solid var(--accent); color: white; font-size: 1rem; padding: 10px 20px; margin-top: 12px; width: 100%; max-width: 300px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 60px; cursor: pointer; transition: 0.2s; }
+        .speak-btn-large:hover { background: var(--accent); color: #000; }
+        .veredicto-card { background: var(--card-bg); border-radius: 48px; padding: 20px; margin: 20px 0; text-align: center; border: 1px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .veredicto-flex { display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; }
+        .semaphore-light-big { width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0 15px currentColor; }
+        .scale-big { font-size: 3rem; font-weight: 800; }
+        .action-big { font-size: 1.4rem; font-weight: bold; background: #00000066; padding: 4px 16px; border-radius: 60px; }
+        .im-mini { font-size: 0.85rem; margin-top: 12px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .tooltip-costo { border-bottom: 1px dashed var(--accent); cursor: help; }
+        .metrics-mini { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px 0; }
+        .metric-mini { background: var(--surface); border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; border-left: 3px solid var(--accent); display: inline-flex; align-items: baseline; gap: 6px; cursor: help; position: relative; }
+        .metric-mini strong { font-size: 0.9rem; margin-right: 2px; }
+        .metric-mini .explain { font-size: 0.65rem; color: var(--text-dim); }
+        .tooltip-science { display: none; position: absolute; bottom: 130%; left: 0; background: var(--tooltip-bg); border-radius: 16px; padding: 8px; width: 220px; font-size: 0.7rem; z-index: 200; box-shadow: 0 2px 8px black; white-space: normal; }
+        .metric-mini:hover .tooltip-science, .metric-mini:focus-within .tooltip-science { display: block; }
+        .expert-card { background: var(--surface); border-radius: 28px; padding: 16px; margin-top: 20px; border: 1px solid var(--border-dim); }
+        .aseptic-panel { background: var(--surface); border-radius: 20px; padding: 16px; font-family: 'Segoe UI', monospace; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; border: 1px solid var(--border-dim); margin-top: 12px; }
+        .hallazgos-explicados { background: var(--surface); border-radius: 24px; padding: 20px; margin-top: 24px; border: 1px solid var(--border-dim); }
+        .hallazgos-explicados h3 { margin-bottom: 12px; color: var(--accent); }
+        .hall-item-explicado { border-left: 3px solid; margin: 12px 0; padding-left: 14px; background: var(--card-bg); border-radius: 16px; padding: 10px 16px; }
+        .hall-cat { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .hall-word { font-weight: bold; font-family: monospace; font-size: 1rem; }
+        .hall-explanation { font-size: 0.8rem; margin-top: 6px; color: var(--text-dim); }
+        .radar-container { text-align: center; margin: 16px 0; }
+        canvas { max-width: 260px; background: var(--surface); border-radius: 20px; padding: 8px; }
+        .footer { font-size: 0.65rem; text-align: center; margin-top: 40px; color: var(--text-dim); border-top: 1px solid var(--border-dim); padding-top: 16px; }
+        .scientific-footer { padding: 20px; font-size: 0.75rem; color: var(--text-dim); border-top: 1px solid var(--border-dim); margin-top: 40px; }
+        .history-list { max-height: 180px; overflow-y: auto; margin-top: 12px; }
+        .history-item { background: var(--card-bg); border-radius: 16px; padding: 8px 12px; margin: 6px 0; cursor: pointer; border-left: 3px solid var(--accent); }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: #000c; backdrop-filter: blur(8px); z-index: 1100; justify-content: center; align-items: center; }
+        .modal-content { background: var(--surface); border-radius: 32px; padding: 20px; max-width: 550px; width: 90%; max-height: 80vh; overflow: auto; border: 1px solid var(--accent); }
+        .veto-layer { display: none; position: fixed; top:50%; left:50%; transform: translate(-50%,-50%); background: #000c; backdrop-filter: blur(12px); border-radius: 40px; padding: 30px; text-align: center; z-index: 1000; width: 260px; border: 2px solid var(--danger); }
+        .timer-big { font-size: 2.5rem; font-family: monospace; color: var(--danger); }
+        .btn-example-custom { background: #2a2a44; border-color: var(--text-dim); color: #ddddff; padding: 4px 10px; font-size: 0.7rem; }
+        .rewrite-suggestion { background: #0a2a1f; border-radius: 24px; padding: 12px; margin: 16px 0; color: #c0ffc0; }
+        .gancho { display: inline; background: rgba(0,247,176,0.15); border-bottom: 1px dashed var(--accent); padding: 0 2px; border-radius: 6px; font-family: monospace; }
+        #liveRegion { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .text-center { text-align: center; }
+    </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
