@@ -3,319 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Argira Shield v5.5 · Permiso de micrófono asistido</title>
+    <title>Argira Shield v5.17 · Métricas con etiquetas explicativas</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-deep: #02020a; --surface: #0b0b14; --card-bg: #11111f; --accent: #00f7b0;
-            --danger: #ff3e6c; --warning: #ff9f2e; --text-main: #eaeaef; --text-dim: #8f8faa;
-            --border-dim: #25253a;
+            --danger: #ff3e6c; --warning: #ff9f2e; --info: #3b82f6;
+            --text-main: #eaeaef; --text-dim: #b0b0cc; --border-dim: #2a2a40;
+            --tooltip-bg: #1a1a2e;
         }
-        body { font-family: 'Segoe UI', system-ui; background: var(--bg-deep); color: var(--text-main); padding: 28px 20px; }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 32px; }
-        .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 2px; }
-        h1 { font-size: 2rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .main-box { background: var(--surface); border: 1px solid var(--border-dim); border-radius: 32px; padding: 24px; }
-        textarea { width: 100%; height: 220px; background: #03030c; border: 1px solid var(--border-dim); border-radius: 20px; color: #d0f0e8; font-family: monospace; padding: 16px; }
-        .button-group { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
-        button { background: linear-gradient(95deg, #0f2120, #071010); border: 1px solid var(--accent); color: var(--accent); border-radius: 60px; padding: 12px 20px; font-weight: bold; cursor: pointer; flex: 1; }
-        button:hover:not(:disabled) { background: var(--accent); color: #000; }
-        .btn-secondary { border-color: var(--text-dim); color: var(--text-dim); }
-        .veto-layer { display: none; background: rgba(0,0,0,0.85); backdrop-filter: blur(16px); border-radius: 40px; padding: 32px; margin-top: 24px; border: 1px solid var(--danger); text-align: center; }
-        .timer-big { font-size: 3rem; font-family: monospace; font-weight: bold; color: var(--danger); }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0; }
-        .metric { background: var(--card-bg); border-radius: 24px; padding: 16px; border-left: 4px solid var(--accent); }
-        .metric-value { font-size: 2rem; font-weight: 800; }
-        .semaphore { display: flex; align-items: center; gap: 20px; background: #0a0a12aa; border-radius: 60px; padding: 10px 20px; flex-wrap: wrap; }
-        .semaphore-light { width: 48px; height: 48px; border-radius: 50%; background: gray; }
-        .semaphore-scale { font-size: 1.8rem; font-weight: 800; }
-        .legend { display: flex; flex-wrap: wrap; gap: 16px; background: #0a0a12aa; border-radius: 40px; padding: 12px 20px; font-size: 0.7rem; margin: 15px 0; }
-        .legend-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 6px; }
-        .aseptic-panel { background: #03030b; border-radius: 28px; padding: 24px; font-family: monospace; font-size: 0.85rem; line-height: 1.7; margin-top: 24px; white-space: pre-wrap; }
-        .gancho { display: inline; padding: 0px 4px; border-radius: 8px; cursor: help; position: relative; }
-        .gancho-p { background: rgba(192,132,252,0.2); border-bottom: 1px dashed #c084fc; }
-        .gancho-emo { background: rgba(255,107,139,0.2); border-bottom: 1px dashed #ff6b8b; }
-        .gancho-urg { background: rgba(249,115,22,0.2); border-bottom: 1px dashed #f97316; }
-        .gancho-auth { background: rgba(59,130,246,0.2); border-bottom: 1px dashed #3b82f6; }
-        .gancho-soc { background: rgba(6,182,212,0.2); border-bottom: 1px dashed #06b6d4; }
-        .gancho-alarm { background: rgba(239,68,68,0.2); border-bottom: 1px dashed #ef4444; }
-        .gancho-fake { background: rgba(168,85,247,0.2); border-bottom: 1px dashed #a855f7; }
-        .tooltip { display: none; position: absolute; bottom: 140%; left: 0; background: #1a1a2a; border: 1px solid #4a4a6e; color: #e0e0ff; font-size: 0.7rem; padding: 8px 14px; border-radius: 16px; width: 280px; z-index: 200; }
-        .gancho:hover .tooltip { display: block; }
-        .hallazgos-container { background: #05050e; border-radius: 28px; padding: 20px; margin-top: 20px; }
-        .hall-item { border-left: 4px solid; background: #0c0c16; margin-bottom: 12px; padding: 12px 16px; border-radius: 18px; }
-        .footer { font-size: 0.7rem; text-align: center; color: #4f4f6b; border-top: 1px solid var(--border-dim); margin-top: 44px; padding-top: 20px; }
-        .btn-example { background: transparent; border: 1px solid #3a3a5a; color: #bbbbee; margin-top: 12px; padding: 8px; font-size: 0.75rem; width: auto; }
-        .flex-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--surface); border-radius: 32px; padding: 28px; max-width: 500px; width: 90%; text-align: center; border: 1px solid var(--accent); }
-        .audio-status { margin: 20px 0; font-size: 1rem; white-space: pre-wrap; }
-        .warning-text { color: var(--warning); background: #332200; padding: 8px; border-radius: 16px; }
-        .btn-mic-test { background: #2a2a44; border-color: var(--info); }
+        @media (prefers-color-scheme: light) {
+            :root { --bg-deep: #eef2f7; --surface: #ffffff; --card-bg: #f8f9fc; --text-main: #111; --text-dim: #3a3a5a; --border-dim: #ccc; --tooltip-bg: #f0f0f0; }
+            .aseptic-panel, .hallazgos-container { background: #f8f9fa; border: 1px solid #ddd; }
+            textarea { background: #fff; color: #111; }
+        }
+        body { font-family: 'Segoe UI', Roboto, system-ui; background: var(--bg-deep); color: var(--text-main); padding: 20px; line-height: 1.5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 1px; }
+        h1 { font-size: 1.6rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .mode-selector { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: var(--card-bg); padding: 10px 18px; border-radius: 60px; margin-bottom: 16px; border: 1px solid var(--border-dim); }
+        .mode-options { display: flex; gap: 16px; flex-wrap: wrap; }
+        .mode-option { display: flex; align-items: center; gap: 6px; cursor: pointer; background: var(--surface); padding: 4px 12px; border-radius: 40px; }
+        .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; font-weight: bold; background: #2a5a2a; color: white; }
+        .view-selector { display: flex; gap: 8px; }
+        .view-btn { background: transparent; border: 1px solid var(--border-dim); border-radius: 30px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
+        .view-btn.active { background: var(--accent); color: #000; }
+        .main-box { background: var(--surface); border-radius: 32px; padding: 20px; border: 1px solid var(--border-dim); margin-bottom: 20px; }
+        textarea { width: 100%; height: 140px; background: var(--surface); border-radius: 20px; padding: 12px; font-family: monospace; border: 1px solid var(--border-dim); color: var(--text-main); font-size: 0.9rem; }
+        .button-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 12px; }
+        .example-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+        .action-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        button { background: linear-gradient(95deg, #1a2a2a, #0a1a1a); border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; padding: 6px 12px; font-weight: 600; cursor: pointer; font-size: 0.75rem; }
+        button:hover { background: var(--accent); color: #000; }
+        .btn-primary { background: #1a4a3a; border-width: 2px; padding: 6px 16px; }
+        .btn-secondary { border-color: var(--text-dim); color: var(--text-dim); background: transparent; }
+        .share-link { background: transparent; border: none; color: var(--text-dim); font-size: 0.8rem; padding: 4px 8px; text-decoration: underline; cursor: pointer; }
+        .share-link:hover { color: var(--accent); }
+        .veredicto-card { background: var(--card-bg); border-radius: 48px; padding: 20px; margin: 20px 0; text-align: center; border: 1px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .veredicto-flex { display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; }
+        .semaphore-light-big { width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0 15px currentColor; }
+        .scale-big { font-size: 3rem; font-weight: 800; }
+        .action-big { font-size: 1.4rem; font-weight: bold; background: #00000066; padding: 4px 16px; border-radius: 60px; }
+        .im-mini { font-size: 0.85rem; margin-top: 12px; color: var(--text-dim); }
+        .metrics-mini { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px 0; }
+        .metric-mini { background: var(--surface); border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; border-left: 3px solid var(--accent); display: inline-flex; align-items: baseline; gap: 6px; cursor: help; position: relative; }
+        .metric-mini strong { font-size: 0.9rem; margin-right: 2px; }
+        .metric-mini .explain { font-size: 0.65rem; color: var(--text-dim); }
+        .tooltip-science { display: none; position: absolute; bottom: 130%; left: 0; background: var(--tooltip-bg); border-radius: 16px; padding: 8px; width: 200px; font-size: 0.7rem; z-index: 200; box-shadow: 0 2px 8px black; white-space: normal; }
+        .metric-mini:hover .tooltip-science { display: block; }
+        .expert-card { background: var(--surface); border-radius: 28px; padding: 16px; margin-top: 20px; border: 1px solid var(--border-dim); }
+        .aseptic-panel { background: var(--surface); border-radius: 20px; padding: 16px; font-family: 'Segoe UI', monospace; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; border: 1px solid var(--border-dim); margin-top: 12px; }
+        .hallazgos-container { background: var(--surface); border-radius: 20px; padding: 12px; margin-top: 16px; }
+        .hall-item { border-left: 4px solid; margin: 8px 0; padding-left: 12px; }
+        .rewrite-suggestion { background: #0a2a1f; border-radius: 24px; padding: 12px; margin: 16px 0; color: #c0ffc0; }
+        .gancho { display: inline; background: rgba(0,247,176,0.15); border-bottom: 1px dashed var(--accent); padding: 0 2px; border-radius: 6px; font-family: monospace; }
+        .radar-container { text-align: center; margin: 16px 0; }
+        canvas { max-width: 260px; background: var(--surface); border-radius: 20px; padding: 8px; }
+        .footer { font-size: 0.65rem; text-align: center; margin-top: 40px; color: var(--text-dim); border-top: 1px solid var(--border-dim); padding-top: 16px; }
+        .history-list { max-height: 180px; overflow-y: auto; margin-top: 12px; }
+        .history-item { background: var(--card-bg); border-radius: 16px; padding: 8px 12px; margin: 6px 0; cursor: pointer; border-left: 3px solid var(--accent); }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: #000c; backdrop-filter: blur(8px); z-index: 1100; justify-content: center; align-items: center; }
+        .modal-content { background: var(--surface); border-radius: 32px; padding: 20px; max-width: 550px; width: 90%; max-height: 80vh; overflow: auto; border: 1px solid var(--accent); }
+        .veto-layer { display: none; position: fixed; top:50%; left:50%; transform: translate(-50%,-50%); background: #000c; backdrop-filter: blur(12px); border-radius: 40px; padding: 30px; text-align: center; z-index: 1000; width: 260px; border: 2px solid var(--danger); }
+        .timer-big { font-size: 2.5rem; font-family: monospace; color: var(--danger); }
+        .btn-example-custom { background: #2a2a44; border-color: var(--text-dim); color: #ddddff; padding: 4px 10px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <div class="badge-sci">⚡ ARGIRA STATION</div>
-        <h1>🛡️ Integrity Shield v5.5</h1>
-        <div class="sub">Solución de permiso de micrófono · Prueba de permisos</div>
+        <div class="badge-sci">⚡ ARGIRA v5.17 · Métricas con etiquetas</div>
+        <h1>🛡️ Integrity Shield</h1>
+        <div>Kahneman · Cialdini · Shannon</div>
+    </div>
+    <div class="mode-selector">
+        <div class="mode-options">
+            <label class="mode-option"><input type="radio" name="mode" value="alert"> ⚠️ Alerta</label>
+            <label class="mode-option"><input type="radio" name="mode" value="balanced" checked> ⚖️ Equilibrado</label>
+            <label class="mode-option"><input type="radio" name="mode" value="newsletter"> 🌿 Newsletter</label>
+            <span id="modeBadge" class="mode-badge">⚖️ Equilibrado</span>
+        </div>
+        <div class="view-selector">
+            <button id="simpleViewBtn" class="view-btn active">👁️ Simple</button>
+            <button id="expertViewBtn" class="view-btn">🔬 Experta</button>
+            <button id="helpBtn" class="view-btn">❓ Ayuda</button>
+        </div>
     </div>
     <div class="main-box">
-        <textarea id="inputText" placeholder="📄 Pega texto o usa el botón de audio..."></textarea>
-        <div class="button-group">
-            <button id="testMicBtn" class="btn-mic-test">🎤 Probar / pedir permiso de micrófono</button>
-            <button id="audioBtn">🎙️ Abrir grabadora</button>
-            <button id="auditBtn">🔬 AUDITAR TEXTO</button>
-        </div>
-        <div class="flex-buttons">
-            <button id="loadExampleTech" class="btn-example">📘 Técnica</button>
-            <button id="loadExampleAlarm" class="btn-example">⚠️ Alarmismo</button>
-            <button id="loadExampleEng" class="btn-example">🇬🇧 English</button>
-        </div>
-    </div>
-    <!-- Resultados (resumido para brevedad) -->
-    <div id="resultsArea" style="display:none; margin-top: 24px;">
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-            <div class="semaphore" style="flex:2">
-                <div class="semaphore-light" id="semaphoreLight"></div>
-                <div class="semaphore-scale" id="scaleNumber">0</div>
-                <div class="semaphore-action" id="actionSuggestion">—</div>
-                <div class="confidence" id="confidenceBadge">Confianza: —</div>
+        <textarea id="inputText" placeholder="Pega un texto (email, bulo, noticia) y pulsa AUDITAR..."></textarea>
+        <div class="button-row">
+            <div class="example-bar">
+                <button id="loadExampleTech" class="btn-secondary btn-example-custom">📘 Newsletter</button>
+                <button id="loadExampleAlarm" class="btn-secondary btn-example-custom">⚠️ Bulo</button>
+                <button id="loadExampleEng" class="btn-secondary btn-example-custom">🇬🇧 Scam</button>
             </div>
-            <div><button id="exportTxtBtn" class="btn-secondary">📄 TXT</button> <button id="exportPdfBtn" class="btn-secondary">📑 PDF</button></div>
+            <div class="action-bar">
+                <button id="testMicBtn" class="btn-secondary" title="Probar micrófono">🎤 Mic</button>
+                <button id="audioBtn" class="btn-secondary" title="Grabadora">🎙️ Grabar</button>
+                <button id="auditBtn" class="btn-primary">🔬 AUDITAR</button>
+                <button id="compareBtn" class="btn-secondary" title="Comparar">🔄 Comparar</button>
+                <button id="shareBtn" class="share-link" title="Copiar resultado">📤 Compartir</button>
+            </div>
         </div>
-        <div class="dashboard">
-            <div class="metric"><div class="metric-label">🎯 P</div><div class="metric-value" id="valP">0</div></div>
-            <div class="metric"><div class="metric-label">💔 E</div><div class="metric-value" id="valE">0</div></div>
-            <div class="metric"><div class="metric-label">⏳ U</div><div class="metric-value" id="valU">0</div></div>
-            <div class="metric"><div class="metric-label">👑 A</div><div class="metric-value" id="valA">0</div></div>
-            <div class="metric"><div class="metric-label">👥 S</div><div class="metric-value" id="valSoc">0</div></div>
-            <div class="metric"><div class="metric-label">🔥 L</div><div class="metric-value" id="valAlarm">0</div></div>
-            <div class="metric"><div class="metric-label">🔮 F</div><div class="metric-value" id="valFake">0</div></div>
-            <div class="metric"><div class="metric-label">📊 D</div><div class="metric-value" id="valD">—</div></div>
-        </div>
-        <div><strong>IM:</strong> <span id="imIndex">0.00</span> | <strong>Costo:</strong> <span id="costoAtencion">— min</span> | <strong>Resumen:</strong> <span id="executiveSummary">—</span></div>
-        <div class="legend">
-            <span><span class="legend-dot" style="background:#c084fc;"></span> Personalización</span><span><span class="legend-dot" style="background:#ff6b8b;"></span> Emocional</span><span><span class="legend-dot" style="background:#f97316;"></span> Urgencia</span><span><span class="legend-dot" style="background:#3b82f6;"></span> Autoridad</span><span><span class="legend-dot" style="background:#06b6d4;"></span> Prueba social</span><span><span class="legend-dot" style="background:#ef4444;"></span> Alarmismo</span><span><span class="legend-dot" style="background:#a855f7;"></span> Fabricación</span>
-        </div>
-        <h3>📜 Traducción forense</h3>
-        <div id="cleanText" class="aseptic-panel"></div>
-        <h3>🧩 Hallazgos</h3>
-        <div id="hallazgosDiv" class="hallazgos-container"></div>
     </div>
-    <div class="footer">v5.5 · Si el micrófono no funciona, usa el botón "Probar / pedir permiso" o concede manualmente en el candado de la barra de direcciones.</div>
-</div>
-<!-- MODAL AUDIO -->
-<div id="audioModal" class="modal">
-    <div class="modal-content">
-        <h3>🎙️ Grabadora</h3>
-        <div class="audio-status" id="audioStatus">✅ Haz clic en "Iniciar" (primero permite el micrófono con el botón de prueba).</div>
-        <div style="display: flex; gap: 12px; justify-content: center;">
-            <button id="startRecordBtn">🎤 Iniciar</button>
-            <button id="stopRecordBtn" disabled>⏹️ Parar</button>
+
+    <div id="veredictoContainer" style="display: none;">
+        <div class="veredicto-card">
+            <div class="veredicto-flex">
+                <div class="semaphore-light-big" id="bigSemaphore"></div>
+                <div class="scale-big" id="bigScale">0/10</div>
+                <div class="action-big" id="bigAction">—</div>
+            </div>
+            <div class="im-mini">📊 IM: <span id="imValue">0.00</span> · ⏱️ Costo: <span id="costoValue">0 min</span> · 🧠 <span id="summaryValue">—</span></div>
+            <div id="modeIndicator" style="font-size:0.7rem; margin-top:8px;"></div>
         </div>
-        <button id="closeModalBtn" class="btn-secondary" style="margin-top: 20px;">Cerrar</button>
+
+        <!-- Métricas con etiquetas explicativas (al estilo "Cialdini: simpatía") -->
+        <div class="metrics-mini" id="miniMetrics">
+            <div class="metric-mini"><strong>🎯P</strong> <span class="explain">(simpatía)</span> <span id="valP">0</span><div class="tooltip-science">Personalización: "tú, gratis, nosotros". Principio de simpatía y reciprocidad (Cialdini).</div></div>
+            <div class="metric-mini"><strong>💔E</strong> <span class="explain">(miedo)</span> <span id="valE">0</span><div class="tooltip-science">Emocional: miedo, culpa, pérdida. Activa Sistema 1 (Kahneman).</div></div>
+            <div class="metric-mini"><strong>⏳U</strong> <span class="explain">(escasez)</span> <span id="valU">0</span><div class="tooltip-science">Urgencia: "ahora, hoy". Principio de escasez (Cialdini).</div></div>
+            <div class="metric-mini"><strong>👑A</strong> <span class="explain">(autoridad)</span> <span id="valA">0</span><div class="tooltip-science">Autoridad: "expertos, universidad". Sesgo de autoridad.</div></div>
+            <div class="metric-mini"><strong>👥S</strong> <span class="explain">(arrastre)</span> <span id="valSoc">0</span><div class="tooltip-science">Prueba social: "millones, la mayoría". Efecto de arrastre.</div></div>
+            <div class="metric-mini"><strong>🔥L</strong> <span class="explain">(catástrofe)</span> <span id="valAlarm">0</span><div class="tooltip-science">Alarmismo: "apocalipsis, colapso". Catastrofismo sin base.</div></div>
+            <div class="metric-mini"><strong>🔮F</strong> <span class="explain">(conspiración)</span> <span id="valFake">0</span><div class="tooltip-science">Fabricación: "cura oculta, conspiración". Narrativas infalsificables.</div></div>
+            <div class="metric-mini"><strong>📊D</strong> <span class="explain">(datos)</span> <span id="valD">—</span><div class="tooltip-science">Densidad factual: números, fechas, enlaces, fuentes.</div></div>
+            <div class="metric-mini"><strong>📡EDI</strong> <span class="explain">(Shannon)</span> <span id="valEDI">—</span><div class="tooltip-science">Entropía: diversidad del vocabulario. Cerca de 1 = rico informativamente.</div></div>
+        </div>
+
+        <div id="expertDetails" style="display: none;">
+            <div class="expert-card">
+                <div class="radar-container">
+                    <canvas id="radarCanvas" width="300" height="300" style="max-width:100%;"></canvas>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 8px 0;">
+                    <span><span style="background:#c084fc; display:inline-block; width:12px; height:12px; border-radius:3px;"></span> P</span>
+                    <span><span style="background:#ff6b8b;"></span> E</span>
+                    <span><span style="background:#f97316;"></span> U</span>
+                    <span><span style="background:#3b82f6;"></span> A</span>
+                    <span><span style="background:#06b6d4;"></span> S</span>
+                    <span><span style="background:#ef4444;"></span> L</span>
+                    <span><span style="background:#a855f7;"></span> F</span>
+                </div>
+                <h3>📜 Texto anotado</h3>
+                <div id="cleanText" class="aseptic-panel"></div>
+                <h3>🧩 Hallazgos</h3>
+                <div id="hallazgosDiv" class="hallazgos-container"></div>
+                <div id="rewriteBox" class="rewrite-suggestion"></div>
+            </div>
+        </div>
+        <div style="text-align: center; margin: 20px 0;">
+            <button id="exportTxtBtn" class="btn-secondary">📄 TXT</button>
+            <button id="exportPdfBtn" class="btn-secondary">📑 PDF</button>
+        </div>
+        <h3>📜 Historial reciente</h3>
+        <div id="historyList" class="history-list"></div>
     </div>
+
+    <!-- Modales -->
+    <div id="comparatorModal" class="modal"><div class="modal-content"><h3>Comparar otro texto</h3><textarea id="compareText" rows="6" placeholder="Pega el segundo texto aquí..."></textarea><button id="doCompareBtn" style="margin-top:12px;">Comparar</button><button id="closeCompareBtn" class="btn-secondary">Cerrar</button></div></div>
+    <div id="helpModal" class="modal"><div class="modal-content"><h2>🧠 Ciencia detrás de Argira</h2><p><strong>Kahneman:</strong> Sistema 1 (rápido, emocional) vs Sistema 2 (analítico). Los ganchos activan el Sistema 1.</p><p><strong>Cialdini:</strong> 6 principios: reciprocidad, escasez, autoridad, simpatía, prueba social, compromiso.</p><p><strong>Shannon:</strong> Entropía (EDI) = diversidad léxica. Fórmula: H = –Σ p·log₂(p). EDI = H/Hmax.</p><p><strong>IM:</strong> &lt;1.5 Confiable, 1.5-3.2 Persuasión legítima, &gt;3.2 Alto riesgo.</p><button id="closeHelpBtn" class="btn-secondary">Cerrar</button></div></div>
+    <div id="audioModal" class="modal"><div class="modal-content"><h3>🎙️ Grabadora</h3><div id="audioStatus">Prueba "Probar mic" primero.</div><button id="startRecordBtn">Iniciar</button><button id="stopRecordBtn" disabled>Parar</button><button id="closeModalBtn">Cerrar</button></div></div>
+    <div class="footer">v5.17 · Métricas con etiquetas: simpatía, miedo, escasez, autoridad, arrastre, catástrofe, conspiración, datos, Shannon.</div>
 </div>
+
 <script>
-(function(){
-    // Diccionario (idéntico a versión anterior)
-    const TERMS = { p:["amigo","tú","ti","tu","nosotros","gratis","te regalo","solo para ti","te mereces","juntos","friend","you","your","we","free","just for you"], e:["miedo","terror","pánico","amenaza","peligro","crisis","culpa","fracaso","perder","pérdida","demasiado tarde","sufrir","dolor","muerte","tragedia","milagro","fear","panic","danger","crisis","guilt","loss","too late","suffer","death"], u:["ahora","ya","hoy","urgente","sin demora","no esperes","expira","vence","solo hoy","últimas plazas","quedan pocos","casi agotado","oferta","aprovecha","hoy mismo","now","today","urgent","don't wait","expires","last chance","limited","hurry"], a:["expertos","especialistas","autoridad","científicos","estudios demuestran","universidad","avalado por","premio nobel","experts","authority","scientists","studies prove","university","endorsed by"], soc:["millones","todo el mundo","la mayoría","miles de personas","viral","tendencia","millions","everyone","trending","viral"], alarm:["apocalipsis","cataclismo","devastación","colapso","fin del mundo","extinción","desastre irreversible","apocalypse","cataclysm","collapse","end of the world","extinction"], fake:["cura milagrosa","fórmula secreta","ellos no quieren que sepas","verdad oculta","conspiración","élite mundial","miracle cure","secret formula","they don't want you to know","conspiracy"] };
-    const WEIGHTS = { p:1.2, e:1.4, u:1.2, a:1.3, soc:1.3, alarm:1.7, fake:2.0 };
-    function buildRegex(list){ let e=list.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).sort((a,b)=>b.length-a.length); return new RegExp("\\b("+e.join("|")+")\\b","gi"); }
-    function countMatches(t,k){ let l=TERMS[k]; if(!l) return 0; let m=t.match(buildRegex(l)); return m?m.length:0; }
-    function computeFactualDensity(t){ let s=0; [/\b\d+[\.,]?\d*\s*(%|€|\$|lectores|usuarios|personas|millones|miles)\b/gi, /\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b/g, /https?:\/\/[^\s]+/gi, /\b(estudio|libro|#1|bestseller)\b/gi].forEach(r=>s+=(t.match(r)||[]).length); if(/\b(Claude|GPT|prompt|IA)\b/i.test(t)) s++; return Math.max(s,1); }
-    // ── COLORES Y ETIQUETAS POR CATEGORÍA ─────────────────────────────────
-    const CAT_COLORS = { p:'#c084fc', e:'#ff6b8b', u:'#f97316', a:'#3b82f6', soc:'#06b6d4', alarm:'#ef4444', fake:'#a855f7' };
-    const CAT_LABELS = { p:'Personalización', e:'Carga Emocional', u:'Urgencia/Escasez', a:'Autoridad', soc:'Prueba Social', alarm:'Alarmismo', fake:'Fabricación' };
+    // ========== CÓDIGO DE ANÁLISIS IDÉNTICO A V5.16 (FUNCIONES COMPLETAS) ==========
+    let currentMode = "balanced";
+    let simpleMode = true;
+    let lastText = "";
 
-    const TIPS = {
-        "amigo":"Crea falsa intimidad. Simula cercanía para bajar tus defensas (Cialdini: Simpatía).","tú":"Interpelación directa que activa procesamiento egocéntrico (Sistema 1, Kahneman).","ti":"Interpelación directa. Personaliza el mensaje artificialmente.","tu":"Posesivo que genera sensación de relevancia personal.","nosotros":"Inclusión tribal. Difumina el rol emisor/receptor.","gratis":"Activa reciprocidad: si te dan algo, sientes que debes devolver (Cialdini).","te regalo":"Reciprocidad forzada. Crea deuda psicológica.","solo para ti":"Exclusividad fabricada para generar sensación de privilegio.","te mereces":"Adulación que predispone a la acción sin análisis.","juntos":"Pertenencia tribal. Reduce el pensamiento crítico.","friend":"Creates false intimacy to lower critical defenses.","you":"Direct address activating egocentric System 1 processing.","your":"Possessive creating false personal relevance.","we":"Tribal inclusion blurring sender/receiver roles.","free":"Triggers reciprocity bias — receiving creates obligation.","just for you":"Fabricated exclusivity to create sense of privilege.",
-        "miedo":"Activa la amígdala. Desactiva el Sistema 2 (análisis racional).","terror":"Activación máxima del sistema de amenaza.","pánico":"Respuesta de emergencia que anula la reflexión.","amenaza":"Redirige atención al emisor como fuente de seguridad.","peligro":"Activa respuesta de supervivencia — decisiones más impulsivas.","crisis":"Encuadre de emergencia que justifica decisiones rápidas.","culpa":"Evitación del dolor social. Alta eficacia manipuladora.","fracaso":"Amenaza al autoconcepto. Induce acción para restaurar imagen.","perder":"Loss aversion (Kahneman): perder duele 2x más que ganar.","pérdida":"Loss aversion. Activador emocional muy potente.","demasiado tarde":"Pérdida + urgencia. Doble activación emocional.","sufrir":"Empatía forzada que desvía atención hacia el emisor.","dolor":"Disparador de empatía. Desplaza el análisis racional.","muerte":"Activación del terror existencial. Respuesta máxima.","tragedia":"Catástrofe que amplifica la percepción de riesgo.","milagro":"Promesa irracional. Activa pensamiento mágico.","fear":"Activates amygdala, disabling rational System 2.","panic":"Emergency response overriding critical thinking.","danger":"Survival activation — triggers impulsive decisions.","crisis":"Emergency framing justifying rapid, unreflective action.","guilt":"Social pain avoidance — highly effective manipulator.","loss":"Loss aversion (Kahneman): losses feel 2x stronger than gains.","too late":"Loss + urgency combined — double emotional activation.","suffer":"Forced empathy redirecting attention to the sender.","death":"Existential terror activation. Maximum emotional response.",
-        "ahora":"Presión temporal que impide evaluar con calma.","ya":"Urgencia inmediata. Inhibe reflexión.","hoy":"Plazo artificial. Crea urgencia sin justificación real.","urgente":"La urgencia real rara vez se anuncia así.","sin demora":"Presión temporal directa. ¿Hay razón real para la prisa?","no esperes":"Imperativo que activa miedo a perder oportunidad.","expira":"Caducidad artificial. ¿Es real este plazo?","vence":"Caducidad. Verifica si el plazo es real.","solo hoy":"Escasez temporal clásica. Rara vez real en email marketing.","últimas plazas":"Escasez de unidades (Cialdini). Activa miedo a quedarse fuera.","quedan pocos":"Escasez sin cifra concreta — activador emocional puro.","casi agotado":"Stock limitado sin evidencia verificable.","oferta":"¿Cuál es el precio real de mercado? Contrasta antes de actuar.","aprovecha":"Activa miedo a perder oportunidad.","hoy mismo":"Plazo artificial de máxima urgencia.","now":"Temporal pressure preventing calm evaluation.","today":"Artificial deadline without real justification.","urgent":"Real urgency is rarely announced this way.","don't wait":"Imperative activating fear of missing out.","expires":"Artificial expiry — is this deadline real?","last chance":"Scarcity + loss aversion combined.","limited":"Scarcity trigger (Cialdini). Fear of missing out.","hurry":"Direct pressure bypassing rational decision-making.",
-        "expertos":"Autoridad genérica. ¿Quiénes? ¿Qué estudiaron?","especialistas":"Autoridad vaga. Sin especificación, es ruido.","científicos":"Apelación a la ciencia sin cita concreta.","estudios demuestran":"¿Qué estudios? ¿Publicados dónde? Sin referencia es ruido.","universidad":"Institución sin especificar. Autoridad fabricada.","avalado por":"Respaldo sin verificar. ¿Por quién exactamente?","premio nobel":"Máxima autoridad para validar cualquier afirmación.","experts":"Generic authority without specifying who or what they studied.","authority":"Authority without specification — fabricated credibility.","scientists":"Appeal to science without concrete citation.","studies prove":"What studies? Without reference it's noise.","university":"Unspecified institution. Fabricated authority.","endorsed by":"Unverifiable endorsement.",
-        "millones":"Prueba social masiva. ¿Verificable? Popularidad ≠ calidad.","todo el mundo":"Generalización extrema. Activa sesgo de manada.","la mayoría":"Presión social. ¿Mayoría de quién? ¿Cuándo?","miles de personas":"Prueba social sin fuente. ¿Contable?","viral":"Activa sesgo de cascada informativa.","tendencia":"Sesgo de seguir a la mayoría (herding).","millions":"Massive social proof. Popularity ≠ quality.","everyone":"Extreme generalization triggering herd behavior.","trending":"Social proof activating information cascade bias.",
-        "apocalipsis":"Catastrofismo máximo. Activa respuesta de supervivencia.","cataclismo":"Encuadre catastrófico sin evidencia.","devastación":"Amplifica percepción de riesgo.","colapso":"¿Hay datos reales detrás de esta afirmación?","fin del mundo":"Catastrofismo extremo. Sin verificación posible.","extinción":"Amenaza existencial máxima.","desastre irreversible":"Catástrofe + irreversibilidad. Combinación muy potente.","apocalypse":"Maximum catastrophism. Activates survival response.","cataclysm":"Catastrophic framing without evidence.","collapse":"Are there real data behind this claim?","end of the world":"Extreme catastrophism. Unverifiable.","extinction":"Maximum existential threat.",
-        "cura milagrosa":"Promesa médica sin evidencia. Alto riesgo de daño real.","fórmula secreta":"Conocimiento exclusivo para crear dependencia.","ellos no quieren que sepas":"Estructura conspirativa. Infalsificable por definición.","verdad oculta":"Marco conspirativo. ¿Oculta por quién?","conspiración":"Narrativa de enemigo oculto. Muy difícil de refutar.","élite mundial":"Enemigo difuso para canalizar desconfianza.","miracle cure":"Medical promise without evidence. Risk of real harm.","secret formula":"Exclusive knowledge creating dependency.","they don't want you to know":"Classic conspiratorial structure. Unfalsifiable by design.","conspiracy":"Hidden enemy narrative. Very difficult to refute."
+    function getModeWeights() {
+        if (currentMode === "alert") return { p:1.2, e:1.4, u:1.2, a:1.3, soc:1.3, alarm:1.7, fake:2.0, syntaxMult:1.0, gratisContextual:1.0 };
+        if (currentMode === "balanced") return { p:0.8, e:1.3, u:0.9, a:1.2, soc:1.0, alarm:1.6, fake:1.9, syntaxMult:0.7, gratisContextual:0.6 };
+        return { p:0.5, e:1.2, u:0.6, a:1.1, soc:0.7, alarm:1.5, fake:1.8, syntaxMult:0.4, gratisContextual:0.3 };
+    }
+    function gratisFactor(text) {
+        if (currentMode !== "newsletter") return 1;
+        if (/\b(guía|recurso|prompts|libro|curso|aprender|tutorial|gratuito|regalo)\b/i.test(text)) return 0.3;
+        return 0.6;
+    }
+    function buildRegexUnicode(words) { let e=words.map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')); return new RegExp(`(?:^|\\s)(${e.join('|')})(?=\\s|$)`, 'gi'); }
+    const TERMS = {
+        p: ["amigo","tú","ti","tu","nosotros","gratis","te regalo","solo para ti","te mereces","juntos","friend","you","your","we","free","just for you"],
+        e: ["miedo","terror","pánico","amenaza","peligro","crisis","culpa","fracaso","perder","pérdida","demasiado tarde","sufrir","dolor","muerte","tragedia","milagro","fear","panic","danger","crisis","guilt","loss","too late","suffer","death"],
+        u: ["ahora","ya","hoy","urgente","sin demora","no esperes","expira","vence","solo hoy","últimas plazas","quedan pocos","casi agotado","oferta","aprovecha","hoy mismo","now","today","urgent","don't wait","expires","last chance","limited","hurry"],
+        a: ["expertos","especialistas","autoridad","científicos","estudios demuestran","universidad","avalado por","premio nobel","experts","authority","scientists","studies prove","university","endorsed by"],
+        soc: ["millones","todo el mundo","la mayoría","miles de personas","viral","tendencia","millions","everyone","trending","viral"],
+        alarm: ["apocalipsis","cataclismo","devastación","colapso","fin del mundo","extinción","desastre irreversible","apocalypse","cataclysm","collapse","end of the world","extinction"],
+        fake: ["cura milagrosa","fórmula secreta","ellos no quieren que sepas","verdad oculta","conspiración","élite mundial","miracle cure","secret formula","they don't want you to know","conspiracy"]
     };
-
-    function getTip(word, cat) {
-        return TIPS[word.toLowerCase()] || `Patrón de ${CAT_LABELS[cat]||cat} detectado. Evalúa críticamente.`;
-    }
-
-    function annotatedText(t) {
-        let seg = [];
-        for (let c of ['p','e','u','a','soc','alarm','fake']) {
-            let rx = buildRegex(TERMS[c]), m;
-            while ((m = rx.exec(t))) seg.push({start:m.index, end:m.index+m[0].length, word:m[0], cat:c});
-        }
-        seg.sort((a,b) => a.start - b.start);
-        let h = "", last = 0;
-        for (let s of seg) {
-            if (s.start < last) continue;
-            h += escapeHtml(t.slice(last, s.start));
-            const col = CAT_COLORS[s.cat]||'#888';
-            const tip = getTip(s.word, s.cat);
-            h += `<span class="gancho gancho-${s.cat}" style="border-bottom-color:${col}">${escapeHtml(s.word)}<span class="tooltip"><strong style="color:${col}">${CAT_LABELS[s.cat]}</strong><br>${escapeHtml(tip)}</span></span>`;
-            last = s.end;
-        }
-        return h + escapeHtml(t.slice(last));
-    }
-
-    function buildHallazgos(t) {
-        let items = [], seen = new Set();
-        for (let c of ['p','e','u','a','soc','alarm','fake']) {
-            let rx = buildRegex(TERMS[c]), m;
-            while ((m = rx.exec(t))) {
-                const key = m[0].toLowerCase()+'_'+c;
-                if (seen.has(key)) continue;
-                seen.add(key);
-                items.push({palabra:m[0], tipo:c});
-            }
-        }
-        if (items.length === 0) return "<div style='color:#4f4f6b;padding:12px'>✅ Sin ganchos detectados. Texto con integridad alta.</div>";
-        return items.map(it => {
-            const col = CAT_COLORS[it.tipo]||'#888';
-            return `<div class="hall-item" style="border-left-color:${col}">
-                <div style="font-size:0.65rem;color:${col};text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${CAT_LABELS[it.tipo]}</div>
-                <div style="font-weight:bold;font-family:monospace">"${escapeHtml(it.palabra)}"</div>
-                <div style="font-size:0.78rem;color:#9a9ab8;margin-top:4px">→ ${escapeHtml(getTip(it.palabra,it.tipo))}</div>
-            </div>`;
-        }).join("");
-    }
-
+    function countMatches(text, key) { let m=text.match(buildRegexUnicode(TERMS[key])); return m?m.length:0; }
+    function syntacticPatterns(t) { let s=0; if(/([A-ZÁÉÍÓÚÜ]{4,})/.test(t)) s+=1.5; if(/!{2,}/.test(t)) s+=1.2; if(/\b(compra|haz|corre|actúa|comparte|suscríbete|llama|pulsa|no esperes)\b/i.test(t)) s+=1.0; if((t.match(/\?/g)||[]).length>2) s+=0.8; return s; }
+    function factualDensity(t) { let s=0; s+=(t.match(/\b\d{4}\b/g)||[]).length; s+=(t.match(/https?:\/\/[^\s]+/gi)||[]).length*2; s+=(t.match(/\b(según|estudio|investigación|datos|fuente:)\b/gi)||[]).length*1.5; s+=(t.match(/\b\d+(?:\.\d+)?\s*(%|euros|€|dólares|personas|casos)\b/gi)||[]).length; return Math.max(s,0.5); }
+    function computeEDI(t) { let w=t.toLowerCase().replace(/[^a-záéíóúüñ\s]/g,'').split(/\s+/).filter(w=>w.length>2); const stop=new Set(['que','para','con','sin','sobre','tras','ante','entre','aunque','porque','por','como','muy','solo']); w=w.filter(x=>!stop.has(x)); if(w.length<5) return {edi:'1.00', entropy:'0.00', interp:'Corto', delta:'0.0'}; let f={}; w.forEach(x=>f[x]=(f[x]||0)+1); let H=0; Object.values(f).forEach(c=>{let p=c/w.length; H-=p*Math.log2(p);}); let Hmax=Math.log2(w.length); let edi=Hmax>0?Math.min(1,H/Hmax):1; return {edi:edi.toFixed(2), entropy:H.toFixed(2), interp:edi>=0.85?'Alta densidad':(edi>=0.65?'Media':'Repetitivo'), delta:((1-edi)*10).toFixed(1)}; }
+    function getSemaphore(im) { if(im<=1.5) return {color:"#00cc66", action:"✅ Confiable"}; if(im<=3.2) return {color:"#ffcc00", action:"⚠️ Persuasión legítima"}; return {color:"#ff3e6c", action:"🚨 Alto riesgo"}; }
     function escapeHtml(s){ return s.replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
-    function getSemaphore(im){ if(im<=1.5) return {color:"#00cc66",action:"✅ Asepsia"}; if(im<=3.2) return {color:"#ffcc00",action:"⚠️ Persuasión activa"}; return {color:"#ff3e6c",action:"🚨 Alta manipulación"}; }
-    function performAudit(text){
-        let lower=text.toLowerCase(), D=computeFactualDensity(text);
-        let sP=countMatches(lower,'p')*WEIGHTS.p, sE=countMatches(lower,'e')*WEIGHTS.e, sU=countMatches(lower,'u')*WEIGHTS.u, sA=countMatches(lower,'a')*WEIGHTS.a, sSoc=countMatches(lower,'soc')*WEIGHTS.soc, sAlarm=countMatches(lower,'alarm')*WEIGHTS.alarm, sFake=countMatches(lower,'fake')*WEIGHTS.fake;
-        let IM=(sP+sE+sU+sA+sSoc+sAlarm+sFake)/(D+0.5);
-        let scale=Math.min(10,Math.round(IM*1.7*10)/10);
-        let {color,action}=getSemaphore(IM);
-        document.getElementById('valP').innerHTML=sP.toFixed(1); document.getElementById('valE').innerHTML=sE.toFixed(1); document.getElementById('valU').innerHTML=sU.toFixed(1); document.getElementById('valA').innerHTML=sA.toFixed(1); document.getElementById('valSoc').innerHTML=sSoc.toFixed(1); document.getElementById('valAlarm').innerHTML=sAlarm.toFixed(1); document.getElementById('valFake').innerHTML=sFake.toFixed(1); document.getElementById('valD').innerHTML=D;
-        document.getElementById('imIndex').innerHTML=IM.toFixed(2); document.getElementById('costoAtencion').innerHTML=((countMatches(lower,'p')+countMatches(lower,'e')+countMatches(lower,'u')+countMatches(lower,'a')+countMatches(lower,'soc')+countMatches(lower,'alarm')+countMatches(lower,'fake'))*22/60).toFixed(1)+" min";
-        document.getElementById('semaphoreLight').style.backgroundColor=color; document.getElementById('scaleNumber').innerHTML=scale+"/10"; document.getElementById('actionSuggestion').innerHTML=action;
-        let summary= IM<=1.5?"Confiable": IM<=3.2?"Persuasión legítima":"Alto riesgo";
-        document.getElementById('executiveSummary').innerHTML=summary;
-        document.getElementById('cleanText').innerHTML=annotatedText(text);
-        document.getElementById('hallazgosDiv').innerHTML=buildHallazgos(text);
-        document.getElementById('resultsArea').style.display='block';
-        window.lastText=text;
-    }
-    function buildReport() {
-        const im = document.getElementById('imIndex')?.innerText || '—';
-        const scale = document.getElementById('scaleNumber')?.innerText || '—';
-        const action = document.getElementById('actionSuggestion')?.innerText || '—';
-        const p = document.getElementById('valP')?.innerText || '—';
-        const e = document.getElementById('valE')?.innerText || '—';
-        const u = document.getElementById('valU')?.innerText || '—';
-        const a = document.getElementById('valA')?.innerText || '—';
-        const soc = document.getElementById('valSoc')?.innerText || '—';
-        const alarm = document.getElementById('valAlarm')?.innerText || '—';
-        const fake = document.getElementById('valFake')?.innerText || '—';
-        const d = document.getElementById('valD')?.innerText || '—';
-        const costo = document.getElementById('costoAtencion')?.innerText || '—';
-        const summary = document.getElementById('executiveSummary')?.innerText || '—';
-        const hallazgosEl = document.getElementById('hallazgosDiv');
-        const hallazgosText = hallazgosEl ? hallazgosEl.innerText : '—';
-        return `ARGIRA SHIELD v5.5 - INFORME
-Fecha: ${new Date().toLocaleString()}
-Escala 0-10: ${scale}
-Veredicto: ${action}
-IM: ${im}
-P:${p} E:${e} U:${u} A:${a} Soc:${soc} Alarm:${alarm} Fake:${fake} D:${d}
-Costo: ${costo}
-Resumen: ${summary}
+    function annotatedText(t){ let seg=[]; for(let c of ['p','e','u','a','soc','alarm','fake']){ let rx=buildRegexUnicode(TERMS[c]); let m; while((m=rx.exec(t))) seg.push({start:m.index, end:m.index+m[0].length, word:m[0], cat:c}); } seg.sort((a,b)=>a.start-b.start); let html="", last=0; for(let s of seg){ if(s.start<last) continue; html+=escapeHtml(t.slice(last,s.start)); let col={p:'#c084fc',e:'#ff6b8b',u:'#f97316',a:'#3b82f6',soc:'#06b6d4',alarm:'#ef4444',fake:'#a855f7'}[s.cat]; html+=`<span class="gancho" style="border-bottom-color:${col};">${escapeHtml(s.word)}</span>`; last=s.end; } html+=escapeHtml(t.slice(last)); return html; }
+    function buildHallazgos(t){ let items=new Set(); for(let c of ['p','e','u','a','soc','alarm','fake']){ let rx=buildRegexUnicode(TERMS[c]); let m; while((m=rx.exec(t))) items.add(JSON.stringify({palabra:m[0], tipo:c})); } if(items.size===0) return "<div>✅ Sin ganchos relevantes.</div>"; return Array.from(items).map(item=>{ let {palabra,tipo}=JSON.parse(item); let col={p:'#c084fc',e:'#ff6b8b',u:'#f97316',a:'#3b82f6',soc:'#06b6d4',alarm:'#ef4444',fake:'#a855f7'}[tipo]; return `<div class="hall-item" style="border-left-color:${col}"><b>${tipo}</b>: "${escapeHtml(palabra)}"</div>`; }).join(''); }
+    function drawRadar(values, labels) { let canvas=document.getElementById('radarCanvas'); if(!canvas) return; let ctx=canvas.getContext('2d'); let w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); let cx=w/2, cy=h/2, r=Math.min(w,h)/2.5; let angles=labels.map((_,i)=>(i*2*Math.PI/labels.length)-Math.PI/2); ctx.strokeStyle='#aaa'; ctx.fillStyle='#ccc'; ctx.font='10px sans-serif'; angles.forEach((ang,i)=>{ let x=cx+r*Math.cos(ang), y=cy+r*Math.sin(ang); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke(); ctx.fillText(labels[i], x-8, y-4); }); ctx.beginPath(); let first=true; values.forEach((v,i)=>{ let norm=Math.min(1,v/10); let x=cx+r*norm*Math.cos(angles[i]), y=cy+r*norm*Math.sin(angles[i]); if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }); ctx.closePath(); ctx.fillStyle='rgba(0,247,176,0.3)'; ctx.fill(); ctx.strokeStyle='#00f7b0'; ctx.stroke(); }
+    function saveToHistory(text, im, summary){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); h.unshift({text:text.slice(0,80), im, summary, date:new Date().toISOString()}); if(h.length>5) h.pop(); localStorage.setItem('argira_history',JSON.stringify(h)); }
+    function renderHistory(){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); let container=document.getElementById('historyList'); if(!container) return; container.innerHTML = h.map(hh=>`<div class="history-item" data-text="${escapeHtml(hh.text)}"><strong>${hh.summary}</strong> (IM ${hh.im})<br><small>${new Date(hh.date).toLocaleString()}</small><br>${escapeHtml(hh.text)}</div>`).join(''); document.querySelectorAll('.history-item').forEach(el=>{ el.addEventListener('click',()=>{ document.getElementById('inputText').value=el.getAttribute('data-text'); alert('Texto cargado. Pulsa Auditar.'); }); }); }
 
-HALLAZGOS:
-${hallazgosText}
-
-Texto analizado:
-
-${window.lastText||''}`;
-    }
-    async function exportTxt(){ if(window.lastText){ let blob=new Blob([buildReport()],{type:"text/plain"}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`argira_${Date.now()}.txt`; a.click(); } }
-    async function exportPdf(){ if(window.lastText){ let {jsPDF}=window.jspdf; let doc=new jsPDF(); let report=buildReport(); let splitLines=doc.splitTextToSize(report,170); let y=20; splitLines.forEach(l=>{ if(y>270){doc.addPage();y=20;} doc.setFontSize(9); doc.text(l,20,y); y+=6; }); doc.save(`argira_${Date.now()}.pdf`); } }
-    // ----------------------- AUDIO MEJORADO (con prueba de permiso) -----------------------
-    let recognition=null, isRecording=false, finalTranscript="";
-    const modal=document.getElementById('audioModal'), audioStatus=document.getElementById('audioStatus');
-    const startBtn=document.getElementById('startRecordBtn'), stopBtn=document.getElementById('stopRecordBtn');
-    async function requestMicAndNotify() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            stream.getTracks().forEach(t=>t.stop());
-            audioStatus.innerText = "✅ Permiso de micrófono concedido. Puedes iniciar grabación.";
-            return true;
-        } catch(err) {
-            audioStatus.innerText = `❌ Error: ${err.message}. Concede permiso manual: haz clic en el candado 🔒 de la barra de direcciones y permite el micrófono.`;
-            return false;
+    function performAudit(text) {
+        const weights = getModeWeights();
+        let gf = gratisFactor(text);
+        let syntax = syntacticPatterns(text) * weights.syntaxMult;
+        let lower = text.toLowerCase();
+        let D = factualDensity(text);
+        let rawP = countMatches(lower,'p') * weights.p;
+        if (currentMode === 'newsletter' && /\bgratis\b/i.test(text)) rawP *= gf;
+        let rawE = countMatches(lower,'e') * weights.e;
+        let rawU = countMatches(lower,'u') * weights.u;
+        let rawA = countMatches(lower,'a') * weights.a;
+        let rawSoc = countMatches(lower,'soc') * weights.soc;
+        let rawAlarm = countMatches(lower,'alarm') * weights.alarm;
+        let rawFake = countMatches(lower,'fake') * weights.fake;
+        let total = rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake + syntax;
+        let wordCount = text.split(/\s+/).length;
+        let im = total / (Math.log10(Math.max(1, wordCount)) + D);
+        let scale = Math.min(10, Math.round(im * 1.5 * 10)/10);
+        let {color, action} = getSemaphore(im);
+        let summary = im<=1.5?"✅ Confiable":(im<=3.2?"⚠️ Persuasión legítima":"🚨 Alto riesgo");
+        document.getElementById('bigSemaphore').style.backgroundColor = color;
+        document.getElementById('bigScale').innerHTML = scale + "/10";
+        document.getElementById('bigAction').innerHTML = action;
+        document.getElementById('imValue').innerHTML = im.toFixed(2);
+        document.getElementById('costoValue').innerHTML = ((total)*12/60).toFixed(1)+" min";
+        document.getElementById('summaryValue').innerHTML = summary;
+        let modeName = currentMode==='alert'?'⚠️ Alerta':(currentMode==='balanced'?'⚖️ Equilibrado':'🌿 Newsletter');
+        document.getElementById('modeIndicator').innerHTML = `Modo: ${modeName}`;
+        document.getElementById('valP').innerHTML = rawP.toFixed(1);
+        document.getElementById('valE').innerHTML = rawE.toFixed(1);
+        document.getElementById('valU').innerHTML = rawU.toFixed(1);
+        document.getElementById('valA').innerHTML = rawA.toFixed(1);
+        document.getElementById('valSoc').innerHTML = rawSoc.toFixed(1);
+        document.getElementById('valAlarm').innerHTML = rawAlarm.toFixed(1);
+        document.getElementById('valFake').innerHTML = rawFake.toFixed(1);
+        document.getElementById('valD').innerHTML = D.toFixed(1);
+        const edi = computeEDI(text);
+        document.getElementById('valEDI').innerHTML = edi.edi;
+        if (!simpleMode) {
+            document.getElementById('expertDetails').style.display = 'block';
+            document.getElementById('cleanText').innerHTML = annotatedText(text);
+            document.getElementById('hallazgosDiv').innerHTML = buildHallazgos(text);
+            let radarVals = [Math.min(10,rawP), Math.min(10,rawE), Math.min(10,rawU), Math.min(10,rawA), Math.min(10,rawSoc), Math.min(10,rawAlarm), Math.min(10,rawFake)];
+            drawRadar(radarVals, ['P','E','U','A','S','L','F']);
+            document.getElementById('rewriteBox').innerHTML = `✍️ ${(im>3.2 && currentMode!=='newsletter')?"Reescribir eliminando presión artificial": "✅ El texto parece legítimo. No se requiere reescritura."}`;
+        } else {
+            document.getElementById('expertDetails').style.display = 'none';
         }
+        document.getElementById('veredictoContainer').style.display = 'block';
+        window.lastText = text;
+        saveToHistory(text, im.toFixed(2), summary);
+        renderHistory();
     }
-    async function startRecording() {
-        const ok = await requestMicAndNotify();
-        if (!ok) return;
-        if (recognition) try{recognition.abort();}catch(e){}
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(!SR){ audioStatus.innerText="❌ Navegador no compatible"; return; }
-        recognition = new SR();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.lang = 'es-ES';
-        finalTranscript = "";
-        recognition.onresult = (e) => {
-            let final="";
-            for(let i=0; i<e.results.length; i++) if(e.results[i].isFinal) final+=e.results[i][0].transcript;
-            if(final) finalTranscript = final;
-            audioStatus.innerText = `🎙️ Grabando...\n${finalTranscript || "..."}`;
-        };
-        recognition.onerror = (e) => { audioStatus.innerText = `❌ Error: ${e.error}`; stopRecording(); };
-        recognition.onend = () => { if(isRecording) stopRecording(); };
-        recognition.start();
-        isRecording = true;
-        startBtn.disabled = true; stopBtn.disabled = false;
-    }
-    function stopRecording() {
-        if(recognition && isRecording) recognition.stop();
-        isRecording = false;
-        startBtn.disabled = false; stopBtn.disabled = true;
-        if(finalTranscript) {
-            audioStatus.innerText = `✅ Transcripción: "${finalTranscript}"`;
-            document.getElementById('inputText').value = finalTranscript;
-        } else audioStatus.innerText = "⏹️ Sin texto capturado.";
-        setTimeout(()=>{ if(modal.style.display==='flex') modal.style.display='none'; }, 1500);
-    }
-    document.getElementById('testMicBtn').onclick = async () => { await requestMicAndNotify(); alert("Comprueba el mensaje de estado."); };
-    document.getElementById('audioBtn').onclick = () => { modal.style.display='flex'; audioStatus.innerText="Haz clic en 'Iniciar' (antes prueba el botón 'Probar micrófono')."; finalTranscript=""; };
-    startBtn.onclick = startRecording;
-    stopBtn.onclick = stopRecording;
-    document.getElementById('closeModalBtn').onclick = () => { if(isRecording) stopRecording(); modal.style.display='none'; };
-    window.onclick = (e) => { if(e.target===modal) { if(isRecording) stopRecording(); modal.style.display='none'; } };
-    // Botones principales
-    let vetoInterv=null;
-    document.getElementById('auditBtn').onclick = () => {
-        let txt=document.getElementById('inputText').value;
-        if(!txt.trim()){ alert("Inserta texto o graba audio."); return; }
-        let btn=document.getElementById('auditBtn'), ov=document.getElementById('vetoOverlay');
-        document.getElementById('resultsArea').style.display='none';
-        btn.disabled=true; ov.style.display='block';
-        let t=5, el=document.getElementById('vetoTimer');
-        if(vetoInterv) clearInterval(vetoInterv);
-        vetoInterv=setInterval(()=>{ t--; el.innerText=`🧠 ${t}s`; if(t<=0){ clearInterval(vetoInterv); ov.style.display='none'; btn.disabled=false; performAudit(txt); } },1000);
-    };
-    document.getElementById('exportTxtBtn').onclick=exportTxt;
-    document.getElementById('exportPdfBtn').onclick=exportPdf;
-    document.getElementById('loadExampleTech').onclick=()=>document.getElementById('inputText').value="Hola, ofrezco prompts gratis. Mi libro #1 en Amazon. Compra hoy.";
-    document.getElementById('loadExampleAlarm').onclick=()=>document.getElementById('inputText').value="¡URGENTE! El gobierno oculta la cura. Comparte ahora o morirán.";
-    document.getElementById('loadExampleEng').onclick=()=>document.getElementById('inputText').value="URGENT: They hide the truth. Share NOW!";
-    // Crear overlay si no existe
-    if(!document.getElementById('vetoOverlay')){
-        let div=document.createElement('div'); div.id='vetoOverlay'; div.className='veto-layer'; div.innerHTML='<div class="timer-big" id="vetoTimer">🧠 5s</div><p>Activando Sistema 2...</p>'; document.body.appendChild(div);
-    }
-})();
+
+    function buildFullReport() { let t=window.lastText||""; return `ARGIRA v5.17\nModo: ${currentMode}\nIM: ${document.getElementById('imValue').innerText}\nResumen: ${document.getElementById('summaryValue').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
+    function exportTxt() { if(!window.lastText) {alert("Audita algo primero");return;} const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buildFullReport()],{type:'text/plain'})); a.download=`argira_${Date.now()}.txt`; a.click(); }
+    function exportPdf() { if(typeof window.jspdf==='undefined'){alert("Cargando jsPDF...");return;} const {jsPDF}=window.jspdf; const doc=new jsPDF(); doc.text(buildFullReport(),10,10); doc.save(`argira_${Date.now()}.pdf`); }
+    function shareResult() { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('summaryValue').innerText} (IM ${document.getElementById('imValue').innerText})`); alert("Resultado copiado."); }
+
+    // Eventos DOM
+    document.getElementById('exportTxtBtn').onclick = exportTxt;
+    document.getElementById('exportPdfBtn').onclick = exportPdf;
+    document.getElementById('shareBtn').onclick = shareResult;
+    document.getElementById('simpleViewBtn').onclick = () => { simpleMode=true; document.getElementById('simpleViewBtn').classList.add('active'); document.getElementById('expertViewBtn').classList.remove('active'); if(window.lastText) performAudit(window.lastText); };
+    document.getElementById('expertViewBtn').onclick = () => { simpleMode=false; document.getElementById('expertViewBtn').classList.add('active'); document.getElementById('simpleViewBtn').classList.remove('active'); if(window.lastText) performAudit(window.lastText); };
+    document.getElementById('helpBtn').onclick = () => document.getElementById('helpModal').style.display='flex';
+    document.getElementById('closeHelpBtn').onclick = () => document.getElementById('helpModal').style.display='none';
+    document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',(e)=>{ currentMode=e.target.value; let badge=document.getElementById('modeBadge'); if(currentMode==='alert') badge.innerHTML='⚠️ Alerta'; else if(currentMode==='balanced') badge.innerHTML='⚖️ Equilibrado'; else badge.innerHTML='🌿 Newsletter'; if(window.lastText) performAudit(window.lastText); }));
+    document.getElementById('loadExampleTech').onclick = () => document.getElementById('inputText').value = "Hola! Soy autor de un libro de IA. Te regalo 1000 prompts gratis. Aprende IA hoy mismo. Sin spam.";
+    document.getElementById('loadExampleAlarm').onclick = () => document.getElementById('inputText').value = "¡URGENTE! El gobierno esconde la cura. Comparte ahora o morirán.";
+    document.getElementById('loadExampleEng').onclick = () => document.getElementById('inputText').value = "URGENT: Miracle cure! They don't want you to know. Buy now!";
+    let vetoInterval=null;
+    document.getElementById('auditBtn').onclick = () => { let txt=document.getElementById('inputText').value; if(!txt.trim()){ alert("Inserta texto"); return; } let overlay=document.getElementById('vetoOverlay'); if(!overlay){ overlay=document.createElement('div'); overlay.id='vetoOverlay'; overlay.className='veto-layer'; overlay.innerHTML='<div class="timer-big" id="vetoTimer">🧠 5s</div><p>Analizando...</p>'; document.body.appendChild(overlay); } overlay.style.display='block'; let t=5; if(vetoInterval) clearInterval(vetoInterval); vetoInterval=setInterval(()=>{ t--; let ts=document.getElementById('vetoTimer'); if(ts) ts.innerText=`🧠 ${t}s`; if(t<=0){ clearInterval(vetoInterval); overlay.style.display='none'; performAudit(txt); } },1000); };
+    document.getElementById('compareBtn').onclick = () => { if(!document.getElementById('inputText').value.trim()){ alert("Primero pega un texto."); return; } document.getElementById('comparatorModal').style.display='flex'; };
+    document.getElementById('doCompareBtn').onclick = () => { let t1=document.getElementById('inputText').value; let t2=document.getElementById('compareText').value; if(!t2.trim()){ alert("Pega segundo texto"); return; } let weights = getModeWeights(); let calcIM = (t)=>{ let lower=t.toLowerCase(); let D=factualDensity(t); let rawP=countMatches(lower,'p')*weights.p; let rawE=countMatches(lower,'e')*weights.e; let rawU=countMatches(lower,'u')*weights.u; let rawA=countMatches(lower,'a')*weights.a; let rawSoc=countMatches(lower,'soc')*weights.soc; let rawAlarm=countMatches(lower,'alarm')*weights.alarm; let rawFake=countMatches(lower,'fake')*weights.fake; let total=rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake+syntacticPatterns(t)*weights.syntaxMult; let wordCount=t.split(/\s+/).length; return total/(Math.log10(Math.max(1,wordCount))+D); }; let im1=calcIM(t1); let im2=calcIM(t2); let sum1=im1<=1.5?"Confiable":(im1<=3.2?"Persuasión legítima":"Alto riesgo"); let sum2=im2<=1.5?"Confiable":(im2<=3.2?"Persuasión legítima":"Alto riesgo"); alert(`Comparación:\nTexto1: ${sum1} (IM ${im1.toFixed(2)})\nTexto2: ${sum2} (IM ${im2.toFixed(2)})\nDiferencia: ${Math.abs(im1-im2).toFixed(2)}`); document.getElementById('comparatorModal').style.display='none'; };
+    document.getElementById('closeCompareBtn').onclick = () => document.getElementById('comparatorModal').style.display='none';
+    // Audio
+    let recognition, isRecording=false, finalTranscript="";
+    const modalAudio = document.getElementById('audioModal');
+    const audioStatus = document.getElementById('audioStatus');
+    const startRec = document.getElementById('startRecordBtn');
+    const stopRec = document.getElementById('stopRecordBtn');
+    async function requestMic(){ try{ await navigator.mediaDevices.getUserMedia({audio:true}); audioStatus.innerText="Permiso OK"; return true; } catch(e){ audioStatus.innerText="Error permiso"; return false; } }
+    function startRecording(){ if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){ audioStatus.innerText="No compatible"; return; } requestMic().then(ok=>{ if(!ok) return; const SR=window.SpeechRecognition||window.webkitSpeechRecognition; recognition=new SR(); recognition.continuous=false; recognition.interimResults=true; recognition.lang='es-ES'; finalTranscript=""; recognition.onresult=e=>{ let final=""; for(let i=0;i<e.results.length;i++) if(e.results[i].isFinal) final+=e.results[i][0].transcript; if(final) finalTranscript=final; audioStatus.innerText=`🎙️: ${finalTranscript}`; }; recognition.onerror=()=>{ stopRecording(); }; recognition.onend=()=>{ if(isRecording) stopRecording(); }; recognition.start(); isRecording=true; startRec.disabled=true; stopRec.disabled=false; }); }
+    function stopRecording(){ if(recognition&&isRecording) recognition.stop(); isRecording=false; startRec.disabled=false; stopRec.disabled=true; if(finalTranscript) document.getElementById('inputText').value=finalTranscript; setTimeout(()=>modalAudio.style.display='none',1000); }
+    document.getElementById('testMicBtn').onclick=requestMic;
+    document.getElementById('audioBtn').onclick=()=> modalAudio.style.display='flex';
+    if(startRec) startRec.onclick=startRecording;
+    if(stopRec) stopRec.onclick=stopRecording;
+    document.getElementById('closeModalBtn').onclick = ()=>{ if(isRecording) stopRecording(); modalAudio.style.display='none'; };
+    renderHistory();
 </script>
 </body>
 </html>
