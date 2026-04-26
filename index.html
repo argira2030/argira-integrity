@@ -14,7 +14,7 @@
             --text-main: #eaeaef; --text-dim: #b0b0cc; --border-dim: #2a2a40;
             --tooltip-bg: #1a1a2e;
         }
-        /* Argira Shield — siempre modo oscuro. Identidad visual fija. */
+        /* siempre modo  */
         .skip-link { position: absolute; top: -40px; left: 0; background: var(--accent); color: #000; padding: 8px; z-index: 100; text-decoration: none; border-radius: 0 0 8px 0; }
         .skip-link:focus { top: 0; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
@@ -26,47 +26,21 @@
         .header-shield { font-size: 2.2rem; display: block; margin-bottom: 4px; filter: drop-shadow(0 0 16px rgba(0,247,176,0.6)); }
         .header-sub { font-size: 0.85rem; color: var(--text-dim); letter-spacing: 1px; }
         
-        .example-bar { display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; }
-        .example-bar::-webkit-scrollbar { height: 3px; }
-        .example-bar::-webkit-scrollbar-thumb { background: var(--border-dim); border-radius: 4px; }
-        .action-bar { display: flex; gap: 8px; align-items: center; }
-        .mode-collapsible { margin: 10px 0 16px; border: 1px solid var(--border-dim); border-radius: 20px; overflow: hidden; }
-        .mode-summary { display: flex; align-items: center; padding: 10px 16px; cursor: pointer; list-style: none; background: var(--card-bg); border-radius: 20px; }
-        .mode-summary::-webkit-details-marker { display: none; }
-        .mode-summary::after { content: '▾'; margin-left: auto; color: var(--text-dim); font-size: 0.8rem; }
-        details[open] .mode-summary { border-radius: 20px 20px 0 0; }
-        details[open] .mode-summary::after { content: '▴'; }
-        .mode-selector { border-top: 1px solid var(--border-dim); padding: 16px; background: var(--card-bg); border-radius: 0 0 20px 20px; }
-        .mode-options { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
-        .mode-option { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; background: var(--surface); padding: 6px 14px; border-radius: 60px; transition: 0.1s; text-align: center; }
-        .mode-option.selected { background: var(--accent); color: #000; }
-        .mode-option input { margin-bottom: 2px; }
-        .mode-desc { font-size: 0.65rem; color: var(--text-dim); max-width: 120px; line-height: 1.2; }
-        .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.75rem; font-weight: bold; background: #2a5a2a; color: white; white-space: nowrap; }
-        
-        .compact-semaphore { display: flex; align-items: center; gap: 12px; background: var(--surface); padding: 6px 16px; border-radius: 60px; margin-left: auto; }
-        .compact-light { width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
-        .compact-scale { font-weight: bold; font-size: 1.2rem; }
-        .compact-action { font-weight: bold; font-size: 0.9rem; }
-
-        .view-selector { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: 20px; }
-        .view-buttons { display: flex; gap: 8px; }
-        .view-help { font-size: 0.65rem; color: var(--text-dim); max-width: 280px; text-align: right; }
-        .view-btn { background: transparent; border: 1px solid var(--border-dim); border-radius: 30px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
-        .view-btn.active { background: var(--accent); color: #000; }
-        
-        .main-box { background: var(--surface); border-radius: 32px; padding: 20px; border: 1px solid var(--border-dim); margin-bottom: 20px; }
-        textarea { width: 100%; height: 140px; background: #02020e; border-radius: 20px; padding: 14px; font-family: monospace; border: 2px solid rgba(0,247,176,0.5); color: #e0f5ef; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
-        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,247,176,0.15); }
-        textarea::placeholder { color: rgba(255,255,255,0.55); }
+        .sem-compact { display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:40px; padding:8px 16px; margin:10px 0; border:1px solid var(--border-dim); min-height:42px; }
+        .sem-dot { width:18px; height:18px; border-radius:50%; background:#333; flex-shrink:0; transition:background 0.3s, box-shadow 0.3s; }
+        .sem-score { font-size:1.1rem; font-weight:800; min-width:40px; }
+        .sem-label { font-size:0.8rem; font-weight:600; flex:1; }
+        .sem-im { font-size:0.65rem; color:var(--text-dim); white-space:nowrap; }
         .mode-quick { display: flex; gap: 8px; margin-bottom: 12px; }
         .mode-quick-btn { flex: 1; padding: 8px 6px; border-radius: 40px; font-size: 0.78rem; font-weight: 700; background: var(--card-bg); border: 1px solid var(--border-dim); color: var(--text-dim); cursor: pointer; transition: all 0.15s; text-align: center; }
         .mode-quick-btn:hover { border-color: var(--accent); color: var(--accent); }
         .mode-quick-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
         .mode-quick-desc { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 10px; padding: 0 4px; min-height: 18px; }
+        .main-box { background: var(--surface); border-radius: 32px; padding: 20px; border: 1px solid var(--border-dim); margin-bottom: 20px; }
+        textarea { width: 100%; height: 140px; background: #02020e; border-radius: 20px; padding: 14px; font-family: monospace; border: 2px solid rgba(0,247,176,0.5); color: #e0f5ef; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,247,176,0.15); }
+        textarea::placeholder { color: rgba(255,255,255,0.55); }
         .button-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 12px; }
-        .example-bar { display: flex; gap: 8px; flex-wrap: wrap; }
-        .action-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         button { background: linear-gradient(95deg, #1a2a2a, #0a1a1a); border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; padding: 8px 14px; font-weight: 600; cursor: pointer; font-size: 0.8rem; transition: 0.1s; }
         button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         button:hover { background: var(--accent); color: #000; }
@@ -107,9 +81,11 @@
         .modal-content { background: var(--surface); border-radius: 32px; padding: 20px; max-width: 550px; width: 90%; max-height: 80vh; overflow: auto; border: 1px solid var(--accent); }
         .veto-layer { display: none; position: fixed; top:50%; left:50%; transform: translate(-50%,-50%); background: #000c; backdrop-filter: blur(12px); border-radius: 40px; padding: 30px; text-align: center; z-index: 1000; width: 260px; border: 2px solid var(--danger); }
         .timer-big { font-size: 2.5rem; font-family: monospace; color: var(--danger); }
-        .btn-example-custom { background: #2a2a44; border-color: var(--text-dim); color: #ddddff; padding: 4px 10px; font-size: 0.7rem; }
         .rewrite-suggestion { background: #0a2a1f; border-radius: 24px; padding: 12px; margin: 16px 0; color: #c0ffc0; }
         .gancho { display: inline; background: rgba(0,247,176,0.15); border-bottom: 1px dashed var(--accent); padding: 0 2px; border-radius: 6px; font-family: monospace; }
+        .view-btn { background: transparent; border: 1px solid var(--border-dim); border-radius: 30px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
+        .view-btn.active { background: var(--accent); color: #000; }
+        .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.75rem; font-weight: bold; background: #2a5a2a; color: white; white-space: nowrap; }
         #liveRegion { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
         .text-center { text-align: center; }
     </style>
@@ -124,7 +100,6 @@
             <div class="header-sub">Kahneman · Cialdini · Shannon</div>
         </div>
         <div class="main-box">
-            <!-- MODOS ARRIBA DE LA CAJA — acceso directo -->
             <div class="mode-quick" role="group" aria-label="Seleccionar modo de análisis">
                 <button class="mode-quick-btn" data-mode="alert">⚠️ Alerta</button>
                 <button class="mode-quick-btn active" data-mode="balanced">⚖️ Equilibrado</button>
@@ -132,19 +107,23 @@
             </div>
             <div id="modeQuickDesc" class="mode-quick-desc">⚖️ Equilibrado — Estándar. Para correos comerciales, publicidad y noticias.</div>
 
-            <!-- CAJA DE TEXTO -->
+            <div class="sem-compact" id="semCompact" aria-live="polite">
+                <div class="sem-dot" id="semDot"></div>
+                <div class="sem-score" id="semScore">—</div>
+                <div class="sem-label" id="semLabel">Pega un texto y pulsa AUDITAR</div>
+                <div class="sem-im" id="semIM"></div>
+            </div>
+
             <textarea id="inputText" placeholder="✍️ Pega aquí un email, noticia, bulo o cualquier texto...
 
 El Shield analizará si contiene manipulación emocional, urgencia artificial, autoridad falsa o desinformación — y te explicará por qué, término a término, con base en Kahneman, Cialdini y Shannon." aria-label="Área de texto para pegar el contenido a analizar"></textarea>
 
-            <!-- VISTA + AUDITAR -->
             <div style="display:flex; gap:8px; margin-top:12px; align-items:center;">
                 <button id="simpleViewBtn" class="view-btn active">👁️ Simple</button>
                 <button id="expertViewBtn" class="view-btn">🔬 Experta</button>
                 <button id="auditBtn" class="btn-primary" style="flex:1; margin-left:4px;">🔬 AUDITAR</button>
             </div>
 
-            <!-- SECUNDARIO COLAPSADO -->
             <details style="margin-top:10px;">
                 <summary style="font-size:0.72rem; color:var(--text-dim); cursor:pointer; list-style:none; padding:6px 4px;">
                     ▾ Ejemplos · Audio · Más opciones
@@ -165,30 +144,16 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             </details>
         </div>
 
-        <!-- VISTA/AYUDA badge -->
         <div style="margin: 8px 0 16px; display:flex; align-items:center; gap:10px;">
             <span id="modeBadge" class="mode-badge" aria-live="polite">⚖️ Equilibrado</span>
             <button id="helpBtn" class="view-btn">❓ Ayuda</button>
         </div>
 
         <div id="resultsArea" style="display: none;">
-            <div class="veredicto-card">
-                <div class="veredicto-flex">
-                    <div class="semaphore-light-big" id="bigSemaphore" aria-hidden="true"></div>
-                    <span id="semaphoreText" class="sr-only">Veredicto: pendiente</span>
-                    <div class="scale-big" id="bigScale">0/10</div>
-                    <div class="action-big" id="bigAction">—</div>
-                </div>
-                <div class="im-mini">
-                    📊 IM: <span id="imIndex">0.00</span> · 
-                    ⚡ Energía: <span id="energyRange">—</span> · 
-                    📉 ΔIC (Inercia): <span id="deltaIC">—</span>/10 <span class="tooltip-costo" title="ΔIC mide la inercia estructural (ruido de guion): proporción de palabras de relleno sobre total de tokens. 0=limpio, 10=máximo relleno.">(ⓘ)</span>
-                </div>
-                <div id="modeIndicator" style="font-size:0.7rem; margin-top:8px;" aria-live="polite"></div>
-                <div class="text-center" style="margin-top: 16px;">
-                    <button id="speakBtn" class="speak-btn-large">🔊 Leer resultado en voz alta</button>
-                </div>
-            </div>
+            <span id="semaphoreText" class="sr-only" aria-live="polite">Veredicto: pendiente</span>
+            <div id="bigSemaphore" style="display:none"></div>
+            <div id="bigScale" style="display:none">0/10</div>
+            <div id="bigAction" style="display:none">—</div>
 
             <div class="metrics-mini" id="miniMetrics">
                 <div class="metric-mini" tabindex="0"><strong>🎯P</strong> <span class="explain">(simpatía)</span> <span id="valP">0</span><div class="tooltip-science">Personalización: "tú, gratis, nosotros", además nombres personales repetidos. Principio de simpatía y reciprocidad (Cialdini).</div></div>
@@ -200,6 +165,16 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 <div class="metric-mini" tabindex="0"><strong>🔮F</strong> <span class="explain">(conspiración)</span> <span id="valFake">0</span><div class="tooltip-science">Fabricación: "cura oculta, conspiración". Narrativas infalsificables.</div></div>
                 <div class="metric-mini" tabindex="0"><strong>📊D</strong> <span class="explain">(datos)</span> <span id="valD">—</span><div class="tooltip-science">Densidad factual: números, fechas, enlaces, fuentes.</div></div>
                 <div class="metric-mini" tabindex="0"><strong>📡EDI</strong> <span class="explain">(Shannon)</span> <span id="valEDI">—</span><div class="tooltip-science">Entropía: diversidad del vocabulario. Alto = texto rico.</div></div>
+            </div>
+            <div class="im-mini" style="margin-top:8px;">
+                📊 IM: <span id="imIndex">0.00</span> ·
+                ⚡ <span id="energyRange">—</span> ·
+                📉 ΔIC: <span id="deltaIC">—</span>/10
+                <span class="tooltip-costo" title="ΔIC = proporción de relleno sobre tokens totales. 0=limpio, 10=máximo ruido estructural.">(ⓘ)</span>
+            </div>
+            <div id="modeIndicator" style="font-size:0.7rem; margin-top:6px; color:var(--text-dim);" aria-live="polite"></div>
+            <div style="text-align:center; margin-top:12px;">
+                <button id="speakBtn" class="speak-btn-large">🔊 Leer resultado en voz alta</button>
             </div>
 
             <div id="expertDetails" style="display: none;">
@@ -245,39 +220,38 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             <p><strong>Nota Metodológica:</strong> Argira Shield v6.2 utiliza proyecciones estadísticas para el consumo energético (rango 0.2-0.5 mWh/token) basadas en arquitecturas Transformer. El ΔIC mide la inercia estructural del lenguaje (palabras de relleno sobre total de tokens). Auditoría externa disponible para revisión académica en Zenodo bajo el marco de Ética Digital.</p>
         </div>
 
-<!-- Caja de autoría y apoyo (Ko-fi + PayPal por correo) -->
-<div class="author-box" style="margin: 30px auto 20px auto; max-width: 550px; padding: 20px; background: var(--card-bg); border-radius: 32px; border: 1px solid var(--border-dim); text-align: center;">
-    <p style="margin-bottom: 10px; font-size: 0.9rem;">
-        🧠 <strong>José Ranero García</strong><br>
-        <a href="https://orcid.org/0009-0009-3168-6379" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">ORCID 0009-0009-3168-6379</a> · 
-        <a href="https://argira.eus" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">ARGIRA.eus</a>
-    </p>
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 15px 0;">
-        <a href="https://ko-fi.com/argira" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #ff5e5e; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-weight: bold; transition: 0.2s;">
-            ☕ Apóyame en Ko-fi
-        </a>
-        <a href="https://www.paypal.com/donate/?cmd=_donations&business=argira2030@gmail.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-weight: bold; transition: 0.2s;">
-            💙 Donar por PayPal
-        </a>
-    </div>
-    <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 8px;">
-        Herramienta de auditoría ética · Código abierto (MIT)
-    </p>
-</div>
+        <!-- Caja de autoría y apoyo (Ko-fi + PayPal por correo) -->
+        <div class="author-box" style="margin: 30px auto 20px auto; max-width: 550px; padding: 20px; background: var(--card-bg); border-radius: 32px; border: 1px solid var(--border-dim); text-align: center;">
+            <p style="margin-bottom: 10px; font-size: 0.9rem;">
+                🧠 <strong>José Ranero García</strong><br>
+                <a href="https://orcid.org/0009-0009-3168-6379" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">ORCID 0009-0009-3168-6379</a> · 
+                <a href="https://argira.eus" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">ARGIRA.eus</a>
+            </p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 15px 0;">
+                <a href="https://ko-fi.com/argira" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #ff5e5e; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-weight: bold; transition: 0.2s;">
+                    ☕ Apóyame en Ko-fi
+                </a>
+                <a href="https://www.paypal.com/donate/?cmd=_donations&business=argira2030@gmail.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-weight: bold; transition: 0.2s;">
+                    💙 Donar por PayPal
+                </a>
+            </div>
+            <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 8px;">
+                Herramienta de auditoría ética · Código abierto (MIT)
+            </p>
+        </div>
         <div class="footer">v6.2 · Auditoría forense completa · Basado en Kahneman, Cialdini, Shannon.</div>
     </div>
 
     <script>
-        // ========== CONFIGURACIÓN (versión estable v5.28 + energía y ΔIC) ==========
+        // ========== CONFIGURACIÓN ==========
         let currentMode = "balanced";
         let simpleMode = true;
-        let lastText = "";
+        window.lastText = "";
         let lastSummary = "";
         let lastIM = "";
         let lastScale = "";
         let lastAction = "";
 
-        // Palabras de relleno estructural (ruido de guion)
         const NOISE_PATTERN = /\b(bueno|decir|entonces|simplemente|realmente|quizás|un poco|tal vez|claro|entiendo|básicamente|obviamente|por supuesto|en realidad|digamos|supongo|evidentemente|claramente|ciertamente|absolutamente|prácticamente|virtualmente|bien|pues|em|eh|mmm)\b/gi;
 
         function getModeWeights() {
@@ -292,7 +266,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         }
 
         const TERMS_BASE = {
-            p: ["amigo","tú","ti","tu","nosotros","gratis","te regalo","solo para ti","te mereces","juntos","friend","you","your","we","free","just for you", "socio", "socia", "socios", "socias"],
+            p: ["amigo","tú","ti","tu","nosotros","gratis","te regalo","solo para ti","te mereces","juntos","friend","you","your","we","free","just for you","socio","socia","socios","socias"],
             e: ["miedo","terror","pánico","amenaza","peligro","crisis","culpa","fracaso","perder","pérdida","demasiado tarde","sufrir","dolor","muerte","tragedia","milagro","fear","panic","danger","crisis","guilt","loss","too late","suffer","death"],
             u: ["ahora","ya","hoy","urgente","sin demora","no esperes","expira","vence","solo hoy","últimas plazas","quedan pocos","casi agotado","oferta","aprovecha","hoy mismo","now","today","urgent","don't wait","expires","last chance","limited","hurry"],
             a: ["expertos","especialistas","especialista","médico","médicos","matrona","matronas","doctor","doctores","doctora","doctoras","director","directores","experta","expertas","científico","científicos","científica","científicas","investigador","investigadores","profesional","profesionales","autoridad","universidad","avalado por","premio nobel","experts","authority","scientists","university","endorsed by"],
@@ -345,7 +319,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         function getSemaphore(im) { if(im<=1.5) return {color:"#00cc66", action:"✅ Confiable"}; if(im<=3.2) return {color:"#ffcc00", action:"⚠️ Persuasión legítima"}; return {color:"#ff3e6c", action:"🚨 Alto riesgo"}; }
         function escapeHtml(s){ return s.replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
         function annotatedText(t){ let seg=[]; for(let c of ['p','e','u','a','soc','alarm','fake']){ let rx=buildRegexUnicode(TERMS_BASE[c]); let m; while((m=rx.exec(t))) seg.push({start:m.index, end:m.index+m[0].length, word:m[0], cat:c}); } seg.sort((a,b)=>a.start-b.start); let html="", last=0; for(let s of seg){ if(s.start<last) continue; html+=escapeHtml(t.slice(last,s.start)); let col={p:'#c084fc',e:'#ff6b8b',u:'#f97316',a:'#3b82f6',soc:'#06b6d4',alarm:'#ef4444',fake:'#a855f7'}[s.cat]; html+=`<span class="gancho" style="border-bottom-color:${col};">${escapeHtml(s.word)}</span>`; last=s.end; } html+=escapeHtml(t.slice(last)); return html; }
-        function drawRadar(values, labels) { let canvas=document.getElementById('radarCanvas'); if(!canvas) return; let ctx=canvas.getContext('2d'); let w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); let cx=w/2, cy=h/2, r=Math.min(w,h)/2.5; let angles=labels.map((_,i)=>(i*2*Math.PI/labels.length)-Math.PI/2); ctx.strokeStyle='#aaa'; ctx.fillStyle='#ccc'; ctx.font='10px sans-serif'; angles.forEach((ang,i)=>{ let x=cx+r*Math.cos(ang), y=cy+r*Math.sin(ang); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke(); ctx.fillText(labels[i], x-8, y-4); }); ctx.beginPath(); let first=true; values.forEach((v,i)=>{ let norm=Math.min(1,v/10); let x=cx+r*norm*Math.cos(angles[i]), y=cy+r*norm*Math.sin(angles[i]); if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }); ctx.closePath(); ctx.fillStyle='rgba(0,247,176,0.3)'; ctx.fill(); ctx.strokeStyle='#00f7b0'; ctx.stroke(); }
+        function drawRadar(values, labels) { let canvas=document.getElementById('radarCanvas'); canvas?.getContext('2d'); if(!canvas) return; let ctx=canvas.getContext('2d'); let w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); let cx=w/2, cy=h/2, r=Math.min(w,h)/2.5; let angles=labels.map((_,i)=>(i*2*Math.PI/labels.length)-Math.PI/2); ctx.strokeStyle='#aaa'; ctx.fillStyle='#ccc'; ctx.font='10px sans-serif'; angles.forEach((ang,i)=>{ let x=cx+r*Math.cos(ang), y=cy+r*Math.sin(ang); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke(); ctx.fillText(labels[i], x-8, y-4); }); ctx.beginPath(); let first=true; values.forEach((v,i)=>{ let norm=Math.min(1,v/10); let x=cx+r*norm*Math.cos(angles[i]), y=cy+r*norm*Math.sin(angles[i]); if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }); ctx.closePath(); ctx.fillStyle='rgba(0,247,176,0.3)'; ctx.fill(); ctx.strokeStyle='#00f7b0'; ctx.stroke(); }
         function saveToHistory(text, im, summary){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); h.unshift({text:text.slice(0,80), im, summary, date:new Date().toISOString()}); if(h.length>5) h.pop(); localStorage.setItem('argira_history',JSON.stringify(h)); }
         function renderHistory(){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); let container=document.getElementById('historyList'); if(!container) return; container.innerHTML = h.map(hh=>`<div class="history-item" data-text="${escapeHtml(hh.text)}"><strong>${hh.summary}</strong> (IM ${hh.im})<br><small>${new Date(hh.date).toLocaleString()}</small><br>${escapeHtml(hh.text)}</div>`).join(''); document.querySelectorAll('.history-item').forEach(el=>{ el.addEventListener('click',()=>{ document.getElementById('inputText').value=el.getAttribute('data-text'); alert('Texto cargado. Pulsa Auditar.'); }); }); }
 
@@ -402,13 +376,15 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
 
         function announceToScreenReader(message) { const liveRegion = document.getElementById('liveRegion'); if (liveRegion) { liveRegion.textContent = message; setTimeout(() => liveRegion.textContent = '', 3000); } }
 
-        function updateCompactSemaphore(color, scale, action) {
-            const compLight = document.getElementById('compactSemaphore');
-            const compScale = document.getElementById('compactScale');
-            const compAction = document.getElementById('compactAction');
-            if (compLight) compLight.style.backgroundColor = color;
-            if (compScale) compScale.innerHTML = scale + "/10";
-            if (compAction) compAction.innerHTML = action;
+        function updateCompactSemaphore(color, scale, action, im) {
+            const semDot = document.getElementById('semDot');
+            const semScore = document.getElementById('semScore');
+            const semLabel = document.getElementById('semLabel');
+            const semIM = document.getElementById('semIM');
+            if (semDot) { semDot.style.background = color; semDot.style.boxShadow = `0 0 8px ${color}`; }
+            if (semScore) { semScore.innerHTML = scale + '/10'; semScore.style.color = color; }
+            if (semLabel) semLabel.innerHTML = action;
+            if (semIM) semIM.innerHTML = 'IM ' + im.toFixed(2);
         }
 
         function performAudit(text) {
@@ -432,7 +408,6 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             let summary = im<=1.5?"✅ Confiable":(im<=3.2?"⚠️ Persuasión legítima":"🚨 Alto riesgo");
             lastSummary = summary; lastIM = im.toFixed(2); lastScale = scale; lastAction = action;
             
-            // Calcular energía y ΔIC
             const tokens = wordCount;
             const energyLow = (tokens * 0.2).toFixed(1);
             const energyHigh = (tokens * 0.5).toFixed(1);
@@ -441,11 +416,13 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             const noiseCount = noiseMatches.length;
             const deltaIC = tokens > 0 ? ((noiseCount / tokens) * 10).toFixed(1) : "0.0";
             
-            // Actualizar UI
-            updateCompactSemaphore(color, scale, action);
-            document.getElementById('bigSemaphore').style.backgroundColor = color;
-            document.getElementById('bigScale').innerHTML = scale + "/10";
-            document.getElementById('bigAction').innerHTML = action;
+            updateCompactSemaphore(color, scale, action, im);
+            const bigSem = document.getElementById('bigSemaphore');
+            if (bigSem) bigSem.style.backgroundColor = color;
+            const bigScaleEl = document.getElementById('bigScale');
+            if (bigScaleEl) bigScaleEl.innerHTML = scale + "/10";
+            const bigActionEl = document.getElementById('bigAction');
+            if (bigActionEl) bigActionEl.innerHTML = action;
             document.getElementById('imIndex').innerHTML = im.toFixed(2);
             document.getElementById('energyRange').innerHTML = energyRange;
             document.getElementById('deltaIC').innerHTML = `${deltaIC}/10`;
@@ -479,7 +456,12 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         }
 
         function refreshCurrentAnalysis() {
-            if (window.lastText) performAudit(window.lastText);
+            const inputText = document.getElementById('inputText').value;
+            if (inputText && inputText.trim().length > 0) {
+                performAudit(inputText);
+            } else if (window.lastText && window.lastText.trim().length > 0) {
+                performAudit(window.lastText);
+            }
         }
 
         function speakResult() {
@@ -491,10 +473,10 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             window.speechSynthesis.speak(utterance);
         }
 
-        function buildFullReport() { let t=window.lastText||""; return `ARGIRA v6.2\nModo: ${currentMode}\nIM: ${document.getElementById('imIndex').innerText}\nResumen: ${document.getElementById('bigAction').innerText}\nEnergía: ${document.getElementById('energyRange').innerText}\nΔIC: ${document.getElementById('deltaIC').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
+        function buildFullReport() { let t=window.lastText||""; return `ARGIRA v6.2\nModo: ${currentMode}\nIM: ${document.getElementById('imIndex').innerText}\nResumen: ${document.getElementById('semLabel').innerText}\nEnergía: ${document.getElementById('energyRange').innerText}\nΔIC: ${document.getElementById('deltaIC').innerText}\nP:${document.getElementById('valP').innerText} E:${document.getElementById('valE').innerText} U:${document.getElementById('valU').innerText} A:${document.getElementById('valA').innerText} S:${document.getElementById('valSoc').innerText} L:${document.getElementById('valAlarm').innerText} F:${document.getElementById('valFake').innerText}\nEDI:${document.getElementById('valEDI').innerText}\n\nTexto:\n${t.substring(0,1500)}`; }
         function exportTxt() { if(!window.lastText) {alert("Audita algo primero");return;} const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buildFullReport()],{type:'text/plain'})); a.download=`argira_${Date.now()}.txt`; a.click(); }
         function exportPdf() { if(typeof window.jspdf==='undefined'){alert("Cargando jsPDF...");return;} const {jsPDF}=window.jspdf; const doc=new jsPDF(); doc.text(buildFullReport(),10,10); doc.save(`argira_${Date.now()}.pdf`); }
-        function shareResult() { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('bigAction').innerText} (IM ${document.getElementById('imIndex').innerText})`); alert("Resultado copiado."); }
+        function shareResult() { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('semLabel').innerText} (IM ${document.getElementById('imIndex').innerText})`); alert("Resultado copiado."); }
 
         // Eventos
         document.getElementById('exportTxtBtn').onclick = exportTxt;
@@ -505,9 +487,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         document.getElementById('expertViewBtn').onclick = () => { simpleMode=false; document.getElementById('expertViewBtn').classList.add('active'); document.getElementById('simpleViewBtn').classList.remove('active'); refreshCurrentAnalysis(); };
         document.getElementById('helpBtn').onclick = () => document.getElementById('helpModal').style.display='flex';
         document.getElementById('closeHelpBtn').onclick = () => document.getElementById('helpModal').style.display='none';
-        document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',(e)=>{ currentMode=e.target.value; let badge=document.getElementById('modeBadge'); if(currentMode==='alert') badge.innerHTML='⚠️ Alerta'; else if(currentMode==='balanced') badge.innerHTML='⚖️ Equilibrado'; else badge.innerHTML='🌿 Newsletter'; refreshCurrentAnalysis(); }));
-
-        // Botones de modo rápido
+        
         const MODE_DESCS = {
             alert:      '⚠️ Alerta — Máxima sensibilidad. Para bulos, estafas y phishing.',
             balanced:   '⚖️ Equilibrado — Estándar. Para correos comerciales, publicidad y noticias.',
@@ -515,7 +495,9 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         };
         document.querySelectorAll('.mode-quick-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                currentMode = btn.dataset.mode;
+                const newMode = btn.dataset.mode;
+                if (currentMode === newMode) return;
+                currentMode = newMode;
                 document.querySelectorAll('.mode-quick-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const badge = document.getElementById('modeBadge');
@@ -525,16 +507,26 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 refreshCurrentAnalysis();
             });
         });
-        document.getElementById('loadExampleTech').onclick = () => document.getElementById('inputText').value = "Asunto: Últimos días para acceder a Marketing Digital Pro\n\nHola [Nombre], ¿Quieres aprender a vender online? El curso ya ha ayudado a más de 5.000 estudiantes. Oferta válida solo hasta el viernes. ¡No te quedes sin tu plaza!";
-        document.getElementById('loadExampleAlarm').onclick = () => document.getElementById('inputText').value = "¡URGENTE! El gobierno esconde la cura. Comparte ahora o morirán.";
-        document.getElementById('loadExampleEng').onclick = () => document.getElementById('inputText').value = "URGENT: Miracle cure! They don't want you to know. Buy now!";
+        
+        document.getElementById('loadExampleTech').onclick = () => {
+            document.getElementById('inputText').value = "Asunto: Últimos días para acceder a Marketing Digital Pro\n\nHola [Nombre], ¿Quieres aprender a vender online? El curso ya ha ayudado a más de 5.000 estudiantes. Oferta válida solo hasta el viernes. ¡No te quedes sin tu plaza!";
+            document.getElementById('resultsArea').style.display = 'none';
+        };
+        document.getElementById('loadExampleAlarm').onclick = () => {
+            document.getElementById('inputText').value = "¡URGENTE! El gobierno esconde la cura. Comparte ahora o morirán.";
+            document.getElementById('resultsArea').style.display = 'none';
+        };
+        document.getElementById('loadExampleEng').onclick = () => {
+            document.getElementById('inputText').value = "URGENT: Miracle cure! They don't want you to know. Buy now!";
+            document.getElementById('resultsArea').style.display = 'none';
+        };
+        
         let vetoInterval=null;
         document.getElementById('auditBtn').onclick = () => { let txt=document.getElementById('inputText').value; if(!txt.trim()){ alert("Inserta texto"); return; } let overlay=document.getElementById('vetoOverlay'); if(!overlay){ overlay=document.createElement('div'); overlay.id='vetoOverlay'; overlay.className='veto-layer'; overlay.innerHTML='<div class="timer-big" id="vetoTimer">🧠 5s</div><p>Analizando...</p>'; document.body.appendChild(overlay); } overlay.style.display='block'; let t=5; if(vetoInterval) clearInterval(vetoInterval); vetoInterval=setInterval(()=>{ t--; let ts=document.getElementById('vetoTimer'); if(ts) ts.innerText=`🧠 ${t}s`; if(t<=0){ clearInterval(vetoInterval); overlay.style.display='none'; performAudit(txt); } },1000); };
         document.getElementById('compareBtn').onclick = () => { if(!document.getElementById('inputText').value.trim()){ alert("Primero pega un texto."); return; } document.getElementById('comparatorModal').style.display='flex'; };
         document.getElementById('doCompareBtn').onclick = () => { let t1=document.getElementById('inputText').value, t2=document.getElementById('compareText').value; if(!t2.trim()){ alert("Pega segundo texto"); return; } let weights = getModeWeights(); let calcMetrics = (t)=>{ let D=factualDensity(t); let rawP=getPersonalizationScore(t,weights.p); let rawE=countMatches(t.toLowerCase(),'e')*weights.e; let rawU=countMatches(t.toLowerCase(),'u')*weights.u; let rawA=countMatches(t.toLowerCase(),'a')*weights.a; let rawSoc=countMatches(t.toLowerCase(),'soc')*weights.soc; let rawAlarm=countMatches(t.toLowerCase(),'alarm')*weights.alarm; let rawFake=countMatches(t.toLowerCase(),'fake')*weights.fake; let total=rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake+syntacticPatterns(t)*weights.syntaxMult; let wc=t.split(/\s+/).length; let im=total/(Math.log10(Math.max(1,wc))+D); let noise=(t.match(NOISE_PATTERN)||[]).length; let delta=wc>0?((noise/wc)*10).toFixed(1):0; let energy=`${(wc*0.2).toFixed(1)}-${(wc*0.5).toFixed(1)} mWh`; return {im, delta, energy}; }; let m1=calcMetrics(t1), m2=calcMetrics(t2); alert(`Comparación:\nTexto1: IM ${m1.im.toFixed(2)}, ΔIC ${m1.delta}/10\nTexto2: IM ${m2.im.toFixed(2)}, ΔIC ${m2.delta}/10`); document.getElementById('comparatorModal').style.display='none'; };
         document.getElementById('closeCompareBtn').onclick = () => document.getElementById('comparatorModal').style.display='none';
         
-        // Grabadora de voz (Web Speech API)
         let recognition, isRecording=false, finalTranscript="";
         const modalAudio = document.getElementById('audioModal');
         const audioStatus = document.getElementById('audioStatus');
