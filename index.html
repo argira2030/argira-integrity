@@ -14,21 +14,29 @@
             --text-main: #eaeaef; --text-dim: #b0b0cc; --border-dim: #2a2a40;
             --tooltip-bg: #1a1a2e;
         }
-        @media (prefers-color-scheme: light) {
-            :root { --bg-deep: #eef2f7; --surface: #ffffff; --card-bg: #f8f9fc; --text-main: #111; --text-dim: #3a3a5a; --border-dim: #ccc; --tooltip-bg: #e9ecef; }
-            .aseptic-panel, .hallazgos-container, .hallazgos-explicados { background: #f8f9fa; border: 1px solid #ddd; color: #111; }
-            textarea { background: #fff; color: #111; }
-        }
+        /* Argira Shield — siempre modo oscuro. Identidad visual fija. */
         .skip-link { position: absolute; top: -40px; left: 0; background: var(--accent); color: #000; padding: 8px; z-index: 100; text-decoration: none; border-radius: 0 0 8px 0; }
         .skip-link:focus { top: 0; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
         body { font-family: 'Segoe UI', Roboto, system-ui; background: var(--bg-deep); color: var(--text-main); padding: 20px; line-height: 1.5; }
         .container { max-width: 1200px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 1px; }
-        h1 { font-size: 1.6rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .header { text-align: center; margin-bottom: 20px; padding: 28px 20px 20px; background: linear-gradient(180deg, #000010, transparent); border-radius: 0 0 40px 40px; }
+        .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 2px; font-size: 0.75rem; text-shadow: 0 0 12px rgba(0,247,176,0.5); }
+        h1 { font-size: 2rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; margin: 8px 0 4px; text-shadow: none; filter: drop-shadow(0 0 20px rgba(0,247,176,0.3)); }
+        .header-shield { font-size: 2.2rem; display: block; margin-bottom: 4px; filter: drop-shadow(0 0 16px rgba(0,247,176,0.6)); }
+        .header-sub { font-size: 0.85rem; color: var(--text-dim); letter-spacing: 1px; }
         
-        .mode-selector { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; background: var(--card-bg); padding: 12px 20px; border-radius: 60px; margin-bottom: 16px; border: 1px solid var(--border-dim); }
+        .example-bar { display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; }
+        .example-bar::-webkit-scrollbar { height: 3px; }
+        .example-bar::-webkit-scrollbar-thumb { background: var(--border-dim); border-radius: 4px; }
+        .action-bar { display: flex; gap: 8px; align-items: center; }
+        .mode-collapsible { margin: 10px 0 16px; border: 1px solid var(--border-dim); border-radius: 20px; overflow: hidden; }
+        .mode-summary { display: flex; align-items: center; padding: 10px 16px; cursor: pointer; list-style: none; background: var(--card-bg); border-radius: 20px; }
+        .mode-summary::-webkit-details-marker { display: none; }
+        .mode-summary::after { content: '▾'; margin-left: auto; color: var(--text-dim); font-size: 0.8rem; }
+        details[open] .mode-summary { border-radius: 20px 20px 0 0; }
+        details[open] .mode-summary::after { content: '▴'; }
+        .mode-selector { border-top: 1px solid var(--border-dim); padding: 16px; background: var(--card-bg); border-radius: 0 0 20px 20px; }
         .mode-options { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
         .mode-option { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; background: var(--surface); padding: 6px 14px; border-radius: 60px; transition: 0.1s; text-align: center; }
         .mode-option.selected { background: var(--accent); color: #000; }
@@ -48,7 +56,14 @@
         .view-btn.active { background: var(--accent); color: #000; }
         
         .main-box { background: var(--surface); border-radius: 32px; padding: 20px; border: 1px solid var(--border-dim); margin-bottom: 20px; }
-        textarea { width: 100%; height: 140px; background: var(--surface); border-radius: 20px; padding: 12px; font-family: monospace; border: 1px solid var(--border-dim); color: var(--text-main); font-size: 0.9rem; }
+        textarea { width: 100%; height: 140px; background: #02020e; border-radius: 20px; padding: 14px; font-family: monospace; border: 2px solid rgba(0,247,176,0.5); color: #e0f5ef; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,247,176,0.15); }
+        textarea::placeholder { color: rgba(255,255,255,0.55); }
+        .mode-quick { display: flex; gap: 8px; margin-bottom: 12px; }
+        .mode-quick-btn { flex: 1; padding: 8px 6px; border-radius: 40px; font-size: 0.78rem; font-weight: 700; background: var(--card-bg); border: 1px solid var(--border-dim); color: var(--text-dim); cursor: pointer; transition: all 0.15s; text-align: center; }
+        .mode-quick-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .mode-quick-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .mode-quick-desc { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 10px; padding: 0 4px; min-height: 18px; }
         .button-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 12px; }
         .example-bar { display: flex; gap: 8px; flex-wrap: wrap; }
         .action-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -103,58 +118,57 @@
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
     <div class="container" id="main-content">
         <div class="header">
-            <div class="badge-sci">⚡ ARGIRA v6.2 · Auditoría Forense Completa</div>
-            <h1>🛡️ Integrity Shield</h1>
-            <div>Kahneman · Cialdini · Shannon</div>
-        </div>
-        <div class="mode-selector">
-            <div class="mode-options">
-                <label class="mode-option">
-                    <input type="radio" name="mode" value="alert"> ⚠️ Alerta<br>
-                    <span class="mode-desc">Máxima sensibilidad. Para bulos, estafas, phishing.</span>
-                </label>
-                <label class="mode-option">
-                    <input type="radio" name="mode" value="balanced" checked> ⚖️ Equilibrado<br>
-                    <span class="mode-desc">Estándar. Para correos comerciales, publicidad, noticias.</span>
-                </label>
-                <label class="mode-option">
-                    <input type="radio" name="mode" value="newsletter"> 🌿 Newsletter<br>
-                    <span class="mode-desc">Sensibilidad reducida. Para divulgación, marketing ético, contenido de valor.</span>
-                </label>
-            </div>
-            <div class="compact-semaphore">
-                <div class="compact-light" id="compactSemaphore"></div>
-                <div class="compact-scale" id="compactScale">0/10</div>
-                <div class="compact-action" id="compactAction">—</div>
-            </div>
-            <div>
-                <span id="modeBadge" class="mode-badge" aria-live="polite">⚖️ Equilibrado</span>
-            </div>
-            <div class="view-selector">
-                <div class="view-buttons">
-                    <button id="simpleViewBtn" class="view-btn active">👁️ Simple</button>
-                    <button id="expertViewBtn" class="view-btn">🔬 Experta</button>
-                    <button id="helpBtn" class="view-btn">❓ Ayuda</button>
-                </div>
-                <div class="view-help">Vista simple: solo veredicto y métricas clave. Vista experta: añade texto anotado, gráfico radar y explicaciones.</div>
-            </div>
+            <div class="badge-sci">⚡ ARGIRA STATION · COGNITIVE DEFENSE</div>
+            <span class="header-shield" role="img" aria-hidden="true">🛡️</span>
+            <h1>Integrity Shield</h1>
+            <div class="header-sub">Kahneman · Cialdini · Shannon</div>
         </div>
         <div class="main-box">
-            <textarea id="inputText" placeholder="Pega un texto (email, bulo, noticia) y pulsa AUDITAR..." aria-label="Área de texto para pegar el contenido a analizar"></textarea>
-            <div class="button-row">
-                <div class="example-bar">
-                    <button id="loadExampleTech" class="btn-secondary btn-example-custom">📘 Newsletter</button>
-                    <button id="loadExampleAlarm" class="btn-secondary btn-example-custom">⚠️ Bulo</button>
-                    <button id="loadExampleEng" class="btn-secondary btn-example-custom">🇬🇧 Scam</button>
-                </div>
-                <div class="action-bar">
-                    <button id="testMicBtn" class="btn-secondary">🎤 Mic</button>
-                    <button id="audioBtn" class="btn-secondary">🎙️ Grabar</button>
-                    <button id="auditBtn" class="btn-primary">🔬 AUDITAR</button>
-                    <button id="compareBtn" class="btn-secondary">🔄 Comparar</button>
-                    <button id="shareBtn" class="share-link">📤 Compartir</button>
-                </div>
+            <!-- MODOS ARRIBA DE LA CAJA — acceso directo -->
+            <div class="mode-quick" role="group" aria-label="Seleccionar modo de análisis">
+                <button class="mode-quick-btn" data-mode="alert">⚠️ Alerta</button>
+                <button class="mode-quick-btn active" data-mode="balanced">⚖️ Equilibrado</button>
+                <button class="mode-quick-btn" data-mode="newsletter">🌿 Newsletter</button>
             </div>
+            <div id="modeQuickDesc" class="mode-quick-desc">⚖️ Equilibrado — Estándar. Para correos comerciales, publicidad y noticias.</div>
+
+            <!-- CAJA DE TEXTO -->
+            <textarea id="inputText" placeholder="✍️ Pega aquí un email, noticia, bulo o cualquier texto...
+
+El Shield analizará si contiene manipulación emocional, urgencia artificial, autoridad falsa o desinformación — y te explicará por qué, término a término, con base en Kahneman, Cialdini y Shannon." aria-label="Área de texto para pegar el contenido a analizar"></textarea>
+
+            <!-- VISTA + AUDITAR -->
+            <div style="display:flex; gap:8px; margin-top:12px; align-items:center;">
+                <button id="simpleViewBtn" class="view-btn active">👁️ Simple</button>
+                <button id="expertViewBtn" class="view-btn">🔬 Experta</button>
+                <button id="auditBtn" class="btn-primary" style="flex:1; margin-left:4px;">🔬 AUDITAR</button>
+            </div>
+
+            <!-- SECUNDARIO COLAPSADO -->
+            <details style="margin-top:10px;">
+                <summary style="font-size:0.72rem; color:var(--text-dim); cursor:pointer; list-style:none; padding:6px 4px;">
+                    ▾ Ejemplos · Audio · Más opciones
+                </summary>
+                <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px;">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button id="loadExampleTech" class="btn-secondary">📘 Newsletter</button>
+                        <button id="loadExampleAlarm" class="btn-secondary">⚠️ Bulo</button>
+                        <button id="loadExampleEng" class="btn-secondary">🇬🇧 Scam</button>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button id="testMicBtn" class="btn-secondary">🎤 Mic</button>
+                        <button id="audioBtn" class="btn-secondary">🎙️ Grabar</button>
+                        <button id="compareBtn" class="btn-secondary">🔄 Comparar</button>
+                        <button id="shareBtn" class="share-link">📤 Compartir</button>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- VISTA/AYUDA badge -->
+        <div style="margin: 8px 0 16px; display:flex; align-items:center; gap:10px;">
+            <span id="modeBadge" class="mode-badge" aria-live="polite">⚖️ Equilibrado</span>
+            <button id="helpBtn" class="view-btn">❓ Ayuda</button>
         </div>
 
         <div id="resultsArea" style="display: none;">
@@ -492,6 +506,25 @@
         document.getElementById('helpBtn').onclick = () => document.getElementById('helpModal').style.display='flex';
         document.getElementById('closeHelpBtn').onclick = () => document.getElementById('helpModal').style.display='none';
         document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',(e)=>{ currentMode=e.target.value; let badge=document.getElementById('modeBadge'); if(currentMode==='alert') badge.innerHTML='⚠️ Alerta'; else if(currentMode==='balanced') badge.innerHTML='⚖️ Equilibrado'; else badge.innerHTML='🌿 Newsletter'; refreshCurrentAnalysis(); }));
+
+        // Botones de modo rápido
+        const MODE_DESCS = {
+            alert:      '⚠️ Alerta — Máxima sensibilidad. Para bulos, estafas y phishing.',
+            balanced:   '⚖️ Equilibrado — Estándar. Para correos comerciales, publicidad y noticias.',
+            newsletter: '🌿 Newsletter — Sensibilidad reducida. Para divulgación y marketing ético.'
+        };
+        document.querySelectorAll('.mode-quick-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentMode = btn.dataset.mode;
+                document.querySelectorAll('.mode-quick-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const badge = document.getElementById('modeBadge');
+                if (badge) badge.innerHTML = btn.textContent;
+                const desc = document.getElementById('modeQuickDesc');
+                if (desc) desc.textContent = MODE_DESCS[currentMode] || '';
+                refreshCurrentAnalysis();
+            });
+        });
         document.getElementById('loadExampleTech').onclick = () => document.getElementById('inputText').value = "Asunto: Últimos días para acceder a Marketing Digital Pro\n\nHola [Nombre], ¿Quieres aprender a vender online? El curso ya ha ayudado a más de 5.000 estudiantes. Oferta válida solo hasta el viernes. ¡No te quedes sin tu plaza!";
         document.getElementById('loadExampleAlarm').onclick = () => document.getElementById('inputText').value = "¡URGENTE! El gobierno esconde la cura. Comparte ahora o morirán.";
         document.getElementById('loadExampleEng').onclick = () => document.getElementById('inputText').value = "URGENT: Miracle cure! They don't want you to know. Buy now!";
