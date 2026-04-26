@@ -451,83 +451,92 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         }
 
         // ========== FUNCIÓN PERFORM AUDIT UNIFICADA ==========
-        async function performAudit(text, mode) {
-    // 1. Configuración de la URL de tu cerebro privado
-    const API_URL = "https://argira-api-v1.onrender.com/v1/audit";
-    
-    // 2. Preparar la interfaz antes de la respuesta
-    window.lastText = text;
+        async function performAudit(text) {
+    if (!text.trim()) return;
+
     const resultsArea = document.getElementById('resultsArea');
     const semLabel = document.getElementById('semLabel');
-    
-    if (semLabel) semLabel.innerText = "Consultando al cerebro v6.5...";
-    
+    semLabel.innerText = "Consultando al cerebro v6.5...";
+    resultsArea.style.display = 'block';
+
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch('https://argira-api-v1.onrender.com/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text, mode: currentMode })
         });
 
-        if (!response.ok) throw new Error("Servidor despertando...");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
 
-        // 3. ACTUALIZACIÓN DE LA WEB CON LOS DATOS PRIVADOS
-        resultsArea.style.display = 'block';
+        // Actualizar semáforo compacto
+        const im = parseFloat(data.im);
+        const scale = data.scale;
+        const { color, action } = getSemaphore(im);
+        updateCompactSemaphore(color, scale, action, im);
         
-        // Valores de métricas (Radar y MiniMetrics)
-        document.getElementById('valP').innerText = data.metrics.p;
-        document.getElementById('valE').innerText = data.metrics.e;
-        document.getElementById('valU').innerText = data.metrics.u;
-        document.getElementById('valA').innerText = data.metrics.a;
-        document.getElementById('valSoc').innerText = data.metrics.soc;
-        document.getElementById('valAlarm').innerText = data.metrics.alarm;
-        document.getElementById('valFake').innerText = data.metrics.fake;
-        
-        // IM y Shannon
-        document.getElementById('imIndex').innerText = data.im;
-        document.getElementById('valD').innerText = data.density;
-        document.getElementById('valEDI').innerText = data.edi.edi;
-        document.getElementById('deltaIC').innerText = data.edi.delta;
-        document.getElementById('energyRange').innerText = data.energy;
-
-        // Semáforo Compacto (Veredicto)
-        const sem = getSemaphore(parseFloat(data.im));
-        updateCompactSemaphore(sem.color, data.scale, sem.action, parseFloat(data.im));
-        
-        // Guardar para lectura de voz y exportación
+        // Guardar en variables globales para voz y exportación
         lastIM = data.im;
-        lastScale = data.scale;
-        lastAction = sem.action;
+        lastScale = scale;
+        lastAction = action;
         lastSummary = data.verdict;
+        window.lastText = text;
 
-        // 4. Lógica Visual Avanzada (Solo si no es modo simple)
+        // Actualizar métricas de UI (IM, energía, deltaIC)
+        document.getElementById('imIndex').innerText = data.im;
+        document.getElementById('energyRange').innerText = data.energy;
+        document.getElementById('deltaIC').innerHTML = `${data.deltaIC}/10`;
+        document.getElementById('modeIndicator').innerHTML = `Modo: ${currentMode === 'alert' ? '⚠️ Alerta' : (currentMode === 'balanced' ? '⚖️ Equilibrado' : '🌿 Newsletter')}`;
+        document.getElementById('rewriteBox').innerHTML = `<strong>Sugerencia Ética:</strong> ${data.suggestion}`;
+
+        // Las métricas P, E, U, A, etc. las recalculamos con las funciones locales
+        // (por coherencia con el radar y para no depender de la API)
+        const weights = getModeWeights();
+        let D = factualDensity(text);
+        let rawP = getPersonalizationScore(text, weights.p);
+        let rawE = countMatches(text.toLowerCase(),'e') * weights.e;
+        let rawU = countMatches(text.toLowerCase(),'u') * weights.u;
+        let rawA = countMatches(text.toLowerCase(),'a') * weights.a;
+        let rawSoc = countMatches(text.toLowerCase(),'soc') * weights.soc;
+        let rawAlarm = countMatches(text.toLowerCase(),'alarm') * weights.alarm;
+        let rawFake = countMatches(text.toLowerCase(),'fake') * weights.fake;
+
+        document.getElementById('valP').innerHTML = rawP.toFixed(1);
+        document.getElementById('valE').innerHTML = rawE.toFixed(1);
+        document.getElementById('valU').innerHTML = rawU.toFixed(1);
+        document.getElementById('valA').innerHTML = rawA.toFixed(1);
+        document.getElementById('valSoc').innerHTML = rawSoc.toFixed(1);
+        document.getElementById('valAlarm').innerHTML = rawAlarm.toFixed(1);
+        document.getElementById('valFake').innerHTML = rawFake.toFixed(1);
+        document.getElementById('valD').innerHTML = D.toFixed(1);
+        const edi = computeEDI(text);
+        document.getElementById('valEDI').innerHTML = edi.edi;
+
+        // Radar y texto anotado (si modo experto)
         if (!simpleMode) {
             document.getElementById('expertDetails').style.display = 'block';
             document.getElementById('cleanText').innerHTML = annotatedText(text);
-            drawRadar(
-                [data.metrics.p, data.metrics.e, data.metrics.u, data.metrics.a, data.metrics.soc, data.metrics.alarm, data.metrics.fake],
-                ['P', 'E', 'U', 'A', 'S', 'L', 'F']
-            );
+            drawRadar([Math.min(10,rawP), Math.min(10,rawE), Math.min(10,rawU), Math.min(10,rawA), Math.min(10,rawSoc), Math.min(10,rawAlarm), Math.min(10,rawFake)], ['P','E','U','A','S','L','F']);
         } else {
             document.getElementById('expertDetails').style.display = 'none';
         }
 
-        // 5. Hallazgos Explicados y Sugerencia
+        // Hallazgos explicados
         document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
-        document.getElementById('rewriteBox').innerHTML = `<strong>Sugerencia Ética:</strong> ${data.suggestion}`;
 
-        // Guardar en historial local
-        saveToHistory(text, data.im, sem.action);
+        // Guardar historial
+        saveToHistory(text, data.im, data.verdict);
         renderHistory();
-        announceToScreenReader(`Análisis completado. Índice de manipulación: ${data.im}`);
+        announceToScreenReader(`Análisis completado. Resultado: ${data.verdict.replace(/✅|⚠️|🚨/g,'').trim()}. Escala ${scale}/10. IM ${data.im}.`);
 
     } catch (error) {
-        console.error("Error de conexión:", error);
-        if (semLabel) semLabel.innerText = "El motor está arrancando (Plan Free). Reintenta en 20s.";
+        console.error(error);
+        semLabel.innerText = "El motor está arrancando (Plan Free). Reintenta en 20s.";
         alert("El servidor gratuito de Render se está 'despertando'. Por favor, espera unos segundos y vuelve a pulsar AUDITAR.");
+        resultsArea.style.display = 'none';
     }
+    
 }
 
         function refreshCurrentAnalysis() {
