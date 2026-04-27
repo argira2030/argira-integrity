@@ -682,6 +682,90 @@ async function performAudit(text) {
         saveToHistory(text, data.im, data.verdict);
         renderHistory();
         announceToScreenReader(`Análisis completado. IM ${data.im}. ${data.verdict}`);
+// ========== FUNCIÓN PERFORM AUDIT ÚNICA Y CORREGIDA ==========
+async function performAudit(text) {
+    if (!text.trim()) return;
+
+    const resultsArea = document.getElementById('resultsArea');
+    const semLabel = document.getElementById('semLabel');
+    const auditBtn = document.getElementById('auditBtn');
+
+    semLabel.innerText = "🔄 Conectando con el motor (puede tardar 20s la primera vez)...";
+    resultsArea.style.display = 'block';
+    auditBtn.disabled = true;
+    auditBtn.style.opacity = '0.5';
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+    try {
+        const response = await fetch('https://argira-api-v1.onrender.com/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, mode: currentMode }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        console.log("API response:", data);
+
+        // Semáforo
+        const im = parseFloat(data.im);
+        const scale = data.scale;
+        const { color, action } = getSemaphore(im);
+        updateCompactSemaphore(color, scale, action, im);
+        
+        lastIM = data.im;
+        lastScale = scale;
+        lastAction = action;
+        lastSummary = data.verdict;
+        window.lastText = text;
+
+        // Métricas principales
+        document.getElementById('imIndex').innerText = data.im;
+        document.getElementById('energyRange').innerText = data.energy;
+        document.getElementById('deltaIC').innerHTML = `${data.deltaIC}/10`;
+        document.getElementById('modeIndicator').innerHTML = `Modo: ${currentMode === 'alert' ? '⚠️ Alerta' : (currentMode === 'balanced' ? '⚖️ Equilibrado' : '🌿 Newsletter')}`;
+        document.getElementById('rewriteBox').innerHTML = `<strong>Sugerencia Ética:</strong> ${data.suggestion}`;
+
+        // Métricas radar (cálculo local)
+        const weights = getModeWeights();
+        let D = factualDensity(text);
+        let rawP = getPersonalizationScore(text, weights.p);
+        let rawE = countMatches(text.toLowerCase(),'e') * weights.e;
+        let rawU = countMatches(text.toLowerCase(),'u') * weights.u;
+        let rawA = countMatches(text.toLowerCase(),'a') * weights.a;
+        let rawSoc = countMatches(text.toLowerCase(),'soc') * weights.soc;
+        let rawAlarm = countMatches(text.toLowerCase(),'alarm') * weights.alarm;
+        let rawFake = countMatches(text.toLowerCase(),'fake') * weights.fake;
+
+        document.getElementById('valP').innerHTML = rawP.toFixed(1);
+        document.getElementById('valE').innerHTML = rawE.toFixed(1);
+        document.getElementById('valU').innerHTML = rawU.toFixed(1);
+        document.getElementById('valA').innerHTML = rawA.toFixed(1);
+        document.getElementById('valSoc').innerHTML = rawSoc.toFixed(1);
+        document.getElementById('valAlarm').innerHTML = rawAlarm.toFixed(1);
+        document.getElementById('valFake').innerHTML = rawFake.toFixed(1);
+        document.getElementById('valD').innerHTML = D.toFixed(1);
+        const edi = computeEDI(text);
+        document.getElementById('valEDI').innerHTML = edi.edi;
+
+        // Modo experto
+        if (!simpleMode) {
+            document.getElementById('expertDetails').style.display = 'block';
+            document.getElementById('cleanText').innerHTML = annotatedText(text);
+            drawRadar([Math.min(10,rawP), Math.min(10,rawE), Math.min(10,rawU), Math.min(10,rawA), Math.min(10,rawSoc), Math.min(10,rawAlarm), Math.min(10,rawFake)], ['P','E','U','A','S','L','F']);
+        } else {
+            document.getElementById('expertDetails').style.display = 'none';
+        }
+
+        document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
+        saveToHistory(text, data.im, data.verdict);
+        renderHistory();
+        announceToScreenReader(`Análisis completado. IM ${data.im}. ${data.verdict}`);
         semLabel.innerText = "✅ Análisis listo";
 
     } catch (error) {
