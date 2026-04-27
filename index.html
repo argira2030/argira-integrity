@@ -358,7 +358,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             return "Patrón persuasivo detectado. Evalúa críticamente.";
         }
 
-        // ========== buildHallazgosExplicados (basada en GLOBAL_PATTERNS) ==========
+        // ========== ) ==========
         function buildHallazgosExplicados(text) {
             let items = [];
             let seen = new Set();
@@ -530,7 +530,8 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                     document.getElementById('expertDetails').style.display = 'none';
                 }
 
-                document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
+                //document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text);
+                document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text, false);
                 saveToHistory(text, data.im, data.verdict);
                 renderHistory();
                 announceToScreenReader(`Análisis completado. IM ${data.im}. ${data.verdict}`);
