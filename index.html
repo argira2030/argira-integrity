@@ -174,6 +174,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             <div style="text-align:center; margin-top:12px;">
                 <button id="speakBtn" class="speak-btn-large">🔊 Leer resultado en voz alta</button>
                 <button id="demoReportBtn" class="btn-secondary" style="background: #ff9900; border-color: #ff9900; color: white;">📑 Informe pericial (demo)</button>
+           
             </div>
 
             <div id="expertDetails" style="display: none;">
@@ -719,6 +720,21 @@ function generateExpertReport() {
     doc.save(`Argira_Informe_${refId}.pdf`);
 }
 
+
+        // Botón de demo para generar informe
+const demoBtn = document.getElementById('demoReportBtn');
+if (demoBtn) {
+    demoBtn.onclick = () => {
+        if (!window.lastText) {
+            alert("Primero audita un texto.");
+            return;
+        }
+        generateExpertReport();
+    };
+} else {
+    console.error("No se encontró el botón con id 'demoReportBtn'");
+}
+        
         function refreshCurrentAnalysis() {
             const inputText = document.getElementById('inputText').value;
             if (inputText && inputText.trim().length > 0) {
@@ -764,14 +780,7 @@ function generateExpertReport() {
         document.getElementById('expertViewBtn').onclick = () => { simpleMode=false; document.getElementById('expertViewBtn').classList.add('active'); document.getElementById('simpleViewBtn').classList.remove('active'); refreshCurrentAnalysis(); };
         document.getElementById('helpBtn').onclick = () => document.getElementById('helpModal').style.display='flex';
         document.getElementById('closeHelpBtn').onclick = () => document.getElementById('helpModal').style.display='none';
-//pdf
-        document.getElementById('demoReportBtn').onclick = () => {
-    if (!window.lastText) {
-        alert("Primero audita un texto.");
-        return;
-    }
-    generateExpertReport();
-};
+
         
         const MODE_DESCS = {
             alert:      '⚠️ Alerta — Máxima sensibilidad. Para bulos, estafas y phishing.',
