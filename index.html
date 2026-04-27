@@ -208,7 +208,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             </div>
             
             <!-- Contenedor del botón de pago de PayPal (se muestra solo tras análisis) -->
-<div id="paypal-button-container" style="margin-top: 20px; max-width: 300px; margin-left: auto; margin-right: auto;"></div>
+            <!-- <div id="paypal-button-container" style="margin-top: 20px; max-width: 300px; margin-left: auto; margin-right: auto;"></div>-->
 
 
             <h3>📜 Historial reciente</h3>
@@ -735,18 +735,18 @@ function generateExpertReport() {
 
 
         // Botón de demo para generar informe
-const demoBtn = document.getElementById('demoReportBtn');
-if (demoBtn) {
-    demoBtn.onclick = () => {
-        if (!window.lastText) {
-            alert("Primero audita un texto.");
-            return;
-        }
-        generateExpertReport();
-    };
-} else {
-    console.error("No se encontró el botón con id 'demoReportBtn'");
-}
+//const demoBtn = document.getElementById('demoReportBtn');
+//if (demoBtn) {
+  //  demoBtn.onclick = () => {
+  //      if (!window.lastText) {
+   //         alert("Primero audita un texto.");
+   //         return;
+  //      }
+   //     generateExpertReport();
+  //  };
+//} else {
+ //   console.error("No se encontró el botón con id 'demoReportBtn'");
+//}
         
    
    // ========== PAYPAL SMART BUTTONS (pago del informe pericial) ==========
