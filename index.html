@@ -206,6 +206,11 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 <button id="exportTxtBtn" class="btn-secondary">📄 TXT</button>
                 <button id="exportPdfBtn" class="btn-secondary">📑 PDF</button>
             </div>
+            
+            <!-- Contenedor del botón de pago de PayPal (se muestra solo tras análisis) -->
+<div id="paypal-button-container" style="margin-top: 20px; max-width: 300px; margin-left: auto; margin-right: auto;"></div>
+
+
             <h3>📜 Historial reciente</h3>
             <div id="historyList" class="history-list"></div>
         </div>
@@ -608,6 +613,12 @@ function buildHallazgosExplicados(text, showWords = false) {
 
         // ========== GENERAR INFORME PERICIAL
 function generateExpertReport() {
+    if (!paymentVerified) {
+        alert("Este informe solo está disponible tras realizar el pago de 49€.");
+        return;
+    }
+    // ... el resto
+    
     if (!window.lastText) {
         alert("No hay ningún texto analizado. Audita un texto primero.");
         return;
@@ -721,6 +732,8 @@ function generateExpertReport() {
 }
 
 
+
+
         // Botón de demo para generar informe
 const demoBtn = document.getElementById('demoReportBtn');
 if (demoBtn) {
@@ -734,6 +747,57 @@ if (demoBtn) {
 } else {
     console.error("No se encontró el botón con id 'demoReportBtn'");
 }
+        
+   
+   // ========== PAYPAL SMART BUTTONS (pago del informe pericial) ==========
+let paymentVerified = false;
+
+function loadPayPalButton() {
+    // Evitar cargar el SDK si ya existe
+    if (document.getElementById('paypal-sdk')) return;
+    
+    const paypalScript = document.createElement('script');
+    paypalScript.id = 'paypal-sdk';
+    paypalScript.src = 'https://www.paypal.com/sdk/js?client-id=ATuG_grvNJ7HVSMOc9uW0&currency=EUR';
+    paypalScript.onload = () => {
+        if (window.paypal) {
+            window.paypal.Buttons({
+                createOrder: (data, actions) => {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: { value: '49.00' },
+                            description: 'Informe pericial Argira Shield - análisis completo de manipulación textual'
+                        }],
+                        application_context: {
+                            shipping_preference: 'NO_SHIPPING'
+                        }
+                    });
+                },
+                onApprove: (data, actions) => {
+                    return actions.order.capture().then((details) => {
+                        paymentVerified = true;
+                        alert(`✅ Pago completado. Gracias ${details.payer.name.given_name}. Descargando informe...`);
+                        generateExpertReport();
+                        // Opcional: después de generar, impide nuevas descargas sin otro pago
+                        // paymentVerified = false;
+                    });
+                },
+                onError: (err) => {
+                    console.error('PayPal error:', err);
+                    alert('❌ Hubo un error con el pago. Inténtalo de nuevo más tarde.');
+                }
+            }).render('#paypal-button-container');
+        } else {
+            console.error('PayPal SDK no cargado correctamente');
+        }
+    };
+    document.head.appendChild(paypalScript);
+}
+
+// Cargar el botón cuando la página esté lista
+loadPayPalButton();
+   
+        
         
         function refreshCurrentAnalysis() {
             const inputText = document.getElementById('inputText').value;
