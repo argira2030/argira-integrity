@@ -602,6 +602,121 @@ function buildHallazgosExplicados(text, showWords = false) {
                 auditBtn.style.opacity = '1';
             }
         }
+ 
+
+        // ========== GENERAR INFORME PERICIAL
+function generateExpertReport() {
+    if (!window.lastText) {
+        alert("No hay ningún texto analizado. Audita un texto primero.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // 1. Identi único
+    const now = new Date();
+    const refId = `ARGI-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}${now.getSeconds().toString().padStart(2,'0')}`;
+    
+    // 2. Cabecera
+    doc.setFontSize(18);
+    doc.setTextColor(0, 247, 176);
+    doc.text("ARGIRA SHIELD - INFORME PERICIAL", 20, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(200, 200, 220);
+    doc.text(`Referencia: ${refId} | Metodología: v6.5`, 20, 28);
+    doc.text(`Fecha: ${now.toLocaleString()}`, 20, 34);
+    doc.text("Auditoría cognitiva basada en Kahneman, Cialdini, Shannon", 20, 40);
+    
+    // 3. Objeto d
+    doc.setFontSize(12);
+    doc.setTextColor(0, 247, 176);
+    doc.text("1. OBJETO DEL ANÁLISIS", 20, 55);
+    doc.setFontSize(10);
+    doc.setTextColor(220, 220, 240);
+    const textLines = doc.splitTextToSize(`Texto analizado: ${window.lastText.substring(0, 800)}${window.lastText.length > 800 ? '...' : ''}`, 170);
+    doc.text(textLines, 20, 63);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 247, 176);
+    doc.text("2. MÉTRICAS DE RESULTADO", 20, 100);
+    doc.setFontSize(10);
+    doc.setTextColor(220, 220, 240);
+    
+    const im = document.getElementById('imIndex').innerText;
+    const scale = document.getElementById('semLabel').innerText;
+    const energy = document.getElementById('energyRange').innerText;
+    const delta = document.getElementById('deltaIC').innerText;
+    const p = document.getElementById('valP').innerText;
+    const e = document.getElementById('valE').innerText;
+    const u = document.getElementById('valU').innerText;
+    const a = document.getElementById('valA').innerText;
+    const soc = document.getElementById('valSoc').innerText;
+    const alarm = document.getElementById('valAlarm').innerText;
+    const fake = document.getElementById('valFake').innerText;
+    const dens = document.getElementById('valD').innerText;
+    const edi = document.getElementById('valEDI').innerText;
+    
+    doc.text(`Índice de Manipulación (IM): ${im}/10`, 20, 110);
+    doc.text(`Escala cualitativa: ${scale}`, 20, 118);
+    doc.text(`Energía estimada: ${energy}`, 20, 126);
+    doc.text(`Diferencial de Inercia (ΔIC): ${delta}`, 20, 134);
+    doc.text(`Entropía de Shannon (EDI): ${edi}`, 20, 142);
+    doc.text(`Variables detalladas: P=${p} | E=${e} | U=${u} | A=${a} | S=${soc} | L=${alarm} | F=${fake} | D=${dens}`, 20, 150);
+    
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 247, 176);
+    doc.text("3. INTERPRETACIÓN DEL ÍNDICE DE MANIPULACIÓN", 20, 170);
+    doc.setFontSize(10);
+    doc.setTextColor(220, 220, 240);
+    let imExplanation = "";
+    const imNum = parseFloat(im);
+    if (imNum <= 1.5) imExplanation = "El texto presenta un nivel de persuasión muy bajo o nulo. Es compatible con comunicación ética, informativa o neutra. No se detectan tácticas de manipulación.";
+    else if (imNum <= 3.2) imExplanation = "El texto contiene elementos de persuasión legítima, propios de marketing, divulgación o llamamientos sociales. No hay indicios de manipulación agresiva, pero se recomienda revisar el contexto si existen llamadas a la acción.";
+    else if (imNum <= 6.5) imExplanation = "El texto muestra una persuasión elevada. Puede incluir urgencia moderada, apelaciones emocionales o autoridad no verificada. Se recomienda precaución antes de actuar.";
+    else imExplanation = "El texto presenta un índice de manipulación crítico. Se detectan técnicas agresivas de coacción, urgencia artificial, amenazas de pérdida o autoridad falsa. No se recomienda interactuar y se considera una estafa potencial.";
+    doc.text(doc.splitTextToSize(imExplanation, 170), 20, 178);
+    
+
+    doc.setFontSize(12);
+    doc.setTextColor(0, 247, 176);
+    doc.text("4. HALLAZGOS FORENSES", 20, 215);
+    doc.setFontSize(9);
+    doc.setTextColor(220, 220, 240);
+    const detailedHTML = _buildDetailedHallazgos(window.lastText);
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = detailedHTML;
+    const hallazgosText = tempDiv.textContent || tempDiv.innerText || "";
+    const hallLines = doc.splitTextToSize(hallazgosText, 170);
+    doc.text(hallLines, 20, 223);
+    
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 247, 176);
+    doc.text("5. CONCLUSIÓN Y RECOMENDACIÓN", 20, 265);
+    doc.setFontSize(10);
+    doc.setTextColor(220, 220, 240);
+    const conclusion = (imNum > 3.2) ? 
+        "Se recomienda NO interactuar con el mensaje, no hacer clic en enlaces, no proporcionar datos personales ni realizar pagos. Reportar como phishing a las autoridades si procede." :
+        "El texto parece legítimo y no presenta riesgos de manipulación evidentes. Se recomienda seguir las buenas prácticas de seguridad digital, pero no hay motivo de alarma.";
+    doc.text(conclusion, 20, 273);
+    
+    doc.text("Firma del auditor:", 20, 295);
+    doc.setFontSize(9);
+    doc.text("José Ranero García", 20, 303);
+    doc.text("ORCID: 0009-0009-3168-6379", 20, 311);
+    doc.text("ARGIRA.eus", 20, 319);
+    
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 180);
+    doc.text("Este informe ha sido generado automáticamente por Argira Shield v6.5. Los resultados se basan en modelos estadísticos y no constituyen asesoramiento legal.", 20, 340);
+    doc.text(`© Argira Shield - Identificador: ${refId}`, 20, 348);
+    
+
+    doc.save(`Argira_Informe_${refId}.pdf`);
+}
 
         function refreshCurrentAnalysis() {
             const inputText = document.getElementById('inputText').value;
