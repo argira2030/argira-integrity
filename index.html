@@ -195,7 +195,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             </div>
 
             <div id="hallazgosExplicados" class="hallazgos-explicados">
-                <h3>🔍 ¿Por qué estos valores? Ganchos detectados y su significado</h3>
+                <h3></h3>
                 <div id="listaHallazgosExplicados">✅ Audita un texto para ver los hallazgos explicados aquí.</div>
             </div>
 
@@ -215,7 +215,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         <div id="audioModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h3>🎙️ Grabadora</h3><div id="audioStatus">Prueba "Probar mic" primero.</div><button id="startRecordBtn">Iniciar</button><button id="stopRecordBtn" disabled>Parar</button><button id="closeModalBtn">Cerrar</button></div></div>
         
         <div class="scientific-footer">
-            <p><strong>Nota Metodológica:</strong> Argira Shield v6.5 utiliza neutralidad multiplicativa, raíz cúbica y multiplicadores por modo para evitar falsos negativos en textos éticos. Auditoría externa disponible en Zenodo.</p>
+            <p><strong>Nota Metodológica:</strong> © Argira Shield – Algoritmo propietario. Todos los derechos reservados</p>
         </div>
 
         <div class="author-box" style="margin: 30px auto 20px auto; max-width: 550px; padding: 20px; background: var(--card-bg); border-radius: 32px; border: 1px solid var(--border-dim); text-align: center;">
@@ -236,7 +236,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 Herramienta de auditoría ética · Código abierto (MIT)
             </p>
         </div>
-        <div class="footer">v6.5 · Detección Robusta · Basado en Kahneman, Cialdini, Shannon.</div>
+        <div class="footer">v6.5 · Detección Robusta · © Argira Shield – Algoritmo propio. Todos los derechos reservados.</div>
     </div>
 
     <script>
@@ -262,7 +262,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             fake: ["cura milagrosa","fórmula secreta","ellos no quieren que sepas","verdad oculta","conspiración","élite mundial","miracle cure","secret formula","they don't want you to know","conspiracy"]
         };
 
-        // ========== PATRONES GLOBALES COMPARTIDOS ==========
+        // ==========  ==========
         const GLOBAL_PATTERNS = {
             phishing: {
                 p: [ { word: "urgente", weight: 2.0 }, { word: "ya", weight: 1.2 }, { word: "ahora", weight: 1.6 }, { word: "inmediatamente", weight: 1.8 } ],
@@ -363,7 +363,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             let items = [];
             let seen = new Set();
 
-            // 1. Phishing patterns
+            // 
             for (const [cat, patterns] of Object.entries(GLOBAL_PATTERNS.phishing)) {
                 patterns.forEach(p => {
                     const regex = new RegExp(`\\b${p.word.replace(/ /g, '\\s+')}\\b`, 'gi');
@@ -387,7 +387,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 });
             }
 
-            // 2. Persuasión legítima
+            //
             GLOBAL_PATTERNS.legit.forEach(p => {
                 const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
                 let match;
@@ -405,7 +405,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 }
             });
 
-            // 3. Frases coercitivas
+            // 
             GLOBAL_PATTERNS.coaccion.forEach(rule => {
                 if (rule.regex.test(text)) {
                     const word = rule.regex.source.replace(/\\s\+/g, ' ');
@@ -421,7 +421,8 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 }
             });
 
-            // 4. Nombres propios adicionales (personalización)
+            // 4. Nom 
+        
             const nameMatch = text.match(/\b(José|Juan|María|Ana|Carlos|Laura|Pablo|Nicole|Taghreed)\b/gi);
             if (nameMatch) {
                 nameMatch.forEach(name => {
@@ -449,7 +450,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             }).join('');
         }
 
-        // ========== FUNCIÓN PERFORM AUDIT ÚNICA Y CORREGIDA ==========
+        // ==========  ==========
         async function performAudit(text) {
             if (!text.trim()) return;
 
