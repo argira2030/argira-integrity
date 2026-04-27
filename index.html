@@ -173,7 +173,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             <div id="modeIndicator" style="font-size:0.7rem; margin-top:6px; color:var(--text-dim);" aria-live="polite"></div>
             <div style="text-align:center; margin-top:12px;">
                 <button id="speakBtn" class="speak-btn-large">🔊 Leer resultado en voz alta</button>
-                
+               
            
             </div>
 
@@ -209,7 +209,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             
             <!-- Contenedor del botón de pago de PayPal (se muestra solo tras análisis) -->
             <!-- <div id="paypal-button-container" style="margin-top: 20px; max-width: 300px; margin-left: auto; margin-right: auto;"></div>-->
-
+<div id="paypal-button-container" style="margin-top: 20px; max-width: 300px; margin-left: auto; margin-right: auto; display: none;"></div>
 
             <h3>📜 Historial reciente</h3>
             <div id="historyList" class="history-list"></div>
@@ -592,6 +592,11 @@ function buildHallazgosExplicados(text, showWords = false) {
                 renderHistory();
                 announceToScreenReader(`Análisis completado. IM ${data.im}. ${data.verdict}`);
                 semLabel.innerText = "✅ Análisis listo";
+
+
+// Mostrar el botón de PayPal después de un análisis exitoso
+const paypalContainer = document.getElementById('paypal-button-container');
+if (paypalContainer) paypalContainer.style.display = 'block';
 
             } catch (error) {
                 clearTimeout(timeoutId);
