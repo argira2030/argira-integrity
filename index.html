@@ -764,6 +764,14 @@ function generateExpertReport() {
         document.getElementById('expertViewBtn').onclick = () => { simpleMode=false; document.getElementById('expertViewBtn').classList.add('active'); document.getElementById('simpleViewBtn').classList.remove('active'); refreshCurrentAnalysis(); };
         document.getElementById('helpBtn').onclick = () => document.getElementById('helpModal').style.display='flex';
         document.getElementById('closeHelpBtn').onclick = () => document.getElementById('helpModal').style.display='none';
+//pdf
+        document.getElementById('demoReportBtn').onclick = () => {
+    if (!window.lastText) {
+        alert("Primero audita un texto.");
+        return;
+    }
+    generateExpertReport();
+};
         
         const MODE_DESCS = {
             alert:      '⚠️ Alerta — Máxima sensibilidad. Para bulos, estafas y phishing.',
