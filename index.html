@@ -359,97 +359,146 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         }
 
         // ========== ) ==========
-        function buildHallazgosExplicados(text) {
-            let items = [];
-            let seen = new Set();
+        // ========== VERSIÓN DETALLADA (para informe de pago) ==========
+function _buildDetailedHallazgos(text) {
+    let items = [];
+    let seen = new Set();
 
-            // 
-            for (const [cat, patterns] of Object.entries(GLOBAL_PATTERNS.phishing)) {
-                patterns.forEach(p => {
-                    const regex = new RegExp(`\\b${p.word.replace(/ /g, '\\s+')}\\b`, 'gi');
-                    let match;
-                    while ((match = regex.exec(text)) !== null) {
-                        const word = match[0];
-                        const key = `${word.toLowerCase()}_${cat}`;
-                        if (seen.has(key)) continue;
-                        seen.add(key);
-                        let categoria = '';
-                        if (cat === 'p') categoria = 'Urgencia';
-                        else if (cat === 'e') categoria = 'Amenaza/Pérdida';
-                        else if (cat === 'u') categoria = 'Escasez';
-                        else if (cat === 'a') categoria = 'Falsa Autoridad';
-                        else if (cat === 's') categoria = 'Llamada a la acción';
-                        else if (cat === 'l') categoria = 'Personalización';
-                        else if (cat === 'f') categoria = 'Miedo';
-                        let tip = getDetailedTip(word);
-                        items.push({ palabra: word, categoria, explicacion: tip, tipo: cat });
-                    }
+    // 1. Phishing patterns
+    for (const [cat, patterns] of Object.entries(GLOBAL_PATTERNS.phishing)) {
+        patterns.forEach(p => {
+            const regex = new RegExp(`\\b${p.word.replace(/ /g, '\\s+')}\\b`, 'gi');
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+                const word = match[0];
+                const key = `${word.toLowerCase()}_${cat}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                let categoria = '';
+                if (cat === 'p') categoria = 'Urgencia';
+                else if (cat === 'e') categoria = 'Amenaza/Pérdida';
+                else if (cat === 'u') categoria = 'Escasez';
+                else if (cat === 'a') categoria = 'Falsa Autoridad';
+                else if (cat === 's') categoria = 'Llamada a la acción';
+                else if (cat === 'l') categoria = 'Personalización';
+                else if (cat === 'f') categoria = 'Miedo';
+                let tip = getDetailedTip(word);
+                items.push({ palabra: word, categoria, explicacion: tip, tipo: cat });
+            }
+        });
+    }
+
+    // 2. Persuasión legítima
+    GLOBAL_PATTERNS.legit.forEach(p => {
+        const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            const word = match[0];
+            const key = `${word.toLowerCase()}_legit`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            items.push({
+                palabra: word,
+                categoria: 'Persuasión legítima',
+                explicacion: 'Término de valor social o educativo.',
+                tipo: 'legit'
+            });
+        }
+    });
+
+    // 3. Frases coercitivas
+    GLOBAL_PATTERNS.coaccion.forEach(rule => {
+        if (rule.regex.test(text)) {
+            const word = rule.regex.source.replace(/\\s\+/g, ' ');
+            const key = `coacc_${word}`;
+            if (seen.has(key)) return;
+            seen.add(key);
+            items.push({
+                palabra: word,
+                categoria: rule.label || 'Coacción',
+                explicacion: rule.reason,
+                tipo: 'coacc'
+            });
+        }
+    });
+
+    // 4. Nombres propios
+    const nameMatch = text.match(/\b(José|Juan|María|Ana|Carlos|Laura|Pablo|Nicole|Taghreed)\b/gi);
+    if (nameMatch) {
+        nameMatch.forEach(name => {
+            const key = `name_${name.toLowerCase()}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                items.push({
+                    palabra: name,
+                    categoria: 'Personalización',
+                    explicacion: 'Uso del nombre propio para crear familiaridad.',
+                    tipo: 'l'
                 });
             }
+        });
+    }
 
-            //
-            GLOBAL_PATTERNS.legit.forEach(p => {
-                const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    const word = match[0];
-                    const key = `${word.toLowerCase()}_legit`;
-                    if (seen.has(key)) continue;
-                    seen.add(key);
-                    items.push({
-                        palabra: word,
-                        categoria: 'Persuasión legítima',
-                        explicacion: 'Término de valor social o educativo.',
-                        tipo: 'legit'
-                    });
-                }
-            });
+    if (items.length === 0) return "<div style='padding:12px'>✅ No se detectaron ganchos persuasivos relevantes.</div>";
+    
+    const colores = { p:'#c084fc', e:'#ff6b8b', u:'#f97316', a:'#3b82f6', s:'#06b6d4', l:'#ef4444', f:'#a855f7', legit:'#00cc66', coacc:'#ff9900' };
+    return items.map(it => {
+        let tipoColor = it.tipo;
+        if (it.tipo === 'legit') tipoColor = 'legit';
+        if (it.tipo === 'coacc') tipoColor = 'coacc';
+        return `<div class="hall-item-explicado" style="border-left-color:${colores[tipoColor] || '#aaa'};"><div class="hall-cat" style="color:${colores[tipoColor] || '#aaa'}">${it.categoria}</div><div class="hall-word">"${escapeHtml(it.palabra)}"</div><div class="hall-explanation">→ ${escapeHtml(it.explicacion)}</div></div>`;
+    }).join('');
+}
 
-            // 
-            GLOBAL_PATTERNS.coaccion.forEach(rule => {
-                if (rule.regex.test(text)) {
-                    const word = rule.regex.source.replace(/\\s\+/g, ' ');
-                    const key = `coacc_${word}`;
-                    if (seen.has(key)) return;
-                    seen.add(key);
-                    items.push({
-                        palabra: word,
-                        categoria: rule.label || 'Coacción',
-                        explicacion: rule.reason,
-                        tipo: 'coacc'
-                    });
-                }
-            });
-
-            // 4. Nom 
+// ========== VERSIÓN PÚBLICA (con o sin palabras) ==========
+function buildHallazgosExplicados(text, showWords = false) {
+    if (showWords) {
+        return _buildDetailedHallazgos(text);
+    } else {
+        // Versión resumida para web gratuita
+        let categoriesDetected = new Set();
         
-            const nameMatch = text.match(/\b(José|Juan|María|Ana|Carlos|Laura|Pablo|Nicole|Taghreed)\b/gi);
-            if (nameMatch) {
-                nameMatch.forEach(name => {
-                    const key = `name_${name.toLowerCase()}`;
-                    if (!seen.has(key)) {
-                        seen.add(key);
-                        items.push({
-                            palabra: name,
-                            categoria: 'Personalización',
-                            explicacion: 'Uso del nombre propio para crear familiaridad.',
-                            tipo: 'l'
-                        });
-                    }
-                });
+        // Phishing patterns
+        for (const [cat, patterns] of Object.entries(GLOBAL_PATTERNS.phishing)) {
+            patterns.forEach(p => {
+                const regex = new RegExp(`\\b${p.word.replace(/ /g, '\\s+')}\\b`, 'gi');
+                if (regex.test(text)) {
+                    if (cat === 'p') categoriesDetected.add('URGENCIA');
+                    else if (cat === 'e') categoriesDetected.add('AMENAZA/PÉRDIDA');
+                    else if (cat === 'u') categoriesDetected.add('ESCASEZ');
+                    else if (cat === 'a') categoriesDetected.add('FALSA AUTORIDAD');
+                    else if (cat === 's') categoriesDetected.add('LLAMADA A LA ACCIÓN');
+                    else if (cat === 'l') categoriesDetected.add('PERSONALIZACIÓN');
+                    else if (cat === 'f') categoriesDetected.add('MIEDO');
+                }
+            });
+        }
+        // Frases coercitivas
+        GLOBAL_PATTERNS.coaccion.forEach(rule => {
+            if (rule.regex.test(text)) {
+                categoriesDetected.add(rule.label || 'COACCIÓN');
             }
+        });
+        // Persuasión legítima
+        let legitCount = 0;
+        GLOBAL_PATTERNS.legit.forEach(p => {
+            const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
+            if (regex.test(text)) legitCount++;
+        });
+        if (legitCount > 0) categoriesDetected.add('PERSUASIÓN LEGÍTIMA');
 
-            if (items.length === 0) return "<div style='padding:12px'>✅ No se detectaron ganchos persuasivos relevantes.</div>";
-            
-            const colores = { p:'#c084fc', e:'#ff6b8b', u:'#f97316', a:'#3b82f6', s:'#06b6d4', l:'#ef4444', f:'#a855f7', legit:'#00cc66', coacc:'#ff9900' };
-            return items.map(it => {
-                let tipoColor = it.tipo;
-                if (it.tipo === 'legit') tipoColor = 'legit';
-                if (it.tipo === 'coacc') tipoColor = 'coacc';
-                return `<div class="hall-item-explicado" style="border-left-color:${colores[tipoColor] || '#aaa'};"><div class="hall-cat" style="color:${colores[tipoColor] || '#aaa'}">${it.categoria}</div><div class="hall-word">"${escapeHtml(it.palabra)}"</div><div class="hall-explanation">→ ${escapeHtml(it.explicacion)}</div></div>`;
-            }).join('');
+        if (categoriesDetected.size === 0) {
+            return "<div style='padding:12px'>✅ No se detectaron patrones relevantes.</div>";
         }
 
+        let html = '<div style="margin-bottom: 12px;">🔍 Se detectaron los siguientes patrones generales:</div><ul>';
+        categoriesDetected.forEach(cat => {
+            html += `<li><strong>${cat}</strong> (contribución detectada)</li>`;
+        });
+        html += '</ul><div style="margin-top: 12px; padding: 10px; background: var(--card-bg); border-radius: 16px; border-left: 4px solid var(--accent);">📄 <strong>Informe detallado</strong>: Para conocer las palabras exactas, su contexto y el análisis completo, adquiere el <strong>informe pericial (49€)</strong>. Incluye firma digital y validación científica.</div>';
+        return html;
+    }
+}
         // ==========  ==========
         async function performAudit(text) {
             if (!text.trim()) return;
