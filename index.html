@@ -377,12 +377,12 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
 
         // Helper: cabeceras autenticadas
         function authHeaders(extra = {}) {
-            return {
-                'Content-Type': 'application/json',
-                ...(sessionToken ? { 'x-session-token': sessionToken } : {}),
-                ...(currentEmail ? { 'x-auth-email': currentEmail } : {}),
-                ...extra
-            };
+    const token = sessionToken || localStorage.getItem('argira_token');
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { 'x-session-token': token } : {}),
+        ...extra
+    };
         }
 
         const NOISE_PATTERN = /\b(bueno|decir|entonces|simplemente|realmente|quizás|un poco|tal vez|claro|entiendo|básicamente|obviamente|por supuesto|en realidad|digamos|supongo|evidentemente|claramente|ciertamente|absolutamente|prácticamente|virtualmente|bien|pues|em|eh|mmm)\b/gi;
