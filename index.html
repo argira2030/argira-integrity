@@ -93,6 +93,7 @@
         .pack-btn:hover { background: var(--accent); color: #000; }
         #creditsControls { text-align: center; margin: 12px 0; padding: 12px; background: var(--card-bg); border-radius: 28px; }
         #paypal-button-container { max-width: 300px; margin: 0 auto; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -478,7 +479,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
         function annotatedText(t){ let seg=[]; for(let c of ['p','e','u','a','soc','alarm','fake']){ let rx=buildRegexUnicode(TERMS_BASE[c]); let m; while((m=rx.exec(t))) seg.push({start:m.index, end:m.index+m[0].length, word:m[0], cat:c}); } seg.sort((a,b)=>a.start-b.start); let html="", last=0; for(let s of seg){ if(s.start<last) continue; html+=escapeHtml(t.slice(last,s.start)); let col={p:'#c084fc',e:'#ff6b8b',u:'#f97316',a:'#3b82f6',soc:'#06b6d4',alarm:'#ef4444',fake:'#a855f7'}[s.cat]; html+=`<span class="gancho" style="border-bottom-color:${col};">${escapeHtml(s.word)}</span>`; last=s.end; } html+=escapeHtml(t.slice(last)); return html; }
         function drawRadar(values, labels) { let canvas=document.getElementById('radarCanvas'); canvas?.getContext('2d'); if(!canvas) return; let ctx=canvas.getContext('2d'); let w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); let cx=w/2, cy=h/2, r=Math.min(w,h)/2.5; let angles=labels.map((_,i)=>(i*2*Math.PI/labels.length)-Math.PI/2); ctx.strokeStyle='#aaa'; ctx.fillStyle='#ccc'; ctx.font='10px sans-serif'; angles.forEach((ang,i)=>{ let x=cx+r*Math.cos(ang), y=cy+r*Math.sin(ang); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke(); ctx.fillText(labels[i], x-8, y-4); }); ctx.beginPath(); let first=true; values.forEach((v,i)=>{ let norm=Math.min(1,v/10); let x=cx+r*norm*Math.cos(angles[i]), y=cy+r*norm*Math.sin(angles[i]); if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }); ctx.closePath(); ctx.fillStyle='rgba(0,247,176,0.3)'; ctx.fill(); ctx.strokeStyle='#00f7b0'; ctx.stroke(); }
         
-        function saveToHistory(text, im, summary, mode, action){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); h.unshift({text:text.slice(0,80), im, summary, date:new Date().toISOString()}); if(h.length>5) h.pop(); localStorage.setItem('argira_history',JSON.stringify(h)); registerAuditInBackend(currentMode, parseFloat(im), action, text.slice(0,120)); }
+        function saveToHistory(text, im, summary){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); h.unshift({text:text.slice(0,80), im, summary, date:new Date().toISOString()}); if(h.length>5) h.pop(); localStorage.setItem('argira_history',JSON.stringify(h)); }
         function renderHistory(){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); let container=document.getElementById('historyList'); if(!container) return; container.innerHTML = h.map(hh=>`<div class="history-item" data-text="${escapeHtml(hh.text)}"><strong>${hh.summary}</strong> (IM ${hh.im})<br><small>${new Date(hh.date).toLocaleString()}</small><br>${escapeHtml(hh.text)}</div>`).join(''); document.querySelectorAll('.history-item').forEach(el=>{ el.addEventListener('click',()=>{ document.getElementById('inputText').value=el.getAttribute('data-text'); alert('Texto cargado. Pulsa Auditar.'); }); }); }
 
         const TIPS_DETAIL = {
@@ -617,11 +618,27 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             }
         }
 
+
+        // ========== FUNCIONES UI ==========
+        function updateCompactSemaphore(color, scale, action, im) {
+            const dot = document.getElementById('semDot');
+            const score = document.getElementById('semScore');
+            const label = document.getElementById('semLabel');
+            const imEl = document.getElementById('semIM');
+            if (dot) { dot.style.background = color; dot.style.boxShadow = `0 0 12px ${color}`; }
+            if (score) score.innerText = scale;
+            if (label) label.innerText = action;
+            if (imEl) imEl.innerText = `IM ${im}`;
+        }
+        function announceToScreenReader(message) {
+            const live = document.getElementById('liveRegion');
+            if (live) { live.textContent = message; setTimeout(() => live.textContent = '', 1000); }
+        }
+
         // ========== FUNCIÓN PRINCIPAL DE ANÁLISIS ==========
         async function performAudit(text) {
             if (!text.trim()) return;
-            // Si no hay email autenticado, mostrar modal
-            if (!currentEmail) { showAuthModal(); return; }
+            if (!currentEmail && !sessionToken) { showAuthModal(); return; }
 
             const resultsArea = document.getElementById('resultsArea');
             const semLabel = document.getElementById('semLabel');
@@ -632,32 +649,51 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
             auditBtn.disabled = true;
             auditBtn.style.opacity = '0.5';
 
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 60000);
-
             try {
+                const token = sessionToken || localStorage.getItem('argira_token');
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'x-session-token': token || ''
+                };
+
                 const response = await fetch(`${API_V1}/analyze`, {
                     method: 'POST',
-                    headers: authHeaders(),
-                    body: JSON.stringify({ text, mode: currentMode }),
-                    signal: controller.signal
+                    headers: headers,
+                    body: JSON.stringify({ text, mode: currentMode })
                 });
-                clearTimeout(timeoutId);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                if (response.status === 401) {
+                    localStorage.removeItem('argira_token');
+                    localStorage.removeItem('argira_email');
+                    currentEmail = null; sessionToken = null;
+                    hideAuthModal && hideAuthModal();
+                    showAuthModal();
+                    semLabel.innerText = "Sesión expirada. Inicia sesión de nuevo.";
+                    return;
+                }
+
+                if (response.status === 403) {
+                    const data = await response.json();
+                    if (data.error === 'limit_reached') {
+                        document.getElementById('limitModal').style.display = 'flex';
+                        semLabel.innerText = "Límite de auditorías alcanzado.";
+                        return;
+                    }
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
+
                 const data = await response.json();
-                console.log("API response:", data);
 
                 const im = parseFloat(data.im);
-                const scale = data.scale;
                 const { color, action } = getSemaphore(im);
-                updateCompactSemaphore(color, scale, action, im);
-                
-                lastIM = data.im;
-                lastScale = scale;
-                lastAction = action;
-                lastSummary = data.verdict;
-                window.lastText = text;
-                lastAnalysisData = data;
+                updateCompactSemaphore(color, data.scale, action, im);
+
+                lastIM = data.im; lastScale = data.scale; lastAction = action;
+                lastSummary = data.verdict; window.lastText = text; lastAnalysisData = data;
 
                 document.getElementById('imIndex').innerText = data.im;
                 document.getElementById('energyRange').innerText = data.energy;
@@ -689,7 +725,7 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 if (!simpleMode) {
                     document.getElementById('expertDetails').style.display = 'block';
                     document.getElementById('cleanText').innerHTML = annotatedText(text);
-                    drawRadar([Math.min(10,rawP), Math.min(10,rawE), Math.min(10,rawU), Math.min(10,rawA), Math.min(10,rawSoc), Math.min(10,rawAlarm), Math.min(10,rawFake)], ['P','E','U','A','S','L','F']);
+                    drawRadar([Math.min(10,rawP),Math.min(10,rawE),Math.min(10,rawU),Math.min(10,rawA),Math.min(10,rawSoc),Math.min(10,rawAlarm),Math.min(10,rawFake)], ['P','E','U','A','S','L','F']);
                 } else {
                     document.getElementById('expertDetails').style.display = 'none';
                 }
@@ -700,16 +736,27 @@ El Shield analizará si contiene manipulación emocional, urgencia artificial, a
                 announceToScreenReader(`Análisis completado. IM ${data.im}. ${data.verdict}`);
                 semLabel.innerText = "✅ Análisis listo";
 
-            } catch (error) {
-                clearTimeout(timeoutId);
-                console.error(error);
-                if (error.name === 'AbortError') {
-                    semLabel.innerText = "⏳ El servidor tarda más de 25 segundos. Reintenta.";
-                    alert("El servidor gratuito está despertando. Vuelve a intentar en 20 segundos.");
-                } else {
-                    semLabel.innerText = "❌ Error de conexión. Revisa tu internet o la API.";
-                    alert("No se pudo contactar con el motor de análisis. ¿El enlace es correcto?");
+                // Actualizar créditos
+                if (data.credits !== undefined) {
+                    credits = data.credits;
+                    document.getElementById('creditsAmount').innerText = credits;
+                    updateUIAfterCredits();
                 }
+
+                // Sincronizar contador auditorías
+                incrementAuditCount();
+                updateAuditCounterUI();
+
+            } catch (error) {
+                console.error('performAudit error:', error);
+                let msg = "No se pudo contactar con el motor de análisis.";
+                if (error.message && error.message.includes('Failed to fetch')) {
+                    msg = "Error de red o CORS. El servidor no está accesible.";
+                } else if (error.message) {
+                    msg = error.message;
+                }
+                semLabel.innerText = "❌ " + msg;
+                alert(msg);
                 resultsArea.style.display = 'none';
             } finally {
                 auditBtn.disabled = false;
