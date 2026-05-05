@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Argira Integrity Shield · argira.eus</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-deep: #02020a; --surface: #0b0b14; --card-bg: #11111f; --accent: #00f7b0;
+            --danger: #ff3e6c; --warning: #ff9f2e; --info: #3b82f6;
+            --text-main: #eaeaef; --text-dim: #b0b0cc; --border-dim: #2a2a40;
+            --tooltip-bg: #1a1a2e;
+        }
+        .skip-link { position: absolute; top: -40px; left: 0; background: var(--accent); color: #000; padding: 8px; z-index: 100; text-decoration: none; border-radius: 0 0 8px 0; }
+        .skip-link:focus { top: 0; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        body { font-family: 'Segoe UI', Roboto, system-ui; background: var(--bg-deep); color: var(--text-main); padding: 20px; line-height: 1.5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; padding: 28px 20px 20px; background: linear-gradient(180deg, #000010, transparent); border-radius: 0 0 40px 40px; }
+        .badge-sci { font-family: monospace; color: var(--accent); letter-spacing: 2px; font-size: 0.75rem; text-shadow: 0 0 12px rgba(0,247,176,0.5); }
+        h1 { font-size: 2rem; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; margin: 8px 0 4px; text-shadow: none; filter: drop-shadow(0 0 20px rgba(0,247,176,0.3)); }
+        .header-shield { font-size: 2.2rem; display: block; margin-bottom: 4px; filter: drop-shadow(0 0 16px rgba(0,247,176,0.6)); }
+        .header-sub { font-size: 0.85rem; color: var(--text-dim); letter-spacing: 1px; }
+        .sem-compact { display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:40px; padding:8px 16px; margin:10px 0; border:1px solid var(--border-dim); min-height:42px; }
+        .sem-dot { width:18px; height:18px; border-radius:50%; background:#333; flex-shrink:0; transition:background 0.3s, box-shadow 0.3s; }
+        .sem-score { font-size:1.1rem; font-weight:800; min-width:40px; }
+        .sem-label { font-size:0.8rem; font-weight:600; flex:1; }
+        .sem-im { font-size:0.65rem; color:var(--text-dim); white-space:nowrap; }
+        .mode-quick { display: flex; gap: 8px; margin-bottom: 12px; }
+        .mode-quick-btn { flex: 1; padding: 8px 6px; border-radius: 40px; font-size: 0.78rem; font-weight: 700; background: var(--card-bg); border: 1px solid var(--border-dim); color: var(--text-dim); cursor: pointer; transition: all 0.15s; text-align: center; }
+        .mode-quick-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .mode-quick-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .mode-quick-desc { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 10px; padding: 0 4px; min-height: 18px; }
+        .main-box { background: var(--surface); border-radius: 32px; padding: 20px; border: 1px solid var(--border-dim); margin-bottom: 20px; }
+        textarea { width: 100%; height: 140px; background: #02020e; border-radius: 20px; padding: 14px; font-family: monospace; border: 2px solid rgba(0,247,176,0.5); color: #e0f5ef; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,247,176,0.15); }
+        textarea::placeholder { color: rgba(255,255,255,0.55); }
+        .button-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 12px; }
+        button { background: linear-gradient(95deg, #1a2a2a, #0a1a1a); border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; padding: 8px 14px; font-weight: 600; cursor: pointer; font-size: 0.8rem; transition: 0.1s; }
+        button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        button:hover { background: var(--accent); color: #000; }
+        .btn-primary { background: #1a4a3a; border-width: 2px; padding: 10px 24px; font-size: 1rem; }
+        .btn-secondary { border-color: var(--text-dim); color: var(--text-dim); background: transparent; padding: 6px 12px; font-size: 0.75rem; }
+        .share-link { background: transparent; border: none; color: var(--text-dim); font-size: 0.8rem; padding: 6px 12px; text-decoration: underline; cursor: pointer; }
+        .share-link:hover { color: var(--accent); }
+        .speak-btn-large { background: #2a4a6a; border: 2px solid var(--accent); color: white; font-size: 1rem; padding: 10px 20px; margin-top: 12px; width: 100%; max-width: 300px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 60px; cursor: pointer; transition: 0.2s; }
+        .speak-btn-large:hover { background: var(--accent); color: #000; }
+        .veredicto-card { background: var(--card-bg); border-radius: 48px; padding: 20px; margin: 20px 0; text-align: center; border: 1px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .veredicto-flex { display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; }
+        .semaphore-light-big { width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0 15px currentColor; }
+        .scale-big { font-size: 3rem; font-weight: 800; }
+        .action-big { font-size: 1.4rem; font-weight: bold; background: #00000066; padding: 4px 16px; border-radius: 60px; }
+        .im-mini { font-size: 0.85rem; margin-top: 12px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .tooltip-costo { border-bottom: 1px dashed var(--accent); cursor: help; }
+        .metrics-mini { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px 0; }
+        .metric-mini { background: var(--surface); border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; border-left: 3px solid var(--accent); display: inline-flex; align-items: baseline; gap: 6px; cursor: help; position: relative; }
+        .metric-mini strong { font-size: 0.9rem; margin-right: 2px; }
+        .metric-mini .explain { font-size: 0.65rem; color: var(--text-dim); }
+        .tooltip-science { display: none; position: absolute; bottom: 130%; left: 0; background: var(--tooltip-bg); border-radius: 16px; padding: 8px; width: 220px; font-size: 0.7rem; z-index: 200; box-shadow: 0 2px 8px black; white-space: normal; }
+        .metric-mini:hover .tooltip-science, .metric-mini:focus-within .tooltip-science { display: block; }
+        .expert-card { background: var(--surface); border-radius: 28px; padding: 16px; margin-top: 20px; border: 1px solid var(--border-dim); }
+        .aseptic-panel { background: var(--surface); border-radius: 20px; padding: 16px; font-family: 'Segoe UI', monospace; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; border: 1px solid var(--border-dim); margin-top: 12px; }
+        .hallazgos-explicados { background: var(--surface); border-radius: 24px; padding: 20px; margin-top: 24px; border: 1px solid var(--border-dim); }
+        .hallazgos-explicados h3 { margin-bottom: 12px; color: var(--accent); }
+        .hall-item-explicado { border-left: 3px solid; margin: 12px 0; padding-left: 14px; background: var(--card-bg); border-radius: 16px; padding: 10px 16px; }
+        .hall-cat { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .hall-word { font-weight: bold; font-family: monospace; font-size: 1rem; }
+        .hall-explanation { font-size: 0.8rem; margin-top: 6px; color: var(--text-dim); }
+        .radar-container { text-align: center; margin: 16px 0; }
+        canvas { max-width: 260px; background: var(--surface); border-radius: 20px; padding: 8px; }
+        .footer { font-size: 0.65rem; text-align: center; margin-top: 40px; color: var(--text-dim); border-top: 1px solid var(--border-dim); padding-top: 16px; }
+        .scientific-footer { padding: 20px; font-size: 0.75rem; color: var(--text-dim); border-top: 1px solid var(--border-dim); margin-top: 40px; }
+        .history-list { max-height: 180px; overflow-y: auto; margin-top: 12px; }
+        .history-item { background: var(--card-bg); border-radius: 16px; padding: 8px 12px; margin: 6px 0; cursor: pointer; border-left: 3px solid var(--accent); }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: #000c; backdrop-filter: blur(8px); z-index: 1100; justify-content: center; align-items: center; }
+        .modal-content { background: var(--surface); border-radius: 32px; padding: 20px; max-width: 550px; width: 90%; max-height: 80vh; overflow: auto; border: 1px solid var(--accent); }
+        .veto-layer { display: none; position: fixed; top:50%; left:50%; transform: translate(-50%,-50%); background: #000c; backdrop-filter: blur(12px); border-radius: 40px; padding: 30px; text-align: center; z-index: 1000; width: 260px; border: 2px solid var(--danger); }
+        .timer-big { font-size: 2.5rem; font-family: monospace; color: var(--danger); }
+        .rewrite-suggestion { background: #0a2a1f; border-radius: 24px; padding: 12px; margin: 16px 0; color: #c0ffc0; }
+        .gancho { display: inline; background: rgba(0,247,176,0.15); border-bottom: 1px dashed var(--accent); padding: 0 2px; border-radius: 6px; font-family: monospace; }
+        .view-btn { background: transparent; border: 1px solid var(--border-dim); border-radius: 30px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
+        .view-btn.active { background: var(--accent); color: #000; }
+        .mode-badge { padding: 4px 12px; border-radius: 40px; font-size: 0.75rem; font-weight: bold; background: #2a5a2a; color: white; white-space: nowrap; }
+        #liveRegion { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .text-center { text-align: center; }
+        /* Nuevos estilos para créditos */
+        .credits-badge { background: var(--accent); color: #000; border-radius: 30px; padding: 4px 12px; font-weight: bold; display: inline-block; margin-left: 12px; }
+        .pack-buttons { display: flex; gap: 12px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
+        .pack-btn { background: #2a4a6a; color: white; border: none; padding: 8px 16px; border-radius: 40px; cursor: pointer; }
+        .pack-btn:hover { background: var(--accent); color: #000; }
+        #creditsControls { text-align: center; margin: 12px 0; padding: 12px; background: var(--card-bg); border-radius: 28px; }
+        #paypal-button-container { max-width: 300px; margin: 0 auto; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+    <div class="container" id="main-content">
+        <div class="header">
+            <div class="badge-sci">⚡ ARGIRA STATION · COGNITIVE DEFENSE</div>
+            <span class="header-shield" role="img" aria-hidden="true">🛡️</span>
+            <h1>Integrity Shield</h1>
+            <div class="header-sub">Kahneman · Cialdini · Shannon</div>
+        </div>
+        <div class="main-box">
+            <div class="mode-quick" role="group" aria-label="Seleccionar modo de análisis">
+                <button class="mode-quick-btn" data-mode="alert">⚠️ Alerta</button>
+                <button class="mode-quick-btn active" data-mode="balanced">⚖️ Equilibrado</button>
+                <button class="mode-quick-btn" data-mode="newsletter">🌿 Newsletter</button>
+            </div>
+            <div id="modeQuickDesc" class="mode-quick-desc">⚖️ Equilibrado — Estándar. Para correos comerciales, publicidad y noticias.</div>
+
+            <div class="sem-compact" id="semCompact" aria-live="polite">
+                <div class="sem-dot" id="semDot"></div>
+                <div class="sem-score" id="semScore">—</div>
+                <div class="sem-label" id="semLabel">Pega un texto y pulsa AUDITAR</div>
+                <div class="sem-im" id="semIM"></div>
+            </div>
+
+            <textarea id="inputText" placeholder="✍️ Pega aquí un email, noticia, bulo o cualquier texto...
+
+El Shield analizará si contiene manipulación emocional, urgencia artificial, autoridad falsa o desinformación — y te explicará por qué, término a término, con base en Kahneman, Cialdini y Shannon." aria-label="Área de texto para pegar el contenido a analizar"></textarea>
+
+            <div style="display:flex; gap:8px; margin-top:12px; align-items:center;">
+                <button id="simpleViewBtn" class="view-btn active">👁️ Simple</button>
+                <button id="expertViewBtn" class="view-btn">🔬 Experta</button>
+                <button id="auditBtn" class="btn-primary" style="flex:1; margin-left:4px;">🔬 AUDITAR</button>
+            </div>
+
+            <details style="margin-top:10px;">
+                <summary style="font-size:0.72rem; color:var(--text-dim); cursor:pointer; list-style:none; padding:6px 4px;">
+                    ▾ Ejemplos · Audio · Más opciones
+                </summary>
+                <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px;">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button id="loadExampleTech" class="btn-secondary">📘 Newsletter</button>
+                        <button id="loadExampleAlarm" class="btn-secondary">⚠️ Bulo</button>
+                        <button id="loadExampleEng" class="btn-secondary">🇬🇧 Scam</button>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button id="testMicBtn" class="btn-secondary">🎤 Mic</button>
+                        <button id="audioBtn" class="btn-secondary">🎙️ Grabar</button>
+                        <button id="compareBtn" class="btn-secondary">🔄 Comparar</button>
+                        <button id="shareBtn" class="share-link">📤 Compartir</button>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div style="margin: 8px 0 16px; display:flex; align-items:center; gap:10px;">
+            <span id="modeBadge" class="mode-badge" aria-live="polite">⚖️ Equilibrado</span>
+            <button id="helpBtn" class="view-btn">❓ Ayuda</button>
+            <button id="logoutBtn" style="display:none; margin-left:auto; background:transparent; border:1px solid var(--border-dim); color:var(--text-dim); border-radius:30px; padding:6px 14px; font-size:0.82rem; cursor:pointer;" title="Cerrar sesión">⏏ Salir</button>
+            <span id="auditCounter" style="display:none; font-size:0.75rem; background:var(--card-bg); border:1px solid var(--border-dim); border-radius:30px; padding:4px 12px; color:var(--text-dim);">
+                🔬 <span id="auditCountNum">5</span> <span id="auditCountLabel">auditorías restantes</span>
+            </span>
+        </div>
+
+        <div id="resultsArea" style="display: none;">
+            <span id="semaphoreText" class="sr-only" aria-live="polite">Veredicto: pendiente</span>
+            <div id="bigSemaphore" style="display:none"></div>
+            <div id="bigScale" style="display:none">0/10</div>
+            <div id="bigAction" style="display:none">—</div>
+
+            <div class="metrics-mini" id="miniMetrics">
+                <div class="metric-mini" tabindex="0"><strong>🎯P</strong> <span class="explain">(simpatía)</span> <span id="valP">0</span><div class="tooltip-science">Personalización: "tú, gratis, nosotros", además nombres personales repetidos. Principio de simpatía y reciprocidad (Cialdini).</div></div>
+                <div class="metric-mini" tabindex="0"><strong>💔E</strong> <span class="explain">(miedo)</span> <span id="valE">0</span><div class="tooltip-science">Emocional: miedo, culpa, pérdida. Activa Sistema 1 (Kahneman).</div></div>
+                <div class="metric-mini" tabindex="0"><strong>⏳U</strong> <span class="explain">(escasez)</span> <span id="valU">0</span><div class="tooltip-science">Urgencia: "ahora, hoy". Principio de escasez (Cialdini).</div></div>
+                <div class="metric-mini" tabindex="0"><strong>👑A</strong> <span class="explain">(autoridad)</span> <span id="valA">0</span><div class="tooltip-science">Autoridad: "expertos, especialista, médico, doctor, matrona". Sesgo de autoridad.</div></div>
+                <div class="metric-mini" tabindex="0"><strong>👥S</strong> <span class="explain">(arrastre)</span> <span id="valSoc">0</span><div class="tooltip-science">Prueba social: "millones, la mayoría". Efecto de arrastre.</div></div>
+                <div class="metric-mini" tabindex="0"><strong>🔥L</strong> <span class="explain">(catástrofe)</span> <span id="valAlarm">0</span><div class="tooltip-science">Alarmismo: "apocalipsis, colapso". Catastrofismo.</div></div>
+                <div class="metric-mini" tabindex="0"><strong>🔮F</strong> <span class="explain">(conspiración)</span> <span id="valFake">0</span><div class="tooltip-science">Fabricación: "cura oculta, conspiración". Narrativas infalsificables.</div></div>
+                <div class="metric-mini" tabindex="0"><strong>📊D</strong> <span class="explain">(datos)</span> <span id="valD">—</span><div class="tooltip-science">Densidad factual: números, fechas, enlaces, fuentes.</div></div>
+                <div class="metric-mini" tabindex="0"><strong>📡EDI</strong> <span class="explain">(Shannon)</span> <span id="valEDI">—</span><div class="tooltip-science">Entropía: diversidad del vocabulario. Alto = texto rico.</div></div>
+            </div>
+            <div class="im-mini" style="margin-top:8px;">
+                📊 IM: <span id="imIndex">0.00</span> ·
+                ⚡ <span id="energyRange">—</span> ·
+                📉 ΔIC: <span id="deltaIC">—</span>/10
+                <span class="tooltip-costo" title="ΔIC = proporción de relleno sobre tokens totales. 0=limpio, 10=máximo ruido estructural.">(ⓘ)</span>
+            </div>
+            <div id="modeIndicator" style="font-size:0.7rem; margin-top:6px; color:var(--text-dim);" aria-live="polite"></div>
+            
+            <!-- NUEVA SECCIÓN DE CRÉDITOS -->
+            <div id="creditsControls" style="text-align:center; margin:10px 0;">
+                <span>💰 Créditos disponibles: <strong id="creditsAmount">0</strong></span>
+                <div id="generateReportArea" style="margin-top:10px;"></div>
+                <div id="buyCreditsArea" class="hidden">
+                    <div class="pack-buttons">
+                        <button class="pack-btn" data-amount="1">1€ → 5 créditos</button>
+                        <button class="pack-btn" data-amount="3">3€ → 20 créditos</button>
+                        <button class="pack-btn" data-amount="9.99">9.99€ → 100 créditos</button>
+                    </div>
+                    <div id="paypal-button-container" style="max-width:300px; margin:0 auto;"></div>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:12px;">
+                <button id="speakBtn" class="speak-btn-large">🔊 Leer resultado en voz alta</button>
+            </div>
+
+            <div id="expertDetails" style="display: none;">
+                <div class="expert-card">
+                    <div class="radar-container">
+                        <canvas id="radarCanvas" width="300" height="300" style="max-width:100%;" aria-label="Gráfico radar"></canvas>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 8px 0;">
+                        <span><span style="background:#c084fc; display:inline-block; width:12px; height:12px; border-radius:3px;"></span> P</span>
+                        <span><span style="background:#ff6b8b;"></span> E</span>
+                        <span><span style="background:#f97316;"></span> U</span>
+                        <span><span style="background:#3b82f6;"></span> A</span>
+                        <span><span style="background:#06b6d4;"></span> S</span>
+                        <span><span style="background:#ef4444;"></span> L</span>
+                        <span><span style="background:#a855f7;"></span> F</span>
+                    </div>
+                    <h3>📜 Texto anotado</h3>
+                    <div id="cleanText" class="aseptic-panel" aria-label="Texto con ganchos resaltados"></div>
+                </div>
+            </div>
+
+            <div id="hallazgosExplicados" class="hallazgos-explicados">
+                <h3>🔍 ¿Por qué estos valores? Ganchos detectados y su significado</h3>
+                <div id="listaHallazgosExplicados">✅ Audita un texto para ver los hallazgos explicados aquí.</div>
+            </div>
+
+            <div id="rewriteBox" class="rewrite-suggestion" aria-live="polite"></div>
+            <div style="text-align: center; margin: 20px 0;">
+                <button id="exportTxtBtn" class="btn-secondary">📄 TXT</button>
+                <button id="exportPdfBtn" class="btn-secondary">📑 PDF (resumen)</button>
+            </div>
+            <h3>📜 Historial reciente</h3>
+            <div id="historyList" class="history-list"></div>
+        </div>
+
+        <div id="liveRegion" aria-live="polite" aria-atomic="true"></div>
+
+        <div id="comparatorModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h3>Comparar otro texto</h3><textarea id="compareText" rows="6" placeholder="Pega el segundo texto aquí..."></textarea><button id="doCompareBtn" style="margin-top:12px;">Comparar</button><button id="closeCompareBtn" class="btn-secondary">Cerrar</button></div></div>
+        <div id="helpModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h2>🧠 Ciencia detrás de Argira</h2><p><strong>Kahneman:</strong> Sistema 1 (rápido, emocional) vs Sistema 2 (analítico).</p><p><strong>Cialdini:</strong> 6 principios: reciprocidad, escasez, autoridad, simpatía, prueba social, compromiso.</p><p><strong>Shannon:</strong> Entropía (EDI) = diversidad léxica.</p><p><strong>IM:</strong> &lt;1.5 Confiable, 1.5-3.2 Persuasión legítima, &gt;3.2 Alto riesgo.</p><p><strong>Energía estimada:</strong> rango 0.2-0.5 mWh/token según arquitectura Transformer.</p><p><strong>ΔIC (Inercia):</strong> proporción de palabras de relleno (ruido estructural) sobre total de tokens.</p><button id="closeHelpBtn" class="btn-secondary">Cerrar</button></div></div>
+        <div id="audioModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><h3>🎙️ Grabadora</h3><div id="audioStatus">Prueba "Probar mic" primero.</div><button id="startRecordBtn">Iniciar</button><button id="stopRecordBtn" disabled>Parar</button><button id="closeModalBtn">Cerrar</button></div></div>
+        
+        <div class="scientific-footer">
+            <p>Argira Shield · Algoritmo de auditoría ética registrado · v6.5</p>
+        </div>
+
+        <div class="author-box" style="margin: 30px auto 20px auto; max-width: 550px; padding: 20px; background: var(--card-bg); border-radius: 32px; border: 1px solid var(--border-dim); text-align: center;">
+            <p style="margin-bottom: 10px; font-size: 0.9rem;">
+                🧠 <strong>José Ranero García</strong><br>
+                <a href="https://orcid.org/0009-0009-3168-6379" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">ORCID 0009-0009-3168-6379</a> · 
+                <a href="https://argira.eus" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">ARGIRA.eus</a>
+            </p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 15px 0;">
+                <a href="https://ko-fi.com/argira" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #ff5e5e; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-weight: bold; transition: 0.2s;">
+                    ☕ Apóyame en Ko-fi
+                </a>
+                <a href="https://www.paypal.com/donate/?cmd=_donations&business=argira2030@gmail.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-weight: bold; transition: 0.2s;">
+                    💙 Donar por PayPal
+                </a>
+            </div>
+            <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 8px;">
+                Herramienta de auditoría ética · Código abierto (MIT)
+            </p>
+        </div>
+        <div class="footer">v6.5 · Detección Robusta · © Argira Shield – Algoritmo propio. Todos los derechos reservados.</div>
+    </div>
+
+    <!-- Modal de autenticación — value-first -->
+    <div id="authModal" class="modal">
+        <div class="modal-content" style="max-width:480px;">
+
+            <!-- Cabecera valor -->
+            <div style="text-align:center; margin-bottom:18px;">
+                <div style="font-size:2rem; margin-bottom:6px;">🛡️</div>
+                <h2 style="font-size:1.3rem; background:linear-gradient(135deg,#fff,var(--accent)); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:6px;">
+                    Detecta manipulación en segundos
+                </h2>
+                <p style="font-size:0.82rem; color:var(--text-dim);">
+                    Argira Shield analiza emails, noticias y mensajes con base científica (Kahneman · Cialdini · Shannon).
+                </p>
+            </div>
+
+            <!-- Beneficios -->
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px;">
+                <div style="display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:16px; padding:10px 14px;">
+                    <span style="font-size:1.2rem;">🔬</span>
+                    <div>
+                        <div style="font-size:0.82rem; font-weight:700; color:var(--text-main);">5 auditorías gratuitas</div>
+                        <div style="font-size:0.72rem; color:var(--text-dim);">Sin tarjeta. Sin compromiso. Empieza ya.</div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:16px; padding:10px 14px;">
+                    <span style="font-size:1.2rem;">⚡</span>
+                    <div>
+                        <div style="font-size:0.82rem; font-weight:700; color:var(--text-main);">Resultado inmediato</div>
+                        <div style="font-size:0.72rem; color:var(--text-dim);">Veredicto claro: confiable, persuasivo o fraude.</div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:16px; padding:10px 14px;">
+                    <span style="font-size:1.2rem;">📑</span>
+                    <div>
+                        <div style="font-size:0.82rem; font-weight:700; color:var(--text-main);">Informe pericial completo</div>
+                        <div style="font-size:0.72rem; color:var(--text-dim);">Para uso profesional, legal o empresarial.</div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:16px; padding:10px 14px;">
+                    <span style="font-size:1.2rem;">🏢</span>
+                    <div>
+                        <div style="font-size:0.82rem; font-weight:700; color:var(--text-main);">Planes para empresas</div>
+                        <div style="font-size:0.72rem; color:var(--text-dim);">Volumen, API y multi-usuario disponibles.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <div id="authStep1">
+                <label style="font-size:0.8rem; color:var(--text-dim); margin-bottom:4px; display:block;">Tu email — solo lo usamos para enviarte el código</label>
+                <input type="email" id="authEmail" placeholder="tu@email.com"
+                    style="width:100%; padding:10px 14px; margin:6px 0 10px; background:#02020e; color:white; border:1px solid var(--accent); border-radius:12px; font-size:0.9rem;">
+                <button id="sendCodeBtn" class="btn-primary" style="width:100%; padding:12px;">Empezar gratis →</button>
+            </div>
+
+            <div id="codeSection" style="display:none; margin-top:10px;">
+                <label style="font-size:0.8rem; color:var(--text-dim); margin-bottom:4px; display:block;">Código de verificación (revisa tu correo)</label>
+                <input type="text" id="authCode" placeholder="Código de 6 dígitos"
+                    style="width:100%; padding:10px 14px; margin:6px 0 10px; background:#02020e; color:white; border:1px solid var(--accent); border-radius:12px; font-size:0.9rem; letter-spacing:4px; text-align:center;">
+                <button id="verifyCodeBtn" class="btn-primary" style="width:100%; padding:12px;">Verificar y entrar</button>
+            </div>
+
+            <div id="authMessage" style="margin-top:10px; color:var(--warning); font-size:0.8rem; text-align:center;"></div>
+            <p style="font-size:0.68rem; color:var(--text-dim); text-align:center; margin-top:14px;">
+                Sin spam · Sin tarjeta · Puedes darte de baja cuando quieras
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal de límite alcanzado -->
+    <div id="limitModal" class="modal">
+        <div class="modal-content" style="max-width:420px; text-align:center;">
+            <div style="font-size:2rem; margin-bottom:8px;">⚡</div>
+            <h3 style="margin-bottom:8px;">Has usado tus 5 auditorías gratuitas</h3>
+            <p style="font-size:0.85rem; color:var(--text-dim); margin-bottom:20px;">
+                Compra créditos para seguir auditando. <strong>1 crédito = 1 auditoría extra.</strong>
+            </p>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+                <button class="btn-primary" style="padding:12px;" onclick="document.getElementById('limitModal').style.display='none'; document.getElementById('creditsControls').scrollIntoView({behavior:'smooth'});">
+                    🪙 Comprar créditos
+                </button>
+                <button class="btn-secondary" style="padding:10px;" onclick="document.getElementById('limitModal').style.display='none';">
+                    Cancelar
+                </button>
+            </div>
+            <p style="font-size:0.72rem; color:var(--text-dim);">¿Eres empresa? <a href="mailto:argira2030@gmail.com" style="color:var(--accent);">Contáctanos</a> para planes personalizados.</p>
+        </div>
+    </div>
+
+    <script>
+        // ========== DEFINICIONES GLOBALES ==========
+        let currentMode = "balanced";
+        let simpleMode = true;
+        window.lastText = "";
+        let lastSummary = "";
+        let lastIM = "";
+        let lastScale = "";
+        let lastAction = "";
+
+        // Variables para el sistema de créditos y sesión
+        let currentEmail = localStorage.getItem('argira_email');
+        let sessionToken = localStorage.getItem('argira_token');
+        let credits = 0;
+        let lastAnalysisData = null;
+        let FREE_AUDIT_LIMIT = 5; // fallback — se sobreescribe con el valor real del servidor en /me
+
+       // const API_BASE = 'https://argira-api-v1.onrender.com';
+       const API_BASE = 'https://argira-api-frankfurt.onrender.com';
+        
+        const API_V1   = `${API_BASE}/api/v1`;
+
+        // Helper: cabeceras autenticadas
+        function authHeaders(extra = {}) {
+    const token = sessionToken || localStorage.getItem('argira_token');
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { 'x-session-token': token } : {}),
+        ...extra
+    };
+        }
+
+        const NOISE_PATTERN = /\b(bueno|decir|entonces|simplemente|realmente|quizás|un poco|tal vez|claro|entiendo|básicamente|obviamente|por supuesto|en realidad|digamos|supongo|evidentemente|claramente|ciertamente|absolutamente|prácticamente|virtualmente|bien|pues|em|eh|mmm)\b/gi;
+
+        // Base de términos para las métricas complementarias (radar)
+        const TERMS_BASE = {
+            p: ["amigo","tú","ti","tu","nosotros","gratis","te regalo","solo para ti","te mereces","juntos","friend","you","your","we","free","just for you","socio","socia","socios","socias"],
+            e: ["miedo","terror","pánico","amenaza","peligro","crisis","culpa","fracaso","perder","pérdida","demasiado tarde","sufrir","dolor","muerte","tragedia","milagro","fear","panic","danger","crisis","guilt","loss","too late","suffer","death"],
+            u: ["ahora","ya","hoy","urgente","sin demora","no esperes","expira","vence","solo hoy","últimas plazas","quedan pocos","casi agotado","oferta","aprovecha","hoy mismo","now","today","urgent","don't wait","expires","last chance","limited","hurry"],
+            a: ["expertos","especialistas","especialista","médico","médicos","matrona","matronas","doctor","doctores","doctora","doctoras","director","directores","experta","expertas","científico","científicos","científica","científicas","investigador","investigadores","profesional","profesionales","autoridad","universidad","avalado por","premio nobel","experts","authority","scientists","university","endorsed by"],
+            soc: ["millones","todo el mundo","la mayoría","miles de personas","viral","tendencia","millions","everyone","trending","viral"],
+            alarm: ["apocalipsis","cataclismo","devastación","colapso","fin del mundo","extinción","desastre irreversible","apocalypse","cataclysm","collapse","end of the world","extinction"],
+            fake: ["cura milagrosa","fórmula secreta","ellos no quieren que sepas","verdad oculta","conspiración","élite mundial","miracle cure","secret formula","they don't want you to know","conspiracy"]
+        };
+
+        // ========== PATRONES GLOBALES (para hallazgos) ==========
+        const GLOBAL_PATTERNS = {
+            phishing: {
+                p: [ { word: "urgente", weight: 2.0 }, { word: "ya", weight: 1.2 }, { word: "ahora", weight: 1.6 }, { word: "inmediatamente", weight: 1.8 } ],
+                e: [ { word: "sospechosa", weight: 2.2 }, { word: "suspendida", weight: 2.5 }, { word: "verifique", weight: 2.0 }, { word: "perderá", weight: 2.8 }, { word: "fondos", weight: 2.2 }, { word: "permanente", weight: 2.6 } ],
+                a: [ { word: "aviso importante", weight: 2.2 }, { word: "estimado usuario", weight: 1.2 } ],
+                s: [ { word: "clic aquí", weight: 2.0 }, { word: "haga clic", weight: 2.0 } ],
+                u: [ { word: "última oportunidad", weight: 2.2 } ],
+                l: [ { word: "josé", weight: 0.5 } ],
+                f: [ { word: "peligro", weight: 2.0 } ]
+            },
+            legit: [
+                { word: "donativo", weight: 0.2 }, { word: "donación", weight: 0.2 }, { word: "apoyo", weight: 0.15 },
+                { word: "ayuda", weight: 0.15 }, { word: "acompañamiento", weight: 0.1 }, { word: "salud", weight: 0.1 },
+                { word: "mujeres", weight: 0.1 }, { word: "bebé", weight: 0.1 }, { word: "embarazo", weight: 0.15 },
+                { word: "gracias", weight: 0.1 }, { word: "juntos", weight: 0.1 }, { word: "solidaridad", weight: 0.15 },
+                { word: "derechos", weight: 0.1 }, { word: "igualdad", weight: 0.1 }, { word: "justicia", weight: 0.15 }
+            ],
+            coaccion: [
+                { regex: /absolutamente\s+necesario/i, weight: 3.5, label: "Coacción", reason: "Sintaxis de obligatoriedad" },
+                { regex: /cierre\s+definitivo/i, weight: 3.0, label: "Amenaza", reason: "Consecuencia irreversible" },
+                { regex: /no\s+ignore/i, weight: 2.5, label: "Presión", reason: "Imperativo coercitivo" },
+                { regex: /acceso\s+a\s+sus\s+fondos/i, weight: 3.0, label: "Amenaza", reason: "Riesgo financiero" },
+                { regex: /discrepancias\s+no\s+resueltas/i, weight: 2.0, label: "Gaslighting", reason: "Inseguridad técnica" },
+                { regex: /aportar\s+la\s+documentación/i, weight: 2.0, label: "Exigencia", reason: "Obligación documental" }
+            ]
+        };
+
+        // Funciones auxiliares (existentes)
+        function buildRegexUnicode(words) { let e=words.map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')); return new RegExp(`(?:^|\\s)(${e.join('|')})(?=\\s|$)`, 'gi'); }
+        function countMatches(text, key) { if (!TERMS_BASE[key]) return 0; let m = text.match(buildRegexUnicode(TERMS_BASE[key])); return m ? m.length : 0; }
+        function detectRepeatedPersonalNames(text) {
+            const words = text.split(/\s+/).map(w => w.replace(/^[¿¡]?|[.,;:!?¿¡()"']+$/g, ''));
+            const freq = {};
+            const commonCaps = new Set(['El','La','Los','Las','Un','Una','Unos','Unas','Y','O','Pero','Sin','Sobre','Tras','Ante','Entre','Hasta','Desde','Para','Por','Con','Sin','En','A','De','Del','Al','Lo','Mi','Tu','Su','Nuestro','Vuestro','Este','Esta','Estos','Estas','Ese','Esa','Aquel','Aquella','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']);
+            const blacklist = new Set(['Visualiza','Oxfam','Intermón','Taghreed','Zanata','Kamal','Adwan','Gaza','Juzoor','Nicole','Ochando','Asuntos','Humanitarios','Contacto','Política','Guerra','Hambre','Pobreza','Salud','Sexual','Reproductiva','Clínicas','Móviles','Consultorios','Campamentos','Doctora','Matronas','Especialista','Desigualdades','Futuro','Privacidad','WhatsApp','Nombre']);
+            for (let i = 0; i < words.length; i++) {
+                let w = words[i];
+                if (!w) continue;
+                if (w.length >= 3 && w.length <= 12 && /^[A-ZÁÉÍÓÚÜ][a-záéíóúüñ]*$/.test(w)) {
+                    let prev = i>0 ? words[i-1] : '';
+                    let isStartOfSentence = i===0 || /[.!?;:][\s]*$/.test(prev);
+                    if (!isStartOfSentence && !commonCaps.has(w) && !blacklist.has(w)) {
+                        freq[w] = (freq[w] || 0) + 1;
+                    }
+                }
+            }
+            let score = 0;
+            for (let name in freq) {
+                let count = freq[name];
+                if (count >= 2) {
+                    let add = 0.6 + Math.min(0.9, (count-2)*0.2);
+                    score += add;
+                }
+            }
+            return Math.min(2.0, score);
+        }
+
+        function getPersonalizationScore(text, weightsP) {
+            let baseMatches = countMatches(text.toLowerCase(), 'p');
+            let baseScore = baseMatches * weightsP;
+            let repeatedNamesScore = detectRepeatedPersonalNames(text);
+            if (currentMode === 'newsletter') repeatedNamesScore *= 0.5;
+            return Math.round((baseScore + repeatedNamesScore) * 10) / 10;
+        }
+
+        function getModeWeights() {
+            if (currentMode === "alert") return { p:1.2, e:1.4, u:1.2, a:1.3, soc:1.3, alarm:1.7, fake:2.0, syntaxMult:1.0, gratisContextual:1.0 };
+            if (currentMode === "balanced") return { p:0.8, e:1.3, u:0.9, a:1.2, soc:1.0, alarm:1.6, fake:1.9, syntaxMult:0.7, gratisContextual:0.6 };
+            return { p:0.5, e:1.2, u:0.6, a:1.1, soc:0.7, alarm:1.5, fake:1.8, syntaxMult:0.4, gratisContextual:0.3 };
+        }
+
+        function syntacticPatterns(t) { let s=0; if(/([A-ZÁÉÍÓÚÜ]{4,})/.test(t)) s+=1.5; if(/!{2,}/.test(t)) s+=1.2; if(/\b(compra|haz|corre|actúa|comparte|suscríbete|llama|pulsa|no esperes)\b/i.test(t)) s+=1.0; if((t.match(/\?/g)||[]).length>2) s+=0.8; return s; }
+        function factualDensity(t) { let s=0; s+=(t.match(/\b\d{4}\b/g)||[]).length; s+=(t.match(/https?:\/\/[^\s]+/gi)||[]).length*2; s+=(t.match(/\b(según|estudio|investigación|datos|fuente:)\b/gi)||[]).length*1.5; s+=(t.match(/\b\d+(?:\.\d+)?\s*(%|euros|€|dólares|personas|casos|horas|cuotas)\b/gi)||[]).length; return Math.max(s,0.5); }
+        function computeEDI(t) { let w=t.toLowerCase().replace(/[^a-záéíóúüñ\s]/g,'').split(/\s+/).filter(w=>w.length>2); const stop=new Set(['que','para','con','sin','sobre','tras','ante','entre','aunque','porque','por','como','muy','solo']); w=w.filter(x=>!stop.has(x)); if(w.length<5) return {edi:'1.00', entropy:'0.00', interp:'Corto', delta:'0.0'}; let f={}; w.forEach(x=>f[x]=(f[x]||0)+1); let H=0; Object.values(f).forEach(c=>{let p=c/w.length; H-=p*Math.log2(p);}); let Hmax=Math.log2(w.length); let edi=Hmax>0?Math.min(1,H/Hmax):1; return {edi:edi.toFixed(2), entropy:H.toFixed(2), interp:edi>=0.85?'Alta densidad':(edi>=0.65?'Media':'Repetitivo'), delta:((1-edi)*10).toFixed(1)}; }
+        function getSemaphore(im) { if(im<=1.5) return {color:"#00cc66", action:"✅ Confiable"}; if(im<=3.2) return {color:"#ffcc00", action:"⚠️ Persuasión legítima"}; return {color:"#ff3e6c", action:"🚨 Alto riesgo"}; }
+        function escapeHtml(s){ return s.replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
+        function annotatedText(t){ let seg=[]; for(let c of ['p','e','u','a','soc','alarm','fake']){ let rx=buildRegexUnicode(TERMS_BASE[c]); let m; while((m=rx.exec(t))) seg.push({start:m.index, end:m.index+m[0].length, word:m[0], cat:c}); } seg.sort((a,b)=>a.start-b.start); let html="", last=0; for(let s of seg){ if(s.start<last) continue; html+=escapeHtml(t.slice(last,s.start)); let col={p:'#c084fc',e:'#ff6b8b',u:'#f97316',a:'#3b82f6',soc:'#06b6d4',alarm:'#ef4444',fake:'#a855f7'}[s.cat]; html+=`<span class="gancho" style="border-bottom-color:${col};">${escapeHtml(s.word)}</span>`; last=s.end; } html+=escapeHtml(t.slice(last)); return html; }
+        function drawRadar(values, labels) { let canvas=document.getElementById('radarCanvas'); canvas?.getContext('2d'); if(!canvas) return; let ctx=canvas.getContext('2d'); let w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); let cx=w/2, cy=h/2, r=Math.min(w,h)/2.5; let angles=labels.map((_,i)=>(i*2*Math.PI/labels.length)-Math.PI/2); ctx.strokeStyle='#aaa'; ctx.fillStyle='#ccc'; ctx.font='10px sans-serif'; angles.forEach((ang,i)=>{ let x=cx+r*Math.cos(ang), y=cy+r*Math.sin(ang); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke(); ctx.fillText(labels[i], x-8, y-4); }); ctx.beginPath(); let first=true; values.forEach((v,i)=>{ let norm=Math.min(1,v/10); let x=cx+r*norm*Math.cos(angles[i]), y=cy+r*norm*Math.sin(angles[i]); if(first){ ctx.moveTo(x,y); first=false; } else ctx.lineTo(x,y); }); ctx.closePath(); ctx.fillStyle='rgba(0,247,176,0.3)'; ctx.fill(); ctx.strokeStyle='#00f7b0'; ctx.stroke(); }
+        
+        function saveToHistory(text, im, summary){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); h.unshift({text:text.slice(0,80), im, summary, date:new Date().toISOString()}); if(h.length>5) h.pop(); localStorage.setItem('argira_history',JSON.stringify(h)); }
+        function renderHistory(){ let h=JSON.parse(localStorage.getItem('argira_history')||'[]'); let container=document.getElementById('historyList'); if(!container) return; container.innerHTML = h.map(hh=>`<div class="history-item" data-text="${escapeHtml(hh.text)}"><strong>${hh.summary}</strong> (IM ${hh.im})<br><small>${new Date(hh.date).toLocaleString()}</small><br>${escapeHtml(hh.text)}</div>`).join(''); document.querySelectorAll('.history-item').forEach(el=>{ el.addEventListener('click',()=>{ document.getElementById('inputText').value=el.getAttribute('data-text'); alert('Texto cargado. Pulsa Auditar.'); }); }); }
+
+        const TIPS_DETAIL = {
+            "josé": "Uso del nombre propio para generar cercanía (principio de simpatía).",
+            "donativo": "Apelación a la solidaridad. Peso bajo porque es persuasión legítima.",
+            "gracias": "Expresión de cortesía. Reduce ligeramente la puntuación.",
+            "urgente": "Presión temporal artificial. Alta manipulación.",
+            "ahora": "Exigencia de inmediatez. Activa el Sistema 1 de Kahneman.",
+        };
+        function getDetailedTip(word) {
+            let w = word.toLowerCase();
+            if (TIPS_DETAIL[w]) return TIPS_DETAIL[w];
+            return "Patrón persuasivo detectado. Evalúa críticamente.";
+        }
+
+        // ========== VERSIÓN DETALLADA (para informe de pago) ==========
+        function _buildDetailedHallazgos(text) {
+            let items = [];
+            let seen = new Set();
+
+            for (const [cat, patterns] of Object.entries(GLOBAL_PATTERNS.phishing)) {
+                patterns.forEach(p => {
+                    const regex = new RegExp(`\\b${p.word.replace(/ /g, '\\s+')}\\b`, 'gi');
+                    let match;
+                    while ((match = regex.exec(text)) !== null) {
+                        const word = match[0];
+                        const key = `${word.toLowerCase()}_${cat}`;
+                        if (seen.has(key)) continue;
+                        seen.add(key);
+                        let categoria = '';
+                        if (cat === 'p') categoria = 'Urgencia';
+                        else if (cat === 'e') categoria = 'Amenaza/Pérdida';
+                        else if (cat === 'u') categoria = 'Escasez';
+                        else if (cat === 'a') categoria = 'Falsa Autoridad';
+                        else if (cat === 's') categoria = 'Llamada a la acción';
+                        else if (cat === 'l') categoria = 'Personalización';
+                        else if (cat === 'f') categoria = 'Miedo';
+                        let tip = getDetailedTip(word);
+                        items.push({ palabra: word, categoria, explicacion: tip, tipo: cat });
+                    }
+                });
+            }
+
+            GLOBAL_PATTERNS.legit.forEach(p => {
+                const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    const word = match[0];
+                    const key = `${word.toLowerCase()}_legit`;
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    items.push({
+                        palabra: word,
+                        categoria: 'Persuasión legítima',
+                        explicacion: 'Término de valor social o educativo.',
+                        tipo: 'legit'
+                    });
+                }
+            });
+
+            GLOBAL_PATTERNS.coaccion.forEach(rule => {
+                if (rule.regex.test(text)) {
+                    const word = rule.regex.source.replace(/\\s\+/g, ' ');
+                    const key = `coacc_${word}`;
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    items.push({
+                        palabra: word,
+                        categoria: rule.label || 'Coacción',
+                        explicacion: rule.reason,
+                        tipo: 'coacc'
+                    });
+                }
+            });
+
+            const nameMatch = text.match(/\b(José|Juan|María|Ana|Carlos|Laura|Pablo|Nicole|Taghreed)\b/gi);
+            if (nameMatch) {
+                nameMatch.forEach(name => {
+                    const key = `name_${name.toLowerCase()}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        items.push({
+                            palabra: name,
+                            categoria: 'Personalización',
+                            explicacion: 'Uso del nombre propio para crear familiaridad.',
+                            tipo: 'l'
+                        });
+                    }
+                });
+            }
+
+            if (items.length === 0) return "<div style='padding:12px'>✅ No se detectaron ganchos persuasivos relevantes.</div>";
+            const colores = { p:'#c084fc', e:'#ff6b8b', u:'#f97316', a:'#3b82f6', s:'#06b6d4', l:'#ef4444', f:'#a855f7', legit:'#00cc66', coacc:'#ff9900' };
+            return items.map(it => {
+                let tipoColor = it.tipo;
+                if (it.tipo === 'legit') tipoColor = 'legit';
+                if (it.tipo === 'coacc') tipoColor = 'coacc';
+                return `<div class="hall-item-explicado" style="border-left-color:${colores[tipoColor] || '#aaa'};"><div class="hall-cat" style="color:${colores[tipoColor] || '#aaa'}">${it.categoria}</div><div class="hall-word">"${escapeHtml(it.palabra)}"</div><div class="hall-explanation">→ ${escapeHtml(it.explicacion)}</div></div>`;
+            }).join('');
+        }
+
+        // ========== VERSIÓN PÚBLICA (con o sin palabras) ==========
+        function buildHallazgosExplicados(text, showWords = false) {
+            if (showWords) {
+                return _buildDetailedHallazgos(text);
+            } else {
+                let categoriesDetected = new Set();
+                for (const [cat, patterns] of Object.entries(GLOBAL_PATTERNS.phishing)) {
+                    patterns.forEach(p => {
+                        const regex = new RegExp(`\\b${p.word.replace(/ /g, '\\s+')}\\b`, 'gi');
+                        if (regex.test(text)) {
+                            if (cat === 'p') categoriesDetected.add('URGENCIA');
+                            else if (cat === 'e') categoriesDetected.add('AMENAZA/PÉRDIDA');
+                            else if (cat === 'u') categoriesDetected.add('ESCASEZ');
+                            else if (cat === 'a') categoriesDetected.add('FALSA AUTORIDAD');
+                            else if (cat === 's') categoriesDetected.add('LLAMADA A LA ACCIÓN');
+                            else if (cat === 'l') categoriesDetected.add('PERSONALIZACIÓN');
+                            else if (cat === 'f') categoriesDetected.add('MIEDO');
+                        }
+                    });
+                }
+                GLOBAL_PATTERNS.coaccion.forEach(rule => {
+                    if (rule.regex.test(text)) categoriesDetected.add(rule.label || 'COACCIÓN');
+                });
+                let legitCount = 0;
+                GLOBAL_PATTERNS.legit.forEach(p => {
+                    const regex = new RegExp(`\\b${p.word}\\b`, 'gi');
+                    if (regex.test(text)) legitCount++;
+                });
+                if (legitCount > 0) categoriesDetected.add('PERSUASIÓN LEGÍTIMA');
+                if (categoriesDetected.size === 0) return "<div style='padding:12px'>✅ No se detectaron patrones relevantes.</div>";
+                let html = '<div style="margin-bottom: 12px;">🔍 Se detectaron los siguientes patrones generales:</div><ul>';
+                categoriesDetected.forEach(cat => { html += `<li><strong>${cat}</strong> (contribución detectada)</li>`; });
+                html += '</ul><div style="margin-top: 12px; padding: 10px; background: var(--card-bg); border-radius: 16px; border-left: 4px solid var(--accent);">📄 <strong>Informe detallado</strong>: Para conocer las palabras exactas, su contexto y el análisis completo, utiliza 1 crédito.</div>';
+                return html;
+            }
+        }
+
+
+        // ========== FUNCIONES UI ==========
+        function updateCompactSemaphore(color, scale, action, im) {
+            const dot = document.getElementById('semDot');
+            const score = document.getElementById('semScore');
+            const label = document.getElementById('semLabel');
+            const imEl = document.getElementById('semIM');
+            if (dot) { dot.style.background = color; dot.style.boxShadow = `0 0 12px ${color}`; }
+            if (score) score.innerText = scale;
+            if (label) label.innerText = action;
+            if (imEl) imEl.innerText = `IM ${im}`;
+        }
+        function announceToScreenReader(message) {
+            const live = document.getElementById('liveRegion');
+            if (live) { live.textContent = message; setTimeout(() => live.textContent = '', 1000); }
+        }
+
+        // ========== FUNCIÓN PRINCIPAL DE ANÁLISIS ==========
+        async function performAudit(text) {
+            if (!text.trim()) return;
+            if (!currentEmail && !sessionToken) { showAuthModal(); return; }
+
+            const resultsArea = document.getElementById('resultsArea');
+            const semLabel = document.getElementById('semLabel');
+            const auditBtn = document.getElementById('auditBtn');
+
+            semLabel.innerText = "🔄 Conectando con el motor (puede tardar 20s la primera vez)...";
+            resultsArea.style.display = 'block';
+            auditBtn.disabled = true;
+            auditBtn.style.opacity = '0.5';
+
+            try {
+                const token = sessionToken || localStorage.getItem('argira_token');
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'x-session-token': token || ''
+                };
+
+                const response = await fetch(`${API_V1}/analyze`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ text, mode: currentMode })
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('argira_token');
+                    localStorage.removeItem('argira_email');
+                    currentEmail = null; sessionToken = null;
+                    hideAuthModal && hideAuthModal();
+                    showAuthModal();
+                    semLabel.innerText = "Sesión expirada. Inicia sesión de nuevo.";
+                    return;
+                }
+
+                if (response.status === 403) {
+                    const data = await response.json();
+                    if (data.error === 'limit_reached') {
+                        document.getElementById('limitModal').style.display = 'flex';
+                        semLabel.innerText = "Límite de auditorías alcanzado.";
+                        return;
+                    }
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+
+                const im = parseFloat(data.im);
+                const { color, action } = getSemaphore(im);
+                updateCompactSemaphore(color, data.scale, action, im);
+
+                lastIM = data.im; lastScale = data.scale; lastAction = action;
+                lastSummary = data.verdict; window.lastText = text; lastAnalysisData = data;
+
+                document.getElementById('imIndex').innerText = data.im;
+                document.getElementById('energyRange').innerText = data.energy;
+                document.getElementById('deltaIC').innerHTML = `${data.deltaIC}/10`;
+                document.getElementById('modeIndicator').innerHTML = `Modo: ${currentMode === 'alert' ? '⚠️ Alerta' : (currentMode === 'balanced' ? '⚖️ Equilibrado' : '🌿 Newsletter')}`;
+                document.getElementById('rewriteBox').innerHTML = `<strong>Sugerencia Ética:</strong> ${data.suggestion}`;
+
+                const weights = getModeWeights();
+                let D = factualDensity(text);
+                let rawP = getPersonalizationScore(text, weights.p);
+                let rawE = countMatches(text.toLowerCase(),'e') * weights.e;
+                let rawU = countMatches(text.toLowerCase(),'u') * weights.u;
+                let rawA = countMatches(text.toLowerCase(),'a') * weights.a;
+                let rawSoc = countMatches(text.toLowerCase(),'soc') * weights.soc;
+                let rawAlarm = countMatches(text.toLowerCase(),'alarm') * weights.alarm;
+                let rawFake = countMatches(text.toLowerCase(),'fake') * weights.fake;
+
+                document.getElementById('valP').innerHTML = rawP.toFixed(1);
+                document.getElementById('valE').innerHTML = rawE.toFixed(1);
+                document.getElementById('valU').innerHTML = rawU.toFixed(1);
+                document.getElementById('valA').innerHTML = rawA.toFixed(1);
+                document.getElementById('valSoc').innerHTML = rawSoc.toFixed(1);
+                document.getElementById('valAlarm').innerHTML = rawAlarm.toFixed(1);
+                document.getElementById('valFake').innerHTML = rawFake.toFixed(1);
+                document.getElementById('valD').innerHTML = D.toFixed(1);
+                const edi = computeEDI(text);
+                document.getElementById('valEDI').innerHTML = edi.edi;
+
+                if (!simpleMode) {
+                    document.getElementById('expertDetails').style.display = 'block';
+                    document.getElementById('cleanText').innerHTML = annotatedText(text);
+                    drawRadar([Math.min(10,rawP),Math.min(10,rawE),Math.min(10,rawU),Math.min(10,rawA),Math.min(10,rawSoc),Math.min(10,rawAlarm),Math.min(10,rawFake)], ['P','E','U','A','S','L','F']);
+                } else {
+                    document.getElementById('expertDetails').style.display = 'none';
+                }
+
+                document.getElementById('listaHallazgosExplicados').innerHTML = buildHallazgosExplicados(text, false);
+                saveToHistory(text, data.im, data.verdict);
+                renderHistory();
+                announceToScreenReader(`Análisis completado. IM ${data.im}. ${data.verdict}`);
+                semLabel.innerText = "✅ Análisis listo";
+
+                // Actualizar créditos desde respuesta del backend (ya descontó si tocaba)
+                if (data.credits !== undefined) {
+                    credits = data.credits;
+                    document.getElementById('creditsAmount').innerText = credits;
+                    updateUIAfterCredits();
+                }
+
+                // Sincronizar contador auditorías
+                incrementAuditCount();
+                updateAuditCounterUI();
+
+            } catch (error) {
+                
+                let msg = "No se pudo contactar con el motor de análisis.";
+                if (error.message && error.message.includes('Failed to fetch')) {
+                    msg = "Error de red o CORS. El servidor no está accesible.";
+                } else if (error.message) {
+                    msg = error.message;
+                }
+                semLabel.innerText = "❌ " + msg;
+                resultsArea.style.display = 'none';
+            } finally {
+                auditBtn.disabled = false;
+                auditBtn.style.opacity = '1';
+            }
+        }
+
+        // ========== GENERAR INFORME PERICIAL (con crédito) ==========
+        async function generateExpertReport() {
+            if (!currentEmail) { showAuthModal(); return; }
+            if (!window.lastText || !lastAnalysisData) {
+                alert("Primero analiza un texto.");
+                return;
+            }
+            // Verificar créditos antes de gastar
+            if (credits <= 0) {
+                alert("No tienes créditos suficientes. Compra un pack.");
+                return;
+            }
+            // Gastar 1 crédito
+            const ok = await useOneCredit();
+            if (!ok) {
+                alert("No se pudo usar el crédito. Verifica tu saldo.");
+                return;
+            }
+            // Generar PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const now = new Date();
+            const refId = `ARGI-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}${now.getSeconds().toString().padStart(2,'0')}`;
+            doc.setFontSize(18);
+            doc.setTextColor(0, 247, 176);
+            doc.text("ARGIRA SHIELD - INFORME PERICIAL", 20, 20);
+            doc.setFontSize(10);
+            doc.setTextColor(200, 200, 220);
+            doc.text(`Referencia: ${refId} | Metodología: v6.5`, 20, 28);
+            doc.text(`Fecha: ${now.toLocaleString()}`, 20, 34);
+            doc.text("Auditoría cognitiva basada en Kahneman, Cialdini, Shannon", 20, 40);
+            doc.setFontSize(12);
+            doc.setTextColor(0, 247, 176);
+            doc.text("1. OBJETO DEL ANÁLISIS", 20, 55);
+            doc.setFontSize(10);
+            doc.setTextColor(220, 220, 240);
+            const textLines = doc.splitTextToSize(`Texto analizado: ${window.lastText.substring(0, 800)}${window.lastText.length > 800 ? '...' : ''}`, 170);
+            doc.text(textLines, 20, 63);
+            doc.setFontSize(12);
+            doc.setTextColor(0, 247, 176);
+            doc.text("2. MÉTRICAS DE RESULTADO", 20, 100);
+            doc.setFontSize(10);
+            doc.setTextColor(220, 220, 240);
+            const im = document.getElementById('imIndex').innerText;
+            const scale = document.getElementById('semLabel').innerText;
+            const energy = document.getElementById('energyRange').innerText;
+            const delta = document.getElementById('deltaIC').innerText;
+            const p = document.getElementById('valP').innerText;
+            const e = document.getElementById('valE').innerText;
+            const u = document.getElementById('valU').innerText;
+            const a = document.getElementById('valA').innerText;
+            const soc = document.getElementById('valSoc').innerText;
+            const alarm = document.getElementById('valAlarm').innerText;
+            const fake = document.getElementById('valFake').innerText;
+            const dens = document.getElementById('valD').innerText;
+            const edi = document.getElementById('valEDI').innerText;
+            doc.text(`Índice de Manipulación (IM): ${im}/10`, 20, 110);
+            doc.text(`Escala cualitativa: ${scale}`, 20, 118);
+            doc.text(`Energía estimada: ${energy}`, 20, 126);
+            doc.text(`Diferencial de Inercia (ΔIC): ${delta}`, 20, 134);
+            doc.text(`Entropía de Shannon (EDI): ${edi}`, 20, 142);
+            doc.text(`Variables detalladas: P=${p} | E=${e} | U=${u} | A=${a} | S=${soc} | L=${alarm} | F=${fake} | D=${dens}`, 20, 150);
+            doc.setFontSize(12);
+            doc.setTextColor(0, 247, 176);
+            doc.text("3. INTERPRETACIÓN DEL ÍNDICE DE MANIPULACIÓN", 20, 170);
+            doc.setFontSize(10);
+            doc.setTextColor(220, 220, 240);
+            const imNum = parseFloat(im);
+            let imExplanation = "";
+            if (imNum <= 1.5) imExplanation = "El texto presenta un nivel de persuasión muy bajo o nulo. Es compatible con comunicación ética, informativa o neutra. No se detectan tácticas de manipulación.";
+            else if (imNum <= 3.2) imExplanation = "El texto contiene elementos de persuasión legítima, propios de marketing, divulgación o llamamientos sociales. No hay indicios de manipulación agresiva, pero se recomienda revisar el contexto si existen llamadas a la acción.";
+            else if (imNum <= 6.5) imExplanation = "El texto muestra una persuasión elevada. Puede incluir urgencia moderada, apelaciones emocionales o autoridad no verificada. Se recomienda precaución antes de actuar.";
+            else imExplanation = "El texto presenta un índice de manipulación crítico. Se detectan técnicas agresivas de coacción, urgencia artificial, amenazas de pérdida o autoridad falsa. No se recomienda interactuar y se considera una estafa potencial.";
+            doc.text(doc.splitTextToSize(imExplanation, 170), 20, 178);
+            doc.setFontSize(12);
+            doc.setTextColor(0, 247, 176);
+            doc.text("4. HALLAZGOS FORENSES", 20, 215);
+            doc.setFontSize(9);
+            doc.setTextColor(220, 220, 240);
+            const detailedHTML = _buildDetailedHallazgos(window.lastText);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = detailedHTML;
+            const hallazgosText = tempDiv.textContent || tempDiv.innerText || "";
+            const hallLines = doc.splitTextToSize(hallazgosText, 170);
+            doc.text(hallLines, 20, 223);
+            doc.setFontSize(12);
+            doc.setTextColor(0, 247, 176);
+            doc.text("5. CONCLUSIÓN Y RECOMENDACIÓN", 20, 265);
+            doc.setFontSize(10);
+            doc.setTextColor(220, 220, 240);
+            const conclusion = (imNum > 3.2) ? 
+                "Se recomienda NO interactuar con el mensaje, no hacer clic en enlaces, no proporcionar datos personales ni realizar pagos. Reportar como phishing a las autoridades si procede." :
+                "El texto parece legítimo y no presenta riesgos de manipulación evidentes. Se recomienda seguir las buenas prácticas de seguridad digital, pero no hay motivo de alarma.";
+            doc.text(conclusion, 20, 273);
+            doc.text("Firma del auditor:", 20, 295);
+            doc.setFontSize(9);
+            doc.text("José Ranero García", 20, 303);
+            doc.text("ORCID: 0009-0009-3168-6379", 20, 311);
+            doc.text("ARGIRA.eus", 20, 319);
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 180);
+            doc.text("Este informe ha sido generado automáticamente por Argira Shield v6.5. Los resultados se basan en modelos estadísticos y no constituyen asesoramiento legal.", 20, 340);
+            doc.text(`© Argira Shield - Identificador: ${refId}`, 20, 348);
+            doc.save(`Argira_Informe_${refId}.pdf`);
+            const semLabel = document.getElementById('semLabel');
+            if (semLabel) semLabel.innerText = '✅ Informe pericial descargado.';
+        }
+
+        // ========== GESTIÓN DE CRÉDITOS (conectar con API) ==========
+        async function fetchCredits() {
+            if (!currentEmail && !sessionToken) return 0;
+            try {
+                const res = await fetch(`${API_V1}/credits`, { headers: authHeaders() });
+                if (res.ok) {
+                    const data = await res.json();
+                    credits = data.credits;
+                    document.getElementById('creditsAmount').innerText = credits;
+                    updateUIAfterCredits();
+                    return credits;
+                } else if (res.status === 401) {
+                    // Sesión expirada — limpiar y pedir login de nuevo
+                    localStorage.removeItem('argira_email');
+                    localStorage.removeItem('argira_token');
+                    currentEmail = null; sessionToken = null;
+                    showAuthModal();
+                    return 0;
+                }
+            } catch(e) { return 0; }
+        }
+
+        async function useOneCredit() {
+            if (credits <= 0) return false;
+            try {
+                const res = await fetch(`${API_V1}/use-credit`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({})
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    credits = data.credits;
+                    document.getElementById('creditsAmount').innerText = credits;
+                    updateUIAfterCredits();
+                    return true;
+                } else {
+                    const semLabel = document.getElementById('semLabel');
+                    if (semLabel) semLabel.innerText = '⚠️ No tienes créditos suficientes.';
+                    return false;
+                }
+            } catch(e) { return false; }
+        }
+
+        async function addCreditsAfterPayment(amount, paypalId) {
+            try {
+                const res = await fetch(`${API_V1}/add-credits`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ amount: parseFloat(amount), paypal_id: paypalId || null })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    credits = data.credits;
+                    document.getElementById('creditsAmount').innerText = credits;
+                    updateUIAfterCredits();
+                    const semLabel = document.getElementById('semLabel');
+                    if (semLabel) semLabel.innerText = `✅ ${data.added} créditos añadidos. Saldo: ${credits}`;
+                } else {
+                    const semLabel = document.getElementById('semLabel');
+                    if (semLabel) semLabel.innerText = '❌ Error al añadir créditos. Contacta con soporte.';
+                }
+            } catch(e) { }
+        }
+
+        function updateUIAfterCredits() {
+            const generateArea = document.getElementById('generateReportArea');
+            const buyArea = document.getElementById('buyCreditsArea');
+            if (credits > 0) {
+                generateArea.innerHTML = `<button id="generateReportBtn" class="btn-primary">📄 Generar informe (1 crédito)</button>`;
+                buyArea.classList.add('hidden');
+                document.getElementById('generateReportBtn')?.addEventListener('click', generateExpertReport);
+            } else {
+                generateArea.innerHTML = `<p style="color:var(--warning)">⚠️ No tienes créditos. Compra un pack:</p>`;
+                buyArea.classList.remove('hidden');
+            }
+        }
+
+        // ========== AUTENTICACIÓN (MODAL) ==========
+        let _authCallback = null;
+        function showAuthModal(callback) {
+            _authCallback = callback || null;
+            document.getElementById('authModal').style.display = 'flex';
+        }
+        function hideAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+
+        document.getElementById('sendCodeBtn').onclick = async () => {
+            const email = document.getElementById('authEmail').value;
+            if (!email) return;
+            try {
+                const res = await fetch(`${API_V1}/auth/send-code`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+                if (res.ok) {
+                    document.getElementById('codeSection').style.display = 'block';
+                    document.getElementById('authMessage').innerText = "Código enviado. Revisa tu correo.";
+                } else {
+                    document.getElementById('authMessage').innerText = "Error al enviar código.";
+                }
+            } catch(e) { }
+        };
+        document.getElementById('verifyCodeBtn').onclick = async () => {
+            const email = document.getElementById('authEmail').value;
+            const code = document.getElementById('authCode').value;
+            const msgEl = document.getElementById('authMessage');
+            const btn = document.getElementById('verifyCodeBtn');
+            btn.disabled = true; btn.textContent = 'Verificando...';
+            try {
+                const res = await fetch(`${API_V1}/auth/verify-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    // Guardar sesión completa
+                    currentEmail = data.email || email;
+                    sessionToken = data.token;
+                    localStorage.setItem('argira_email', currentEmail);
+                    localStorage.setItem('argira_token', sessionToken);
+                    credits = data.credits || 0;
+                    document.getElementById('creditsAmount').innerText = credits;
+                    hideAuthModal();
+                    // Sincronizar contador con servidor — nuevo Y existente
+                    try {
+                        const meRes = await fetch(`${API_V1}/me`, {
+                            headers: { 'Content-Type': 'application/json', 'x-session-token': sessionToken }
+                        });
+                        if (meRes.ok) {
+                            const meData = await meRes.json();
+                            localStorage.setItem('argira_audit_count', meData.auditsUsedThisMonth || 0);
+                            if (meData.credits !== undefined) {
+                                credits = meData.credits;
+                                document.getElementById('creditsAmount').innerText = credits;
+                            }
+                            if (meData.freeAuditsRemaining !== undefined && meData.auditsUsedThisMonth !== undefined) {
+                                FREE_AUDIT_LIMIT = meData.freeAuditsRemaining + meData.auditsUsedThisMonth;
+                            }
+                        }
+                    } catch(e) { }
+                    updateUIAfterCredits();
+                    updateAuditCounterUI();
+                    if (data.isNewUser) {
+                        msgEl.style.color = 'var(--accent)';
+                        msgEl.innerText = data.message || '¡Bienvenido! Tienes 2 créditos de regalo.';
+                    }
+                    showLoggedInUI();
+                    if (_authCallback) { _authCallback(); _authCallback = null; }
+                } else {
+                    msgEl.innerText = data.error || "Código incorrecto o expirado.";
+                }
+            } catch(e) {
+                msgEl.innerText = "Error de conexión. Inténtalo de nuevo.";
+            } finally {
+                btn.disabled = false; btn.textContent = 'Verificar y entrar';
+            }
+        };
+
+        // ========== PAYPAL PARA COMPRA DE CRÉDITOS ==========
+        async function createPayPalOrder(amount) {
+            const response = await fetch(`${API_V1}/create-paypal-order`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ amount })
+            });
+            const data = await response.json();
+            return data.id;
+        }
+        function loadPayPalForPack(amount) {
+            const container = document.getElementById('paypal-button-container');
+            if (!container) return;
+            container.innerHTML = '';
+            if (window.paypal) {
+                window.paypal.Buttons({
+                    createOrder: async () => createPayPalOrder(amount),
+                    onApprove: async (data, actions) => {
+                        const capture = await actions.order.capture();
+                        if (capture.status === 'COMPLETED') {
+                            await addCreditsAfterPayment(amount, capture.id);
+                        }
+                    },
+                    onError: () => { }
+                }).render('#paypal-button-container');
+            } else {
+                // PayPal SDK no cargado;
+            }
+        }
+        document.querySelectorAll('.pack-btn').forEach(btn => {
+            btn.addEventListener('click', () => { loadPayPalForPack(parseFloat(btn.dataset.amount)); });
+        });
+
+        // ========== CARGAR PAYPAL SDK (solo para compra de créditos) ==========
+        function loadPayPalSDK() {
+            if (document.getElementById('paypal-sdk')) return;
+            const script = document.createElement('script');
+            script.id = 'paypal-sdk';
+            script.src = 'https://www.paypal.com/sdk/js?client-id=AS8MySQxdJTe49cYM3aFDduq7w7PK9EZx8h0vu-cny_KH4PLsd7_MR-TCpY2qO_VNxTd4v5wDOVz2aiL&currency=EUR';
+            script.onload = () => {};
+            script.onerror = () => {};
+            document.head.appendChild(script);
+        }
+        loadPayPalSDK();
+
+        // Event listeners varios
+        function requireAuthThen(callback) {
+            if (currentEmail) { callback(); }
+            else { showAuthModal(callback); }
+        }
+        // TXT y PDF básico son gratuitos — si ya auditaste, ya estás registrado
+        document.getElementById('exportTxtBtn').onclick = () => {
+            if (!lastSummary || !lastIM) { alert("Primero audita un texto."); return; }
+            const now = new Date();
+            const refId = `ARGI-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}`;
+            const txt = [
+                'ARGIRA SHIELD — RESUMEN DE AUDITORÍA',
+                '=====================================',
+                `Referencia: ${refId}`,
+                `Fecha: ${now.toLocaleString()}`,
+                `Modo: ${currentMode}`,
+                '',
+                '--- RESULTADO ---',
+                `Veredicto: ${lastSummary}`,
+                `IM (Índice de Manipulación): ${lastIM}/10`,
+                `Escala: ${lastScale}/10`,
+                `Energía estimada: ${document.getElementById('energyRange').innerText}`,
+                `ΔIC (ruido estructural): ${document.getElementById('deltaIC').innerText}`,
+                '',
+                '--- MÉTRICAS ---',
+                `P (Persuasión/simpatía): ${document.getElementById('valP').innerText}`,
+                `E (Emocional/miedo): ${document.getElementById('valE').innerText}`,
+                `U (Urgencia/escasez): ${document.getElementById('valU').innerText}`,
+                `A (Autoridad): ${document.getElementById('valA').innerText}`,
+                `S (Prueba social): ${document.getElementById('valSoc').innerText}`,
+                `L (Alarmismo): ${document.getElementById('valAlarm').innerText}`,
+                `F (Fabricación): ${document.getElementById('valFake').innerText}`,
+                `D (Densidad factual): ${document.getElementById('valD').innerText}`,
+                `EDI (Entropía Shannon): ${document.getElementById('valEDI').innerText}`,
+                '',
+                '--- TEXTO ANALIZADO (primeros 300 caracteres) ---',
+                window.lastText ? window.lastText.substring(0, 300) + (window.lastText.length > 300 ? '...' : '') : '—',
+                '',
+                '=====================================',
+                'Argira Shield v6.5 · argira.eus',
+                'José Ranero García · ORCID 0009-0009-3168-6379',
+                'Metodología: Kahneman · Cialdini · Shannon',
+            ].join('\n');
+            const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `Argira_Resumen_${refId}.txt`;
+            a.click(); URL.revokeObjectURL(url);
+        };
+        document.getElementById('exportPdfBtn').onclick = () => {
+            if (!lastSummary || !lastIM) { alert("Primero audita un texto."); return; }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const now = new Date();
+            const refId = `ARGI-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}`;
+            // Cabecera
+            doc.setFontSize(16); doc.setTextColor(0, 200, 140);
+            doc.text('ARGIRA SHIELD — RESUMEN DE AUDITORÍA', 20, 20);
+            doc.setFontSize(9); doc.setTextColor(160, 160, 190);
+            doc.text(`Ref: ${refId}  |  ${now.toLocaleString()}  |  Modo: ${currentMode}`, 20, 28);
+            doc.setDrawColor(0, 200, 140); doc.line(20, 32, 190, 32);
+            // Resultado
+            doc.setFontSize(12); doc.setTextColor(0, 200, 140);
+            doc.text('RESULTADO', 20, 42);
+            doc.setFontSize(10); doc.setTextColor(220, 220, 240);
+            doc.text(`Veredicto: ${lastSummary}`, 20, 50);
+            doc.text(`IM (Índice de Manipulación): ${lastIM}/10`, 20, 58);
+            doc.text(`Escala: ${lastScale}/10`, 20, 66);
+            doc.text(`Energía estimada: ${document.getElementById('energyRange').innerText}`, 20, 74);
+            doc.text(`ΔIC (ruido estructural): ${document.getElementById('deltaIC').innerText}`, 20, 82);
+            // Métricas
+            doc.setFontSize(12); doc.setTextColor(0, 200, 140);
+            doc.text('MÉTRICAS', 20, 96);
+            doc.setFontSize(10); doc.setTextColor(220, 220, 240);
+            doc.text(`P=${document.getElementById('valP').innerText}  E=${document.getElementById('valE').innerText}  U=${document.getElementById('valU').innerText}  A=${document.getElementById('valA').innerText}  S=${document.getElementById('valSoc').innerText}  L=${document.getElementById('valAlarm').innerText}  F=${document.getElementById('valFake').innerText}`, 20, 104);
+            doc.text(`Densidad factual (D): ${document.getElementById('valD').innerText}  ·  Entropía Shannon (EDI): ${document.getElementById('valEDI').innerText}`, 20, 112);
+            // Texto analizado
+            doc.setFontSize(12); doc.setTextColor(0, 200, 140);
+            doc.text('TEXTO ANALIZADO (extracto)', 20, 126);
+            doc.setFontSize(9); doc.setTextColor(200, 200, 220);
+            const preview = window.lastText ? window.lastText.substring(0, 400) + (window.lastText.length > 400 ? '...' : '') : '—';
+            doc.text(doc.splitTextToSize(preview, 170), 20, 134);
+            // Pie
+            doc.setDrawColor(0, 200, 140); doc.line(20, 270, 190, 270);
+            doc.setFontSize(8); doc.setTextColor(130, 130, 160);
+            doc.text('Argira Shield v6.5 · argira.eus · José Ranero García · ORCID 0009-0009-3168-6379', 20, 276);
+            doc.text('Resumen gratuito. Para informe pericial completo usa 1 crédito.', 20, 282);
+            doc.save(`Argira_Resumen_${refId}.pdf`);
+        };
+        document.getElementById('shareBtn').onclick = () => { navigator.clipboard.writeText(`📊 Argira: ${document.getElementById('semLabel').innerText} (IM ${document.getElementById('imIndex').innerText})`); alert("Resultado copiado."); };
+        document.getElementById('speakBtn').onclick = () => {
+            if (!lastSummary) { alert("Primero audita un texto."); return; }
+            const cleanSummary = lastSummary.replace(/✅|⚠️|🚨/g,'').trim();
+            const utterance = new SpeechSynthesisUtterance(`Resultado: ${cleanSummary}. Escala ${lastScale}/10. IM ${lastIM}. ${lastAction}`);
+            utterance.lang = 'es-ES'; utterance.rate = 0.9;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        };
+        document.getElementById('simpleViewBtn').onclick = () => {
+            simpleMode = true;
+            document.getElementById('simpleViewBtn').classList.add('active');
+            document.getElementById('expertViewBtn').classList.remove('active');
+            document.getElementById('expertDetails').style.display = 'none';
+        };
+        document.getElementById('expertViewBtn').onclick = () => {
+            simpleMode = false;
+            document.getElementById('expertViewBtn').classList.add('active');
+            document.getElementById('simpleViewBtn').classList.remove('active');
+            if (window.lastText && lastAnalysisData) {
+                document.getElementById('expertDetails').style.display = 'block';
+                document.getElementById('cleanText').innerHTML = annotatedText(window.lastText);
+                const weights = getModeWeights();
+                let rawP = getPersonalizationScore(window.lastText, weights.p);
+                let rawE = countMatches(window.lastText.toLowerCase(),'e') * weights.e;
+                let rawU = countMatches(window.lastText.toLowerCase(),'u') * weights.u;
+                let rawA = countMatches(window.lastText.toLowerCase(),'a') * weights.a;
+                let rawSoc = countMatches(window.lastText.toLowerCase(),'soc') * weights.soc;
+                let rawAlarm = countMatches(window.lastText.toLowerCase(),'alarm') * weights.alarm;
+                let rawFake = countMatches(window.lastText.toLowerCase(),'fake') * weights.fake;
+                drawRadar([Math.min(10,rawP),Math.min(10,rawE),Math.min(10,rawU),Math.min(10,rawA),Math.min(10,rawSoc),Math.min(10,rawAlarm),Math.min(10,rawFake)], ['P','E','U','A','S','L','F']);
+            }
+        };
+        document.getElementById('helpBtn').onclick = () => document.getElementById('helpModal').style.display='flex';
+        document.getElementById('closeHelpBtn').onclick = () => document.getElementById('helpModal').style.display='none';
+
+        const MODE_DESCS = {
+            alert: '⚠️ Alerta — Máxima sensibilidad. Para bulos, estafas y phishing.',
+            balanced: '⚖️ Equilibrado — Estándar. Para correos comerciales, publicidad y noticias.',
+            newsletter: '🌿 Newsletter — Sensibilidad reducida. Para divulgación y marketing ético.'
+        };
+        document.querySelectorAll('.mode-quick-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const newMode = btn.dataset.mode;
+                if (currentMode === newMode) return;
+                currentMode = newMode;
+                document.querySelectorAll('.mode-quick-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('modeBadge').innerHTML = btn.textContent;
+                document.getElementById('modeQuickDesc').textContent = MODE_DESCS[currentMode];
+                refreshCurrentAnalysis();
+            });
+        });
+        function refreshCurrentAnalysis() {
+            const inputText = document.getElementById('inputText').value;
+            if (inputText && inputText.trim()) performAudit(inputText);
+            else if (window.lastText) performAudit(window.lastText);
+        }
+        document.getElementById('loadExampleTech').onclick = () => { document.getElementById('inputText').value = "Asunto: Últimos días para acceder a Marketing Digital Pro\n\nHola [Nombre], ¿Quieres aprender a vender online? El curso ya ha ayudado a más de 5.000 estudiantes. Oferta válida solo hasta el viernes. ¡No te quedes sin tu plaza!"; document.getElementById('resultsArea').style.display = 'none'; };
+        document.getElementById('loadExampleAlarm').onclick = () => { document.getElementById('inputText').value = "¡URGENTE! El gobierno esconde la cura. Comparte ahora o morirán."; document.getElementById('resultsArea').style.display = 'none'; };
+        document.getElementById('loadExampleEng').onclick = () => { document.getElementById('inputText').value = "URGENT: Miracle cure! They don't want you to know. Buy now!"; document.getElementById('resultsArea').style.display = 'none'; };
+        let vetoInterval=null;
+        document.getElementById('auditBtn').onclick = () => {
+            // Must be logged in
+            if (!currentEmail) { showAuthModal(); return; }
+            // Check free limit or credits
+            if (!canAudit()) { document.getElementById('limitModal').style.display = 'flex'; return; }
+            let txt = document.getElementById('inputText').value;
+            if (!txt.trim()) { alert("Inserta texto"); return; }
+            window._pendingAuditText = txt;
+            let overlay = document.getElementById('vetoOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div'); overlay.id = 'vetoOverlay'; overlay.className = 'veto-layer';
+                overlay.innerHTML = '<div class="timer-big" id="vetoTimer">🧠 5s</div><p>Analizando...</p>';
+                document.body.appendChild(overlay);
+            }
+            overlay.style.display = 'block';
+            let t = 5;
+            if (vetoInterval) clearInterval(vetoInterval);
+            vetoInterval = setInterval(() => {
+                t--;
+                let ts = document.getElementById('vetoTimer');
+                if (ts) ts.innerText = `🧠 ${t}s`;
+                if (t <= 0) { clearInterval(vetoInterval); overlay.style.display = 'none'; performAudit(txt); }
+            }, 1000);
+        };
+        document.getElementById('compareBtn').onclick = () => { if(!document.getElementById('inputText').value.trim()){ alert("Primero pega un texto."); return; } document.getElementById('comparatorModal').style.display='flex'; };
+        document.getElementById('doCompareBtn').onclick = () => { let t1=document.getElementById('inputText').value, t2=document.getElementById('compareText').value; if(!t2.trim()){ alert("Pega segundo texto"); return; } let weights = getModeWeights(); let calcMetrics = (t)=>{ let D=factualDensity(t); let rawP=getPersonalizationScore(t,weights.p); let rawE=countMatches(t.toLowerCase(),'e')*weights.e; let rawU=countMatches(t.toLowerCase(),'u')*weights.u; let rawA=countMatches(t.toLowerCase(),'a')*weights.a; let rawSoc=countMatches(t.toLowerCase(),'soc')*weights.soc; let rawAlarm=countMatches(t.toLowerCase(),'alarm')*weights.alarm; let rawFake=countMatches(t.toLowerCase(),'fake')*weights.fake; let total=rawP+rawE+rawU+rawA+rawSoc+rawAlarm+rawFake+syntacticPatterns(t)*weights.syntaxMult; let wc=t.split(/\s+/).length; let im=total/(Math.log10(Math.max(1,wc))+D); let noise=(t.match(NOISE_PATTERN)||[]).length; let delta=wc>0?((noise/wc)*10).toFixed(1):0; let energy=`${(wc*0.2).toFixed(1)}-${(wc*0.5).toFixed(1)} mWh`; return {im, delta, energy}; }; let m1=calcMetrics(t1), m2=calcMetrics(t2); alert(`Comparación:\nTexto1: IM ${m1.im.toFixed(2)}, ΔIC ${m1.delta}/10\nTexto2: IM ${m2.im.toFixed(2)}, ΔIC ${m2.delta}/10`); document.getElementById('comparatorModal').style.display='none'; };
+        document.getElementById('closeCompareBtn').onclick = () => document.getElementById('comparatorModal').style.display='none';
+        let recognition, isRecording=false, finalTranscript="";
+        const modalAudio = document.getElementById('audioModal');
+        const audioStatus = document.getElementById('audioStatus');
+        const startRec = document.getElementById('startRecordBtn');
+        const stopRec = document.getElementById('stopRecordBtn');
+        async function requestMic(){ try{ await navigator.mediaDevices.getUserMedia({audio:true}); audioStatus.innerText="✅ Permiso OK"; return true; } catch(e){ audioStatus.innerText="❌ Error de permiso"; return false; } }
+        function startRecording(){ if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){ audioStatus.innerText="❌ No compatible"; return; } requestMic().then(ok=>{ if(!ok) return; const SR=window.SpeechRecognition||window.webkitSpeechRecognition; recognition=new SR(); recognition.continuous=false; recognition.interimResults=true; recognition.lang='es-ES'; finalTranscript=""; recognition.onresult=e=>{ let final=""; for(let i=0;i<e.results.length;i++) if(e.results[i].isFinal) final+=e.results[i][0].transcript; if(final) finalTranscript=final; audioStatus.innerText=`🎙️: ${finalTranscript}`; }; recognition.onerror=()=>{ stopRecording(); }; recognition.onend=()=>{ if(isRecording) stopRecording(); }; recognition.start(); isRecording=true; startRec.disabled=true; stopRec.disabled=false; }); }
+        function stopRecording(){ if(recognition&&isRecording) recognition.stop(); isRecording=false; startRec.disabled=false; stopRec.disabled=true; if(finalTranscript) document.getElementById('inputText').value=finalTranscript; setTimeout(()=>modalAudio.style.display='none',1000); }
+        document.getElementById('testMicBtn').onclick=requestMic;
+        document.getElementById('audioBtn').onclick=()=> modalAudio.style.display='flex';
+        if(startRec) startRec.onclick=startRecording;
+        if(stopRec) stopRec.onclick=stopRecording;
+        document.getElementById('closeModalBtn').onclick = ()=>{ if(isRecording) stopRecording(); modalAudio.style.display='none'; };
+        renderHistory();
+
+        // ========== CONTADOR DE AUDITORÍAS GRATUITAS ==========
+        const FREE_AUDIT_LIMIT = 5;
+        function getAuditCount() { return parseInt(localStorage.getItem('argira_audit_count') || '0'); }
+        function incrementAuditCount() {
+            const n = getAuditCount() + 1;
+            localStorage.setItem('argira_audit_count', n);
+            updateAuditCounterUI();
+            return n;
+        }
+        async function registerAuditInBackend(mode, imScore, resultSummary, textPreview) {
+            if (!sessionToken && !currentEmail) return;
+            try {
+                const res = await fetch(`${API_V1}/audit/use`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({
+                        mode,
+                        im_score: imScore,
+                        result_summary: resultSummary,
+                        text_preview: textPreview
+                    })
+                });
+                if (res.status === 403) {
+                    // Límite alcanzado según el servidor (por si el localStorage se manipuló)
+                    document.getElementById('limitModal').style.display = 'flex';
+                } else if (res.ok) {
+                    const data = await res.json();
+                    // Sincronizar contador local con el del servidor
+                    if (data.auditsUsed !== undefined) {
+                        localStorage.setItem('argira_audit_count', data.auditsUsed);
+                        updateAuditCounterUI();
+                    }
+                }
+            } catch(e) { }
+        }
+        function updateAuditCounterUI() {
+            if (!currentEmail) return;
+            const used = getAuditCount();
+            const freeRemaining = Math.max(0, FREE_AUDIT_LIMIT - used);
+            const badge = document.getElementById('auditCounter');
+            const num = document.getElementById('auditCountNum');
+            if (badge && num) {
+                badge.style.display = 'inline-flex';
+                if (freeRemaining > 0) {
+                    num.textContent = freeRemaining;
+                    const lbl = document.getElementById('auditCountLabel');
+                    if (lbl) lbl.textContent = 'auditorías restantes';
+                    badge.title = `${freeRemaining} auditorías gratuitas restantes`;
+                    badge.style.borderColor = freeRemaining <= 1 ? 'var(--danger)' : 'var(--border-dim)';
+                    badge.style.color = freeRemaining <= 1 ? 'var(--danger)' : 'var(--text-dim)';
+                } else {
+                    // Gratuitas agotadas — mostrar créditos de pago
+                    num.textContent = credits;
+                    const lbl = document.getElementById('auditCountLabel');
+                    if (lbl) lbl.textContent = 'créditos';
+                    badge.title = `${credits} créditos restantes`;
+                    badge.style.borderColor = credits <= 0 ? 'var(--danger)' : 'var(--accent)';
+                    badge.style.color = credits <= 0 ? 'var(--danger)' : 'var(--accent)';
+                }
+            }
+        }
+        function canAudit() {
+            if (!currentEmail) return false; // must be logged in
+            if (getAuditCount() < FREE_AUDIT_LIMIT) return true; // gratuitas disponibles
+            if (credits > 0) return true; // créditos de pago disponibles
+            return false;
+        }
+        function isUsingCredit() {
+            return getAuditCount() >= FREE_AUDIT_LIMIT;
+        }
+
+        // Logout handler
+        document.getElementById('logoutBtn').onclick = async () => {
+            try {
+                await fetch(`${API_V1}/auth/logout`, { method: 'POST', headers: authHeaders() });
+            } catch(e) {}
+            localStorage.removeItem('argira_email');
+            localStorage.removeItem('argira_token');
+            localStorage.removeItem('argira_audit_count');
+            currentEmail = null; sessionToken = null; credits = 0;
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('auditCounter').style.display = 'none';
+            showAuthModal();
+        };
+
+        function showLoggedInUI() {
+            document.getElementById('logoutBtn').style.display = 'inline-flex';
+        }
+
+        // Inicialización — modal al inicio para capturar email
+        if (!currentEmail && !sessionToken) {
+            showAuthModal();
+        } else {
+            // Sincronizar con servidor al recargar (contador real + créditos)
+            (async () => {
+                try {
+                    const meRes = await fetch(`${API_V1}/me`, { headers: authHeaders() });
+                    if (meRes.ok) {
+                        const meData = await meRes.json();
+                        localStorage.setItem('argira_audit_count', meData.auditsUsedThisMonth || 0);
+                        credits = meData.credits !== undefined ? meData.credits : credits;
+                        document.getElementById('creditsAmount').innerText = credits;
+                        if (meData.freeAuditsRemaining !== undefined && meData.auditsUsedThisMonth !== undefined) {
+                            FREE_AUDIT_LIMIT = meData.freeAuditsRemaining + meData.auditsUsedThisMonth;
+                        }
+                        updateUIAfterCredits();
+                    } else if (meRes.status === 401) {
+                        localStorage.removeItem('argira_email');
+                        localStorage.removeItem('argira_token');
+                        localStorage.removeItem('argira_audit_count');
+                        currentEmail = null; sessionToken = null; credits = 0;
+                        showAuthModal();
+                        return;
+                    }
+                } catch(e) {
+                    // sin conexion al iniciar, usando datos locales
+                    await fetchCredits();
+                }
+                updateAuditCounterUI();
+                showLoggedInUI();
+            })();
+        }
+    </script>
+</body>
+</html>
