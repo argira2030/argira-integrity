@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidad | Argira Shield</title>
+<meta name="robots" content="index,follow">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --bg-deep: #17222c; --surface: #1e2b36; --card-bg: #24333f;
+        --accent: #5aada0; --text-main: #eef1f0; --text-dim: #a7b3ba;
+        --border-dim: #34434f;
+    }
+    body {
+        font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        background: var(--bg-deep);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding: 20px;
+    }
+    .container { max-width: 760px; margin: 0 auto; }
+    header {
+        display: flex; align-items: center; gap: 14px;
+        padding: 18px 4px 24px;
+        border-bottom: 1px solid var(--border-dim);
+        margin-bottom: 28px;
+    }
+    .shield { font-size: 2rem; filter: drop-shadow(0 0 12px rgba(0,247,176,0.5)); }
+    h1 {
+        font-size: 1.4rem;
+        background: linear-gradient(135deg, #fff, var(--accent));
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        line-height: 1.2;
+    }
+    .updated { font-size: 0.78rem; color: var(--text-dim); margin-top: 2px; }
+    a { color: var(--accent); }
+    .lang-switch {
+        display: flex; gap: 8px; margin-bottom: 24px;
+    }
+    .lang-btn {
+        background: var(--card-bg); border: 1px solid var(--border-dim);
+        color: var(--text-dim); border-radius: 20px; padding: 6px 14px;
+        font-size: 0.78rem; cursor: pointer; font-weight: 600;
+    }
+    .lang-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    section.policy { display: none; }
+    section.policy.active { display: block; }
+    .card {
+        background: var(--surface); border: 1px solid var(--border-dim);
+        border-radius: 20px; padding: 24px 22px; margin-bottom: 16px;
+    }
+    h2 {
+        font-size: 1.02rem; color: var(--accent); margin-bottom: 10px;
+        margin-top: 4px;
+    }
+    p, li { font-size: 0.9rem; color: var(--text-main); margin-bottom: 10px; }
+    ul { padding-left: 20px; margin-bottom: 10px; }
+    .op-note {
+        font-size: 0.82rem; color: var(--text-dim); background: var(--card-bg);
+        border-left: 3px solid var(--accent); border-radius: 8px;
+        padding: 10px 14px; margin-top: 8px;
+    }
+    footer {
+        text-align: center; font-size: 0.75rem; color: var(--text-dim);
+        padding: 24px 0 8px;
+    }
+    footer a { color: var(--text-dim); text-decoration: underline; }
+    @media (max-width: 480px) {
+        .card { padding: 18px 16px; border-radius: 16px; }
+        h1 { font-size: 1.2rem; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <span class="shield">🛡️</span>
+        <div>
+            <h1 id="pageTitle">Política de Privacidad — Argira Shield</h1>
+            <div class="updated" id="pageUpdated">Última actualización: 8 de septiembre de 2026</div>
+        </div>
+    </header>
+
+    <main>
+    <div class="lang-switch" role="group" aria-label="Seleccionar idioma / Select language">
+        <button class="lang-btn active" data-lang="es" id="btnEs" aria-pressed="true">Español</button>
+        <button class="lang-btn" data-lang="en" id="btnEn" aria-pressed="false">English</button>
+    </div>
+
+    <!-- ═══════════════ ES ═══════════════ -->
+    <section class="policy active" id="policy-es">
+        <div class="card">
+            <h2>Quién presta este servicio</h2>
+            <p>Argira Shield está operado por Jose Ranero García ("Argira", "nosotros"). Contacto: <a href="mailto:argira2030@gmail.com">argira2030@gmail.com</a></p>
+        </div>
+
+        <div class="card">
+            <h2>A qué se aplica este documento</h2>
+            <p>Esta política cubre la herramienta web Argira Shield (<a href="https://argira.eus/argira-integrity/" target="_blank" rel="noopener">argira.eus/argira-integrity/</a>) y la extensión de Chrome Argira Shield. Ambas usan la misma cuenta y el mismo servicio de backend.</p>
+        </div>
+
+        <div class="card">
+            <h2>Qué tratamos y para qué</h2>
+
+            <p><strong>1. Texto que envías a analizar</strong><br>
+            Tú decides, de forma explícita, enviar un texto (pegándolo, o seleccionándolo en una web y usando el menú contextual de la extensión) para que sea analizado. Ese texto se envía por HTTPS a nuestro backend para calcular el resultado (puntuación de manipulación, hallazgos de cada motor) y se te devuelve.</p>
+            <div class="op-note">Argira no almacena en el servidor el texto enviado a análisis — ni completo ni como un fragmento resumido ("text_preview") — y no se conserva ningún historial en el servidor de los textos que analizas.</div>
+            <p>No podemos hacer una afirmación más amplia (p. ej. que el texto no se almacena nunca, bajo ninguna circunstancia) porque el cuerpo de las peticiones puede pasar por infraestructura que no controlamos por completo (ver "Terceros" más abajo).</p>
+
+            <p><strong>2. Datos de cuenta y autenticación</strong><br>
+            Para usar el servicio necesitas una cuenta. Según cómo te registres, almacenamos: tu email; una contraseña con hash (si usas email/contraseña); tu identificador de cuenta de Google (si usas "Iniciar sesión con Google" — no recibimos tu contraseña de Google); tu plan de cuenta; y fechas de creación/actualización. No conservamos los códigos de un solo uso más allá de su breve periodo de validez (unos minutos).</p>
+
+            <p><strong>3. Sesiones</strong><br>
+            Al iniciar sesión emitimos un token de sesión, guardado en tu navegador (y, en la extensión, en el almacenamiento local de la extensión) y en nuestro servidor, con fecha de expiración. Cerrar sesión borra ese token de nuestro servidor de inmediato.</p>
+
+            <p><strong>4. Créditos y pagos</strong><br>
+            Las cuentas nuevas empiezan con un saldo de créditos gratuito para probar el servicio (actualmente <strong>1.000 análisis gratis</strong>); esto no es una característica de pago y puede cambiar con el tiempo sin alterar cómo tratamos tus datos. Almacenamos tu saldo de créditos y un registro de transacciones (importe, concepto y, para compras, una referencia de la transacción de PayPal). Los pagos en sí los procesa PayPal; no recibimos ni almacenamos tus credenciales de tarjeta o de tu cuenta de PayPal. Además del saldo gratuito, existen packs de créditos opcionales que se pueden comprar vía PayPal.</p>
+
+            <p><strong>5. Qué NO almacenamos actualmente</strong><br>
+            No mantenemos en el servidor un historial del contenido de los textos que has analizado, en ninguna forma (ni completo ni como resumen/preview). El "historial reciente" que ves en la herramienta web se guarda solo en tu propio navegador (localStorage) y no se nos envía ni podemos leerlo.</p>
+        </div>
+
+        <div class="card">
+            <h2>Terceros involucrados en el tratamiento</h2>
+            <ul>
+                <li><strong>Render</strong> — alojamiento de nuestro backend, argira-api-frankfurt.</li>
+                <li><strong>Resend</strong> — nuestro proveedor de envío de emails transaccionales, usado para enviarte los códigos de acceso/verificación de un solo uso; recibe tu email y el código únicamente para ese fin.</li>
+                <li><strong>Google</strong> — solo si usas "Iniciar sesión con Google" (aplica la política de privacidad de Google a esa interacción).</li>
+                <li><strong>PayPal</strong> — solo si compras créditos (aplica la política de privacidad de PayPal a esa transacción).</li>
+            </ul>
+            <p>No vendemos tus datos a terceros ni los usamos para publicidad.</p>
+        </div>
+
+        <div class="card">
+            <h2>Conservación de datos</h2>
+            <ul>
+                <li>Cuenta, sesión, créditos y transacciones: mientras tu cuenta esté activa, más el periodo que la ley nos obligue a conservar registros de transacciones por motivos contables/fiscales.</li>
+                <li>Códigos de acceso de un solo uso: se eliminan automáticamente poco después de expirar o de usarse.</li>
+                <li>Texto analizado: no se conserva como historial, en ninguna forma (ver arriba).</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Tus derechos</h2>
+            <p>Puedes solicitar acceso, corrección o eliminación de tus datos personales escribiéndonos a <a href="mailto:argira2030@gmail.com">argira2030@gmail.com</a>. Las solicitudes de eliminación se procesan manualmente por nuestra parte; Argira no ofrece actualmente un borrado de cuenta automático o autoservicio. Te confirmaremos cuando tu solicitud se haya completado.</p>
+        </div>
+
+        <div class="card">
+            <h2>Menores</h2>
+            <p>Este servicio no está dirigido a menores y no está pensado para ser usado por nadie por debajo de la edad que la ley aplicable exija para consentir el tratamiento de sus propios datos.</p>
+        </div>
+
+        <div class="card">
+            <h2>Cambios en esta política</h2>
+            <p>Podemos actualizar esta política a medida que el servicio cambie. Los cambios importantes se reflejarán con una nueva fecha de "última actualización" arriba.</p>
+        </div>
+    </section>
+
+    <!-- ═══════════════ EN ═══════════════ -->
+    <section class="policy" id="policy-en" lang="en">
+        <div class="card">
+            <h2>Who operates this service</h2>
+            <p>Argira Shield is operated by Jose Ranero García ("Argira", "we"). Contact: <a href="mailto:argira2030@gmail.com">argira2030@gmail.com</a></p>
+        </div>
+
+        <div class="card">
+            <h2>What this document covers</h2>
+            <p>This policy applies to the Argira Shield web tool (<a href="https://argira.eus/argira-integrity/" target="_blank" rel="noopener">argira.eus/argira-integrity/</a>) and the Argira Shield Chrome extension. Both use the same account and the same backend service.</p>
+        </div>
+
+        <div class="card">
+            <h2>What we process and why</h2>
+
+            <p><strong>1. Text you submit for analysis</strong><br>
+            You choose, explicitly, to submit text (by pasting it, or by selecting it on a webpage and using the extension's context menu) to be analysed. That text is sent over HTTPS to our backend service to compute the result (manipulation score, engine findings) and is returned to you.</p>
+            <div class="op-note">Argira does not store the text submitted for analysis on the server — neither in full nor as a shortened preview ("text_preview") — and no server-side history of your analysed texts is kept.</div>
+            <p>We are not able to make a broader statement (e.g. that text is never stored anywhere, under any circumstance) because request bodies may pass through infrastructure we do not fully control (see "Third parties" below).</p>
+
+            <p><strong>2. Account and authentication data</strong><br>
+            To use the service you need an account. Depending on how you sign up, we store: your email address; a hashed password (if you use email/password login); your Google account identifier (if you use "Sign in with Google" — we do not receive your Google password); your account plan; and account creation/update timestamps. We do not store one-time login codes beyond their short validity window (a few minutes).</p>
+
+            <p><strong>3. Sessions</strong><br>
+            When you log in, we issue a session token stored in your browser (and, for the extension, in the extension's local storage) and on our server, with an expiration date. Logging out deletes that session token from our server immediately.</p>
+
+            <p><strong>4. Credits and payments</strong><br>
+            New accounts start with a free credit balance to try the service (currently <strong>1,000 free analyses</strong>); this is not a paid product feature and may change over time without altering how we handle your data. We store your credit balance and a log of credit transactions (amount, reason, and — for purchases — a PayPal transaction reference). Payments themselves are processed by PayPal; we do not receive or store your card or PayPal account credentials. Optional credit packs can be purchased via PayPal in addition to the free balance.</p>
+
+            <p><strong>5. What we do NOT currently store</strong><br>
+            We do not maintain a server-side history of the content of texts you have analysed, in any form (full text or preview). The "recent history" feature shown in the web tool is stored only in your own browser (localStorage) and is not sent to or readable by us.</p>
+        </div>
+
+        <div class="card">
+            <h2>Third parties involved in processing</h2>
+            <ul>
+                <li><strong>Render</strong> — hosting of our backend service, argira-api-frankfurt.</li>
+                <li><strong>Resend</strong> — our transactional email provider, used to send you the one-time login/verification codes; receives your email address and the code for that sole purpose.</li>
+                <li><strong>Google</strong> — only if you choose "Sign in with Google" (Google's own privacy policy applies to that interaction).</li>
+                <li><strong>PayPal</strong> — only if you purchase credits (PayPal's own privacy policy applies to that transaction).</li>
+            </ul>
+            <p>We do not sell your data to third parties, and we do not use your data for advertising.</p>
+        </div>
+
+        <div class="card">
+            <h2>Data retention</h2>
+            <ul>
+                <li>Account, session, credit, and transaction data: kept for as long as your account is active, plus any period we are legally required to keep transaction records for accounting/tax purposes.</li>
+                <li>One-time login codes: deleted automatically shortly after they expire or are used.</li>
+                <li>Analysed text: not retained as a history, in any form (see above).</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Your rights</h2>
+            <p>You can request access to, correction of, or deletion of your personal data by writing to us at <a href="mailto:argira2030@gmail.com">argira2030@gmail.com</a>. Deletion requests are processed manually by us; Argira does not currently offer automatic, self-service account deletion. We will confirm once your request has been completed.</p>
+        </div>
+
+        <div class="card">
+            <h2>Children</h2>
+            <p>This service is not directed at children and is not intended for use by anyone under the age required by applicable law to consent to data processing on their own behalf.</p>
+        </div>
+
+        <div class="card">
+            <h2>Changes to this policy</h2>
+            <p>We may update this policy as the service changes. Material changes will be reflected with a new "last updated" date above.</p>
+        </div>
+    </section>
+    </main>
+
+    <footer>
+        Argira Shield · <a href="https://argira.eus/argira-integrity/">Volver a la herramienta</a>
+    </footer>
+
+</div>
+
+<script>
+    const btnEs = document.getElementById('btnEs');
+    const btnEn = document.getElementById('btnEn');
+    const esSection = document.getElementById('policy-es');
+    const enSection = document.getElementById('policy-en');
+    const pageTitle = document.getElementById('pageTitle');
+    const pageUpdated = document.getElementById('pageUpdated');
+
+    const headerText = {
+        es: { title: 'Política de Privacidad — Argira Shield', updated: 'Última actualización: 8 de septiembre de 2026', tab: 'Política de Privacidad | Argira Shield' },
+        en: { title: 'Privacy Policy — Argira Shield', updated: 'Last updated: September 8, 2026', tab: 'Privacy Policy | Argira Shield' }
+    };
+
+    function showLang(lang) {
+        const isEs = lang === 'es';
+        esSection.classList.toggle('active', isEs);
+        enSection.classList.toggle('active', !isEs);
+        btnEs.classList.toggle('active', isEs);
+        btnEn.classList.toggle('active', !isEs);
+        btnEs.setAttribute('aria-pressed', String(isEs));
+        btnEn.setAttribute('aria-pressed', String(!isEs));
+        pageTitle.textContent = headerText[lang].title;
+        pageUpdated.textContent = headerText[lang].updated;
+        document.title = headerText[lang].tab;
+        document.documentElement.lang = lang;
+    }
+
+    btnEs.addEventListener('click', () => showLang('es'));
+    btnEn.addEventListener('click', () => showLang('en'));
+</script>
+
+</body>
+</html>
